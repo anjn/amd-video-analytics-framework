@@ -107,6 +107,8 @@ int main(int argc, char **argv) {
                         mobile.search.ryzen_ai_venv == "/tmp/ryzen-venv",
                     "MobileCLIP and fine frequency roundtrip");
             tuned.search.mobileclip_gpu_budget_percent = 35;
+            tuned.search.ryzen_ai_venv.clear();
+            tuned.search.mobileclip_worker = "/unused/legacy-worker";
             tuned.search.mobileclip_npu_budget_percent = 80;
             tuned.search.mobileclip_backend = "gpu+npu";
             save_config(path, tuned);

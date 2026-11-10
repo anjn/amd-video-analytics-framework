@@ -60,7 +60,7 @@ weights; changing a fixed-batch ONNX input alone is insufficient.
 
 | Directory | Contents |
 | --- | --- |
-| `backend/` | Qt-free `amdva_nvr_backend` library (`amdva::nvr`): camera controller, config persistence, AI scheduling (`AiRuntime`), person search and tracking, MobileCLIP worker |
+| `backend/` | Qt-free `amdva_nvr_backend` library (`amdva::nvr`): camera controller, config persistence, AI scheduling (`AiRuntime`), person search and tracking, in-process MobileCLIP runtime |
 | `app/` | Qt desktop (`amdva-nvr`) |
 | `headless.cpp` | `amdva-streams`, the backend without a display |
 | `tools/`, `tests/`, `scripts/` | validation programs, contract tests, model export and benchmarks |

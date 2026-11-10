@@ -223,9 +223,6 @@ Options load_config(const std::string &path) {
     if (o.search.mobileclip_backend != "gpu" && o.search.mobileclip_backend != "npu" &&
         o.search.mobileclip_backend != "gpu+npu")
         throw std::runtime_error("MobileCLIP backend must be gpu, npu or gpu+npu");
-    if (o.search.enabled && o.search.embedding_model == "mobileclip2-s2" &&
-        o.search.mobileclip_backend != "gpu" && o.search.ryzen_ai_venv.empty())
-        throw std::runtime_error("MobileCLIP NPU requires ryzen_ai_venv");
     if (!o.search.mobileclip_gpu_budget_percent || o.search.mobileclip_gpu_budget_percent > 100 ||
         !o.search.mobileclip_npu_budget_percent || o.search.mobileclip_npu_budget_percent > 100)
         throw std::runtime_error("MobileCLIP budgets must be 1 to 100 percent");

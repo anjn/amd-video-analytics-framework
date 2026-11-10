@@ -9,6 +9,7 @@
 #include <cstring>
 #include <dlfcn.h>
 #include <fstream>
+#include <iostream>
 #include <gst/va/gstva.h>
 #include <png.h>
 #include <random>
@@ -130,8 +131,7 @@ struct SearchCropper::Impl {
     VASurfaceID converted{VA_INVALID_SURFACE};
     std::unique_ptr<ImportedSurface> imported;
     Kernel kernel;
-    DeviceBuffer rgb;
-    unsigned limit;
+    unsigned limit, device;
     Impl(GstVaDisplay *display, unsigned limit, unsigned device)
         : va(static_cast<VADisplay>(gst_va_display_get_va_dpy(display))),
           kernel(R"(
@@ -148,7 +148,7 @@ extern "C" __global__ void crop_rgb(const unsigned char *src,unsigned pitch,unsi
  dst[i*3+c]=(unsigned char)(a*(1-ay)+b*ay+0.5f);}
 })",
                  "crop_rgb", gpu_arch(device)),
-          rgb(size_t(limit) * limit * 3), limit(limit) {
+          limit(limit), device(device) {
         converted = va.create_bgra(max_video_width, max_video_height);
         imported = std::make_unique<ImportedSurface>(va.export_surface(converted));
     }
@@ -184,7 +184,9 @@ std::vector<SearchImage> SearchCropper::crop_many(VASurfaceID surface, unsigned 
         image.rgb.resize(size_t(image.width) * image.height * 3);
         auto src = p.imported->data();
         auto layout = p.imported->layout();
-        auto dst = p.rgb.data();
+        image.gpu_device = int(p.device);
+        image.gpu_rgb = std::make_shared<DeviceBuffer>(image.rgb.size());
+        auto dst = image.gpu_rgb->data();
         unsigned x = unsigned(b.x), y = unsigned(b.y), w = unsigned(b.w), h = unsigned(b.h);
         void *args[] = {&src, &layout.y_pitch, &layout.y_offset, &width, &height, &x, &y, &w,
                         &h,   &image.width,    &image.height,    &dst};
@@ -200,6 +202,12 @@ std::vector<SearchImage> SearchCropper::crop_many(VASurfaceID surface, unsigned 
     return images;
 }
 namespace {
+SearchImage mobileclip_input(const SearchImage &image) {
+    // Queue entries keep CPU thumbnails; inference jobs copy only GPU ownership.
+    if (image.gpu_rgb)
+        return {image.width, image.height, {}, image.gpu_rgb, image.gpu_device};
+    return image; // CPU-source ingestion/warmup only.
+}
 std::vector<uint8_t> png_encode(const SearchImage &im) {
     png_image p{};
     p.version = PNG_IMAGE_VERSION;
@@ -234,7 +242,19 @@ struct Embedder {
     std::vector<std::array<float, 768>>
     mobile_images(MobileClipClient &client, const std::vector<SearchImage> &source, bool npu) {
         const auto start = Clock::now();
-        auto result = client.images(source);
+        std::vector<std::array<float,768>> result;
+#ifdef AMDVA_HAS_MOBILECLIP
+        // NPU uses the GPU briefly for preprocessing, then releases the gate
+        // before entering Vitis AI. GPU callers already hold their own lease.
+        if(npu && metrics) {
+            auto input = [&] {
+                auto lease = metrics->acquire(AiRuntime::MobileClip);
+                return client.prepare(source);
+            }();
+            result = client.infer(input);
+        } else
+#endif
+            result = client.images(source);
         if (metrics)
             metrics->record(npu ? "Image embedding NPU" : "Image embedding GPU", "",
                             std::chrono::duration<double, std::milli>(Clock::now() - start).count(),
@@ -411,7 +431,7 @@ std::string fingerprint(const SearchOptions &o) {
         input += "portrait-v1/" + std::to_string(o.embedding_width) + "x" +
                  std::to_string(o.embedding_height) + "/";
     if (mobileclip)
-        input = "mobileclip2-s2/512-zero-tail-v1/letterbox-bilinear-256/" + o.mobileclip_backend +
+        input = "mobileclip2-s2/inprocess-device-input-v1/512-zero-tail-v1/letterbox-bilinear-256/" + o.mobileclip_backend +
                 "/crop-limit/" + std::to_string(o.image_size) + "/";
     auto append = [&](const std::filesystem::path &path) {
         std::ifstream f(path);
@@ -428,7 +448,7 @@ std::string fingerprint(const SearchOptions &o) {
     if (mobileclip) {
         // GPU FP16 and NPU BF16 also have distinct vector spaces.
         append(root / "manifest.json");
-        append(root / (o.mobileclip_backend + ".json"));
+        append(root / (o.mobileclip_backend == "gpu" ? "gpu-device.json" : "npu.json"));
     } else {
         Parser index((root / "index.json").string());
         append(root / "index.json");
@@ -534,6 +554,7 @@ struct SearchService::Impl {
         std::lock_guard<std::mutex> l(mutex);
         status.state = "error";
         status.error = e.what();
+        std::cerr << "NVR person search stopped: " << status.error << '\n';
         cv.notify_all();
     }
     void track() {
@@ -760,7 +781,7 @@ struct SearchService::Impl {
             {
                 std::lock_guard<std::mutex> lock(mutex);
                 if (stopping)
-                    return; // Futures drain before the model/worker processes are destroyed.
+                    return; // Futures drain before the in-process models are destroyed.
             }
             for (unsigned device = 0; device < 2; ++device) {
                 if (!ready(running[device]))
@@ -821,7 +842,13 @@ struct SearchService::Impl {
                         });
                         npu = gpu;
                     } else {
-                        const std::vector<SearchImage> input{request.image};
+#ifdef AMDVA_HAS_MOBILECLIP
+                        if (!request.image.gpu_rgb) {
+                            auto lease = runtime->acquire(AiRuntime::Query);
+                            model.mobileclip->ingest(request.image);
+                        }
+#endif
+                        const std::vector<SearchImage> input{mobileclip_input(request.image)};
                         std::future<std::vector<std::array<float, 768>>> npu_query;
                         if (enabled[1])
                             npu_query = std::async(std::launch::async, [&] {
@@ -908,7 +935,7 @@ struct SearchService::Impl {
                         try {
                             std::vector<SearchImage> images;
                             for (const auto &item : done.items)
-                                images.push_back(item.second.image);
+                                images.push_back(mobileclip_input(item.second.image));
                             if (device) {
                                 start = Clock::now();
                                 done.embeddings = model.mobile_images(client(device), images, true);

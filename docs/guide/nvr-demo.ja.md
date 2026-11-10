@@ -90,7 +90,7 @@ build/examples/nvr/amdva-streams artifacts/nvr/nvr-local.json 20
 
 ## 人物検索
 
-人物検索には、EmbeddingGemma 2 または MobileCLIP2 のネイティブランタイムが別途必要です。検索結果を同じ人物ごとのカードにまとめるには、さらに ReID モデル（OSNet）を用意します。準備の手順と設定項目は [人物検索](../dev/nvr/nvr-search.ja.md) を参照してください。
+人物検索には、外部のEmbeddingGemma 2ランタイム、またはこのリポジトリでビルドするMobileCLIP2ランタイムを使います。検索結果を同じ人物ごとのカードにまとめるには、さらに ReID モデル（OSNet）を用意します。準備の手順と設定項目は [人物検索](../dev/nvr/nvr-search.ja.md) を参照してください。
 
 ## 仕組み
 
@@ -98,7 +98,7 @@ NVR デモは、このフレームワークの部品、GStreamer の標準の要
 
 [![NVR デモの処理の流れとハードウェア](images/nvr-architecture-ja.svg)](images/nvr-architecture-ja.svg)
 
-図をクリックすると拡大して表示します。箱の色は処理を実行するハードウェア、右上の札は部品の提供元を表します。矢印の色はデータの受け渡し方で、緑は GPU のメモリのままの受け渡し（ゼロコピー）、赤は CPU と GPU または NPU の間のコピー、灰色は CPU のメモリにある圧縮データやメタデータです。
+図をクリックすると拡大して表示します。MobileCLIPの緑の矢印はアプリケーションからEPへ入力を渡す範囲を示し、EP内部のコピーや変換は検証対象に含みません。箱の色は処理を実行するハードウェア、右上の札は部品の提供元を表します。矢印の色はデータの受け渡し方で、緑は同じバッファーを共有する受け渡し（ゼロコピー）、赤は CPU と GPU または NPU の間のコピー、灰色は CPU のメモリにある圧縮データやメタデータです。
 
 **受信と録画**: 受信した圧縮データを、CPU がそのまま MKV ファイルに書き込みます。映像をデコードしないので負荷が小さく、画面に表示していないカメラも録画を続けます。録画の再エンコードを設定したカメラは、デコードした映像を GPU で縮小し、VCN でエンコードしてから録画します（[再エンコード録画](../dev/nvr/vms.ja.md)）。
 
@@ -121,7 +121,7 @@ NVR デモは、このフレームワークの部品、GStreamer の標準の要
 | 人物の切り出し | VPE、GPU（HIP） | 切り出した画像だけ CPU にコピー（最大 384×384） | NVR デモ |
 | ReID | CPU、GPU（MIGraphX） | 入力を GPU に、特徴量（1 人 2 KB）を CPU にコピー | NVR デモ |
 | 人物の対応付け、解析結果の保存 | CPU | — | NVR デモ、フレームワークの `Catalog` |
-| 埋め込み（MobileCLIP2） | CPU（前処理）、NPU | 画像を別プロセスに渡し、入力を NPU にコピー | NVR デモ、ONNX Runtime と Ryzen AI ソフトウェア |
+| 埋め込み（MobileCLIP2） | GPU（前処理）、GPU／NPU（推論） | 同一プロセスで入力を共有。EP内部はコピー監査対象外 | NVRデモ、MIGraphX、ONNX RuntimeとRyzen AIソフトウェア |
 | 検索用画像の保存、ベクトル検索、文章の埋め込み | CPU | — | NVR デモ、SQLite と sqlite-vec |
 | 再エンコード | GPU（縮小）、VCN | ゼロコピー。圧縮データだけ CPU へ | フレームワークの `Transcoder` と `amdencode`、GStreamer の `vapostproc` |
 | 再生、タイムラインのプレビュー | CPU（読み込み）、VCN、VPE、GPU | 読み込み以降はゼロコピー | フレームワークの `PlaybackSession`、GStreamer の `matroskademux` |

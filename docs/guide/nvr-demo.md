@@ -1,4 +1,4 @@
-<!-- source: docs/guide/nvr-demo.ja.md e98425ba9ef3d62972b9719bd9ec3540d8e1dca0 -->
+<!-- source: docs/guide/nvr-demo.ja.md d3287065f834fb501021f14e9e3e91d03f7d7c1e -->
 # NVR demo
 
 The NVR demo is a sample network video recorder built with this framework. It records all registered RTSP cameras while showing up to 16 of them on the desktop, and runs person and vehicle detection and tracking on the cameras being displayed. Recordings can be played back from a timeline, and if you prepare a native embedding model, you can also search for people by text or image.
@@ -91,7 +91,7 @@ It runs for 20 seconds, and it succeeded if the last line is `{"live":2,"recordi
 
 ## Person search
 
-Person search requires a separate native runtime for EmbeddingGemma 2 or MobileCLIP2. To group search results into one card per person, you also need a ReID model (OSNet). For setup steps and settings, see [Person search](../dev/nvr/nvr-search.md).
+Person search uses the external EmbeddingGemma 2 runtime or the optional in-process MobileCLIP2 runtime built in this repository. To group search results into one card per person, you also need a ReID model (OSNet). For setup steps and settings, see [Person search](../dev/nvr/nvr-search.md).
 
 ## How it works
 
@@ -99,7 +99,7 @@ The NVR demo combines parts of this framework, standard GStreamer elements and a
 
 [![NVR demo data flow and hardware](images/nvr-architecture.svg)](images/nvr-architecture.svg)
 
-Click the figure to enlarge it. Box colors show the hardware that runs the step, and the tag at the top right shows who provides the part. Arrow colors show how data is passed: green stays in GPU memory (zero-copy), red is a copy between the CPU and the GPU or NPU, and gray is compressed data or metadata in CPU memory.
+Click the figure to enlarge it. MobileCLIP green arrows cover application input handoff to the EP; copies and conversions inside the EP are outside the verification scope. Box colors show the hardware that runs the step, and the tag at the top right shows who provides the part. Arrow colors show how data is passed: green shares the same buffer (zero-copy), red is a copy between the CPU and the GPU or NPU, and gray is compressed data or metadata in CPU memory.
 
 **Reception and recording**: The CPU writes the received compressed data to MKV files as is. Because the video is not decoded, the load is small and cameras that are not on screen keep recording. For a camera set to re-encode its recording, the decoded video is scaled on the GPU and encoded on VCN before it is recorded ([re-encoded recordings](../dev/nvr/vms.md)).
 
@@ -122,7 +122,7 @@ Click the figure to enlarge it. Box colors show the hardware that runs the step,
 | Person cropping | VPE, GPU (HIP) | Only the cropped image is copied to the CPU (up to 384×384) | NVR demo |
 | ReID | CPU, GPU (MIGraphX) | Input copied to the GPU, features (2 KB per person) to the CPU | NVR demo |
 | Associating people, saving analysis | CPU | — | NVR demo, the framework's `Catalog` |
-| Embedding (MobileCLIP2) | CPU (preprocessing), NPU | Image passed to another process, input copied to the NPU | NVR demo, ONNX Runtime and Ryzen AI Software |
+| Embedding (MobileCLIP2) | GPU preprocessing, GPU/NPU inference | Shared input in one process; EP internals excluded from copy audit | NVR demo, MIGraphX, ONNX Runtime and Ryzen AI Software |
 | Saving search images, vector search, text embedding | CPU | — | NVR demo, SQLite and sqlite-vec |
 | Re-encoding | GPU (scaling), VCN | Zero-copy; only compressed data goes to the CPU | The framework's `Transcoder` and `amdencode`, GStreamer `vapostproc` |
 | Playback, timeline previews | CPU (reading), VCN, VPE, GPU | Zero-copy after reading | The framework's `PlaybackSession`, GStreamer `matroskademux` |

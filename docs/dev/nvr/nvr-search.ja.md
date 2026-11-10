@@ -1,4 +1,4 @@
-<!-- source: docs/dev/nvr/nvr-search.md 99f87779fb96a88c5c7fa0225e27a7c58d3e101a -->
+<!-- source: docs/dev/nvr/nvr-search.md 76794ccb7c31b849e925b7728c09fa2bf9a55474 -->
 # NVR/VMS デモの人物検索
 
 **Search** タブには、幅を変更できる左側の条件パネルと、右側の共通の結果カードがあります。パネルの初期幅は 320 ピクセルです。3 つのモードがあります。
@@ -22,28 +22,22 @@
 **AI Statistics** で、**EmbeddingGemma 2 (GPU)**、**MobileCLIP2-S2
 (GPU FP16)**、**MobileCLIP2-S2 (NPU BF16)**、**MobileCLIP2-S2 (GPU + NPU)** のいずれかを選びます。選択は次回のアプリケーション起動時に反映されます。それまでは、現在実行中のモデルとその検索結果が有効なままです。デスクトップの既存の起動時のポリシーにより、古い録画とその検索データは消去されます。選択時に履歴の埋め込みを再計算することはありません。
 
-MobileCLIP2 は、`embeddinggemma2-rocm` に追加したネイティブ API を使います。そのリポジトリの `docs/mobileclip2.md` に従い、使用するバックエンドのプロファイルも含めてバンドルを準備してください。既存の
-EmbeddingGemma の `library` と `bundle` に加えて次のフィールドを設定すると、両方のモデルを選択できる状態が保たれます。
+MobileCLIP2は、このリポジトリの共通ネイティブランタイムを使い、NVRと同一プロセスで実行します。`AMDVA_BUILD_MOBILECLIP=ON`でビルドし、GPUデバイス入出力用のプロファイルを準備して、Ryzen AIの環境を読み込んでから起動します。手順は[MobileCLIPサンプル](../../../examples/mobileclip/README.ja.md)を参照してください。既存のEmbeddingGemmaの`library`と`bundle`に加えて、次を設定します。
 
 ```json
 "embedding_model": "mobileclip2-s2",
-"mobileclip_backend": "gpu",
-"mobileclip_library": "/path/to/embeddinggemma2-rocm/build-mc2/libmobileclip2.so",
-"mobileclip_bundle": "/path/to/embeddinggemma2-rocm/artifacts/mobileclip2-api",
-"ryzen_ai_venv": "/home/amd/work/rai/rai19-venv"
+"mobileclip_backend": "gpu+npu",
+"mobileclip_bundle": "/path/to/mobileclip-device",
+"embedding_batch": 4
 ```
 
-`embedding_model` の既定値は `embeddinggemma2` です。`mobileclip_backend` は `gpu`
-または `npu` で、`gpu+npu` を指定すると両方で同時に収集します。MobileCLIP2 はインストールされた `amdva-mobileclip-worker` プロセスで動作し、このプロセスは `mobileclip_worker` で変更できます。NPU ワーカーは
-`/opt/xilinx/xrt/setup.sh` と設定した venv の `bin/activate` を読み込み、Ryzen AI とその NPU のハンドルを NVR の HIP 初期化から分離します。NPU ワーカーは、継承したライブラリパスを ROCm と Ryzen AI のパスに置き換え、EmbeddingGemma/PyTorch のライブラリが NPU の依存ライブラリより優先されないようにします。GPU
-ワーカーは起動時の環境を継承します。ワーカーは Python による推論ではなくネイティブの C API を使い、親プロセスとともに終了します。バックエンドのエラーは
-Search に表示します。GPU/CPU への暗黙のフォールバックはありません。
+`embedding_model`の既定値は`embeddinggemma2`です。`mobileclip_backend`は`gpu`、`npu`、両方で収集する`gpu+npu`から選びます。旧設定の`mobileclip_library`と`mobileclip_worker`は読み込めますが、実行には使いません。`examples/nvr/scripts/run.sh CONFIG.json`で起動すると、`ryzen_ai_venv`、`AMDVA_RYZEN_AI_VENV`、`VIRTUAL_ENV`からRyzen AI環境を選び、旧Torchライブラリのパスを除いてからHIP/ORTを起動します。MobileCLIPのワーカーや画像IPCはありません。ビルド機能、依存ライブラリ、準備済みプロファイルが足りない場合はエラーとし、自動で別のバックエンドへ切り替えません。
 
-どちらの MobileCLIP バックエンドも、ライブラリの前処理を使い、上限付きの人物/領域の切り抜きを
-256×256 にレターボックス化します。GPU はバッチ 1 または 4 に対応し（収集数が足りない場合は
-4 にパディングします）、NPU はバッチ 1 を使います。設定した `embedding_batch` は引き続き GPU の希望値です。テキストには MobileCLIP の CPU エンコーダーと 77 トークンのトークナイザーを使い、EmbeddingGemma のプロンプトは使いません。EmbeddingGemma は縦長画像用のプロファイルをそのまま使います。
+両方のバックエンドでGPU前処理を使い、従来のPillow互換のレターボックスとバイリニア補間を再現します。GPU上のRGBクロップ画像を保持し、サムネイルやReID用のCPU読み戻しとは分離します。GPUはデバイス入出力のFP16 MIGraphXプロファイルを使います。NPUでは、HIP共有ホストメモリへGPUが直接入力を書き、その領域を参照するORTのCPUテンソルをVitis AI EPへ渡します。コピーなしの検証範囲はEPの入口までです。EP内部のコピーや変換は監査対象に含めません。
 
-MobileCLIP は 512 次元のベクトルを返します。これを既存の 768 個の float の格納形式にゼロで拡張するため、カタログを移行せずにコサイン類似度を保てます。モデルのマニフェスト、バックエンド、切り抜きの上限によって、別個の検索空間を識別します。各クエリベクトルは、モデルと画像バックエンドが一致する記録とだけ比較します。GPU FP16 と NPU BF16 の結果は異なることがあり、日本語の検索精度もモデルの系統によって異なります。ReID の特徴量は独立したままです。`gpu+npu` モードでは、GPU と NPU が共有の上限付きキューから独立して処理を取り出します。NPU は対象となる切り抜きを 1 つ、GPU は最大 `embedding_batch`（1 または 4）個を取り出します。どちらも、もう一方のデバイスやバッチが埋まるのを待ちません。NPU に空きがあれば NPU を優先し、同じ人物を両方のデバイスで同時に処理することはありません。各切り抜きは、実際にエンコードしたバックエンドのフィンガープリントで 1 回だけ保存します。両方のワーカーの初期化に成功する必要があります。バックエンドが欠けている場合は、暗黙に単一デバイスのモードに切り替えず、エラーとして報告します。
+NPUの前処理は短時間だけGPUの利用権を取得し、推論前に解放します。CPUから渡した検索画像だけは入口で一度アップロードします。GPUは1〜4枚に対応し、2〜3枚は4枚へパディングします。NPUは1枚です。`embedding_batch`はGPUの希望バッチ数として1または4を指定します。テキストはCPUエンコーダーと77トークンのトークナイザーを使い、EmbeddingGemma用のプロンプトは付けません。EmbeddingGemmaの縦長プロファイルは維持します。
+
+MobileCLIP は 512 次元のベクトルを返します。これを既存の 768 個の float の格納形式にゼロで拡張するため、カタログを移行せずにコサイン類似度を保てます。同一プロセス入力のバージョン、モデルのマニフェスト、バックエンド、切り抜きの上限によって、別個の検索空間を識別します。各クエリベクトルは、モデルと画像バックエンドが一致する記録とだけ比較します。GPU FP16 と NPU BF16 の結果は異なることがあり、日本語の検索精度もモデルの系統によって異なります。ReID の特徴量は独立したままです。`gpu+npu` モードでは、GPU と NPU が共有の上限付きキューから独立して処理を取り出します。NPU は対象となる切り抜きを 1 つ、GPU は最大 `embedding_batch`（1 または 4）個を取り出します。どちらも、もう一方のデバイスやバッチが埋まるのを待ちません。NPU に空きがあれば NPU を優先し、同じ人物を両方のデバイスで同時に処理することはありません。各切り抜きは、実際にエンコードしたバックエンドのフィンガープリントで 1 回だけ保存します。両方のワーカーの初期化に成功する必要があります。バックエンドが欠けている場合は、暗黙に単一デバイスのモードに切り替えず、エラーとして報告します。
 
 AI Statistics の **MobileCLIP GPU duty limit** と **MobileCLIP NPU duty limit**
 は 1–100% を受け付け、すぐに反映され、`search.mobileclip_gpu_budget_percent` / `search.mobileclip_npu_budget_percent` として保存されます。どちらも既定値は 100%（推論後に意図的に待機しない）です。20% の場合、各デバイスは次の収集ジョブの前に、直前の推論にかかった時間の 4 倍だけ待ちます。これはスケジューリングの予算で、ハードウェアの使用率の上限ではありません。GPU の処理は引き続き
@@ -52,7 +46,7 @@ YOLO、トラッキング、ユーザーのクエリに譲り、NPU の推論は
 領域のクエリは両方のデバイスで同時にエンコードし、各ベクトルは対応するバックエンドの記録だけを検索します。テキストのクエリには、両方の名前空間で共通の CPU FP32 テキストエンコーダーを使います。ヒットは既存のカメラ/人物の規則で統合し、バックエンド内のコサインスコアの順に並べます。異なるバックエンドのベクトルを直接比較することはありません。類似度スコアの分布は
 FP16 と BF16 で異なることがあります。**Image embedding GPU** と **Image embedding NPU** の行にはデバイスごとの呼び出し回数、バッチサイズ、時間を表示し、**Image embedding** には完了した個々の収集ジョブを集計して表示します。GPU と NPU のジョブは重なることがあるため、それらの時間を足して経過時間とみなしてはいけません。GPU/NPU それぞれの処理中の行と、保留中のキューの行から、受け付けた処理と待機中の処理が分かります。
 
-SDK の利用側は、拡張された `SearchOptions` と、浮動小数点の
+SDKの利用側は、GPU画像の所有権を保持する`SearchImage`、拡張された`SearchOptions`、浮動小数点の
 `Options::ai_fps` / AI 頻度のインターフェースに合わせて再ビルドする必要があります。
 
 ## ネイティブランタイムの準備

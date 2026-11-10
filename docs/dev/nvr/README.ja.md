@@ -1,4 +1,4 @@
-<!-- source: docs/dev/nvr/README.md 1f1bd32804386117bba5c267af821f1398d2e2c9 -->
+<!-- source: docs/dev/nvr/README.md c8e0572a5fd7ec6bfbb5957a5e9554c4dd1a9df6 -->
 # デスクトップ NVR サンプル
 
 `amdva-nvr CONFIG.json` は、登録したすべての RTSP ソースを録画し、選択した最大
@@ -40,7 +40,7 @@ GPU/hash/device-I/O マニフェストを使い、バッチサイズを記録し
 
 | ディレクトリ | 内容 |
 | --- | --- |
-| `backend/` | Qt に依存しない `amdva_nvr_backend` ライブラリ（`amdva::nvr`）：カメラコントローラー、設定の保存、AI のスケジューリング（`AiRuntime`）、人物検索とトラッキング、MobileCLIP ワーカー |
+| `backend/` | Qt に依存しない `amdva_nvr_backend` ライブラリ（`amdva::nvr`）：カメラコントローラー、設定の保存、AI のスケジューリング（`AiRuntime`）、人物検索とトラッキング、同一プロセスのMobileCLIPランタイム |
 | `app/` | Qt デスクトップ（`amdva-nvr`） |
 | `headless.cpp` | 表示を持たないバックエンドである `amdva-streams` |
 | `tools/`, `tests/`, `scripts/` | 検証プログラム、契約テスト、モデルのエクスポート、ベンチマーク |

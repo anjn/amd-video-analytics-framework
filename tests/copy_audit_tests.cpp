@@ -48,6 +48,14 @@ int main() {
         if(errors()!=4)throw std::runtime_error("GL readback not audited");
         gl_mode(false);read_pixels(0,0,0,0,0,0,nullptr);
         if(errors()!=4)throw std::runtime_error("Diagnostic GL mode was not restored");
+        auto input_scope=reinterpret_cast<void(*)(bool)>(dlsym(RTLD_DEFAULT,"amdva_audit_mobileclip_input"));
+        auto input_copies=reinterpret_cast<unsigned long long(*)()>(dlsym(RTLD_DEFAULT,"amdva_audit_mobileclip_input_copies"));
+        auto embedding_scope=reinterpret_cast<void(*)(bool)>(dlsym(RTLD_DEFAULT,"amdva_audit_embedding_scope"));
+        if(!input_scope||!input_copies||!embedding_scope)throw std::runtime_error("MobileCLIP audit hooks missing");
+        embedding_scope(true);input_scope(true);
+        amdva::hip_check(hipMemcpy(second.data(),compact.data(),128,hipMemcpyDeviceToDevice),"Injected MobileCLIP input copy");
+        input_scope(false);embedding_scope(false);
+        if(errors()!=5||input_copies()!=1)throw std::runtime_error("MobileCLIP input copy escaped broad embedding exemption");
         stop();
         va.destroy_surface(source);
         va.destroy_surface(target);

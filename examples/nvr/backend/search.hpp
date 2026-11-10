@@ -16,6 +16,7 @@ struct SearchOptions {
     bool enabled{};
     std::string library{"libeg2.so"}, bundle, reid_model;
     std::string embedding_model{"embeddinggemma2"};
+    // library, worker and venv remain parseable for old configs; execution is native.
     std::string mobileclip_library{"libmobileclip2.so"}, mobileclip_bundle;
     std::string mobileclip_backend{"gpu"}, mobileclip_worker, ryzen_ai_venv;
     unsigned device{}, image_size{384}, interval_ms{5000}, queue_limit{128};
@@ -26,6 +27,9 @@ struct SearchOptions {
 struct SearchImage {
     unsigned width{}, height{};
     std::vector<uint8_t> rgb;
+    // Owns the GPU crop; CPU rgb remains available for thumbnails and ReID.
+    std::shared_ptr<DeviceBuffer> gpu_rgb;
+    int gpu_device{};
 };
 struct SearchObservation {
     int64_t id{}, time_ms{};

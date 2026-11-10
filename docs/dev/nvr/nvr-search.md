@@ -43,38 +43,42 @@ next application startup; the currently running model and its search results
 stay active until then. The desktop's existing startup policy clears old
 recordings and their search data. No history is re-embedded on selection.
 
-MobileCLIP2 uses the native API added to `embeddinggemma2-rocm`. Prepare its
-bundle using that repository's `docs/mobileclip2.md`, including the backend
-profiles to be used. Configure these additional fields alongside the existing
-EmbeddingGemma `library` and `bundle`, so both models remain selectable:
+MobileCLIP2 runs in process through this repository's shared native runtime.
+Build with `AMDVA_BUILD_MOBILECLIP=ON`, prepare the additional GPU device-I/O
+profiles, and launch after sourcing the Ryzen AI environment. See the
+[MobileCLIP sample](../../../examples/mobileclip/README.md) for complete commands.
+Configure these fields alongside the existing EmbeddingGemma `library` and
+`bundle`, so both models remain selectable:
 
 ```json
 "embedding_model": "mobileclip2-s2",
-"mobileclip_backend": "gpu",
-"mobileclip_library": "/path/to/embeddinggemma2-rocm/build-mc2/libmobileclip2.so",
-"mobileclip_bundle": "/path/to/embeddinggemma2-rocm/artifacts/mobileclip2-api",
-"ryzen_ai_venv": "/home/amd/work/rai/rai19-venv"
+"mobileclip_backend": "gpu+npu",
+"mobileclip_bundle": "/path/to/mobileclip-device",
+"embedding_batch": 4
 ```
 
-`embedding_model` defaults to `embeddinggemma2`; `mobileclip_backend` is `gpu`
-or `npu`; `gpu+npu` enables concurrent collection on both. MobileCLIP2 runs in the installed `amdva-mobileclip-worker` process,
-which can be overridden with `mobileclip_worker`. NPU workers source
-`/opt/xilinx/xrt/setup.sh` and the configured venv's `bin/activate`, isolating
-Ryzen AI and its NPU handles from the NVR's HIP initialization. The NPU worker replaces the inherited library path with the ROCm and Ryzen AI
-paths so EmbeddingGemma/PyTorch libraries cannot shadow NPU dependencies. GPU
-workers inherit the launch environment. The worker uses the native C API, not Python
-inference, and shuts down with the parent. A backend error is reported in
-Search; there is no silent GPU/CPU fallback.
+`embedding_model` defaults to `embeddinggemma2`. `mobileclip_backend` selects
+`gpu`, `npu`, or concurrent `gpu+npu`. The former `mobileclip_library`,
+`mobileclip_worker` fields are accepted for configuration compatibility but are not used. Start with `examples/nvr/scripts/run.sh CONFIG.json`; this launcher uses `ryzen_ai_venv` (or `AMDVA_RYZEN_AI_VENV` / `VIRTUAL_ENV`) to initialize Ryzen AI dependencies before HIP/ORT loads, removing inherited Torch library paths. There is no MobileCLIP worker process or image
+IPC. Missing build support, runtime dependencies or prepared profiles are errors;
+there is no automatic fallback.
 
-Both MobileCLIP backends letterbox bounded person/region crops to 256×256 using
-the library's preprocessing. GPU accepts batch 1 or 4 (partial collections pad
-to 4); NPU uses batch 1. The configured `embedding_batch` remains the GPU
-preference. Text uses MobileCLIP's CPU encoder and 77-token tokenizer without
-the EmbeddingGemma prompt. EmbeddingGemma retains its portrait profiles.
+Both backends use GPU preprocessing with the existing Pillow-compatible
+letterbox/bilinear algorithm. GPU-generated RGB crops are retained on the GPU;
+thumbnail and ReID readbacks are independent of the MobileCLIP input. GPU uses
+FP16 MIGraphX profiles with device I/O. NPU uses HIP-mapped host input written
+by the GPU, wrapped directly in an ORT CPU tensor and passed to Vitis AI EP.
+The copy-free claim ends at the EP boundary; its internal copies/conversions
+are outside this application's audit. NPU preprocessing briefly acquires the
+GPU gate and releases it before inference. CPU-origin search images are uploaded
+once at ingestion. GPU accepts batches 1–4 (partial batches pad to four); NPU
+uses one. `embedding_batch` remains the preferred GPU batch of 1 or 4.
+Text uses the CPU encoder and 77-token tokenizer without the EmbeddingGemma
+prompt. EmbeddingGemma retains its portrait profiles.
 
 MobileCLIP returns 512D vectors. They are zero-extended to the existing 768-float
 storage envelope, preserving cosine similarity without a catalog migration.
-Model manifests, backend and crop limit identify a separate search space;
+The in-process input version, model manifests, backend and crop limit identify a separate search space;
 Each query vector is compared only with records from the matching model and
 image backend.
 GPU FP16 and NPU BF16 results can differ; Japanese retrieval accuracy also
@@ -109,7 +113,7 @@ aggregates individual completed collection jobs. GPU and NPU jobs can overlap,
 so their times must not be summed as elapsed time. Separate GPU/NPU in-flight
 rows and the pending queue row show admitted versus waiting work.
 
-SDK consumers must rebuild for the extended `SearchOptions` and floating-point
+SDK consumers must rebuild for GPU-owning `SearchImage`, the extended `SearchOptions` and floating-point
 `Options::ai_fps` / AI frequency interfaces.
 
 ## Native runtime setup

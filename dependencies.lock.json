@@ -616,5 +616,12 @@
     "weights_url": "https://huggingface.co/kaiyangzhou/osnet/resolve/a5c5cc037c24235cda3b21085b93ad77c9616224/osnet_x1_0_msmt17_combineall_256x128_amsgrad_ep150_stp60_lr0.0015_b64_fb10_softmax_labelsmooth_flip_jitter.pth",
     "weights_sha256": "48df972f72887b95cf3b43b3a07c3a7d2398381aea0f9cae64a7ef11d512b727",
     "integration": "external MSMT17 checkpoint; native MIGraphX; fixed-camera BoT-SORT-style association and conservative tracklet reconnection"
+  },
+  "mobileclip_tokenizer": {
+    "repository": "https://github.com/anjn/embeddinggemma2-rocm",
+    "commit": "102a9df65cd312529668daabb3e88e0a17cfc363",
+    "path": "third_party/mobileclip-tokenizer",
+    "source_path": "tokenizer",
+    "license": "MIT"
   }
 }

@@ -1,0 +1,289 @@
+{
+  "schema": 1,
+  "date": "2026-11-10",
+  "host": "amd-rai370",
+  "hardware": "Ryzen AI 9 HX 370 / Radeon 890M gfx1150 / XDNA2",
+  "kernel": "6.17.0-1033-oem",
+  "rocm": "7.2.0",
+  "onnxruntime": "1.30.0",
+  "ryzen_ai": "1.9 development build",
+  "contract": "GPU RGB source to application inference input; Vitis AI EP internals excluded",
+  "samples": {
+    "gpu": [
+      {
+        "backend": "gpu",
+        "pid": 347327,
+        "device": 129917074538496,
+        "bound": 129917074538496
+      },
+      {
+        "schema": 1,
+        "application_input_copy_verified": true,
+        "ep_internal_copy_verified": false,
+        "iterations": 100,
+        "calls": 100,
+        "input_copies": 0,
+        "violations": 0,
+        "max_pixel_error": 0,
+        "reference_checked": true,
+        "min_embedding_cosine": 1,
+        "min_text_cosine": 1,
+        "buffer_reuses": 50,
+        "invalid_inputs_rejected": 4,
+        "diagnostic_input_readback_bytes": 255590400,
+        "reference_mean_call_ms": 23.49210061,
+        "mean_call_ms": 21.31971295
+      }
+    ],
+    "npu": [
+      {
+        "backend": "npu",
+        "pid": 347146,
+        "host": 136817190895616,
+        "device": 136817190895616,
+        "ort_bound": 136817190895616
+      },
+      {
+        "schema": 1,
+        "application_input_copy_verified": true,
+        "ep_internal_copy_verified": false,
+        "iterations": 100,
+        "calls": 100,
+        "input_copies": 0,
+        "violations": 0,
+        "max_pixel_error": 0,
+        "reference_checked": true,
+        "min_embedding_cosine": 1,
+        "min_text_cosine": 1,
+        "buffer_reuses": 99,
+        "invalid_inputs_rejected": 4,
+        "diagnostic_input_readback_bytes": 78643200,
+        "reference_mean_call_ms": 11.9142029,
+        "mean_call_ms": 11.49136242
+      }
+    ],
+    "gpu+npu": [
+      {
+        "backend": "gpu",
+        "pid": 347387,
+        "device": 132313871810560,
+        "bound": 132313871810560
+      },
+      {
+        "backend": "npu",
+        "pid": 347387,
+        "host": 132317749182464,
+        "device": 132317749182464,
+        "ort_bound": 132317749182464
+      },
+      {
+        "schema": 1,
+        "application_input_copy_verified": true,
+        "ep_internal_copy_verified": false,
+        "iterations": 100,
+        "calls": 200,
+        "input_copies": 0,
+        "violations": 0,
+        "max_pixel_error": 0,
+        "reference_checked": true,
+        "min_embedding_cosine": 1,
+        "min_text_cosine": 1,
+        "buffer_reuses": 149,
+        "invalid_inputs_rejected": 9,
+        "diagnostic_input_readback_bytes": 334233600,
+        "reference_mean_call_ms": 19.300191605,
+        "mean_call_ms": 21.97792186
+      }
+    ]
+  },
+  "nvr_gui": {
+    "gpu": {
+      "passed": true,
+      "cameras": 2,
+      "resolution": "2560x1440",
+      "source": "M01 and M02 museum fixtures, RTSP HEVC 30 fps",
+      "checks": [
+        "PASS: checkbox person search; groups=15 best=0.337713",
+        "PASS: person cards contain a single camera/person and tracklet IDs",
+        "PASS: retention-style deletion kept 15 results in place",
+        "PASS: strip image playback frames=35",
+        "PASS: video click paused",
+        "PASS: video click resumed",
+        "PASS: playback looped from 1794290448434 to 1794290442567",
+        "PASS: live collection, English/Japanese search, result playback, drag image search; groups=16",
+        "PASS: live collection, English/Japanese search, result playback, drag image search; groups=16",
+        "PASS: live collection, English/Japanese search, result playback, drag image search; groups=20",
+        "PASS: deletion removed search image; deleted=9",
+        "PASS: deletion pruned results; cards=0 status=The matching recordings were deleted.",
+        "PASS: Exit Application quit the event loop"
+      ],
+      "audit_report": [
+        "amdva_audit_search_bytes=45680058",
+        "amdva_audit_embedding_bytes=325697536"
+      ]
+    },
+    "npu": {
+      "passed": true,
+      "cameras": 2,
+      "resolution": "2560x1440",
+      "source": "M01 and M02 museum fixtures, RTSP HEVC 30 fps",
+      "checks": [
+        "PASS: checkbox person search; groups=15 best=0.282253",
+        "PASS: person cards contain a single camera/person and tracklet IDs",
+        "PASS: retention-style deletion kept 15 results in place",
+        "PASS: strip image playback frames=48",
+        "PASS: video click paused",
+        "PASS: video click resumed",
+        "PASS: playback looped from 1794290483807 to 1794290478973",
+        "PASS: live collection, English/Japanese search, result playback, drag image search; groups=16",
+        "PASS: live collection, English/Japanese search, result playback, drag image search; groups=16",
+        "PASS: live collection, English/Japanese search, result playback, drag image search; groups=16",
+        "PASS: deletion removed search image; deleted=7",
+        "PASS: deletion pruned results; cards=0 status=The matching recordings were deleted.",
+        "PASS: Exit Application quit the event loop"
+      ],
+      "audit_report": [
+        "amdva_audit_search_bytes=44297694",
+        "amdva_audit_embedding_bytes=324116480"
+      ]
+    },
+    "gpu+npu": {
+      "passed": true,
+      "cameras": 2,
+      "resolution": "2560x1440",
+      "source": "M01 and M02 museum fixtures, RTSP HEVC 30 fps",
+      "checks": [
+        "PASS: checkbox person search; groups=15 best=0.31204",
+        "PASS: person cards contain a single camera/person and tracklet IDs",
+        "PASS: retention-style deletion kept 15 results in place",
+        "PASS: strip image playback frames=77",
+        "PASS: video click paused",
+        "PASS: video click resumed",
+        "PASS: playback looped from 1794290362071 to 1794290357238",
+        "PASS: live collection, English/Japanese search, result playback, drag image search; groups=16",
+        "PASS: live collection, English/Japanese search, result playback, drag image search; groups=16",
+        "PASS: live collection, English/Japanese search, result playback, drag image search; groups=16",
+        "PASS: deletion removed search image; deleted=7",
+        "PASS: deletion pruned results; cards=0 status=The matching recordings were deleted.",
+        "PASS: Exit Application quit the event loop"
+      ],
+      "audit_report": [
+        "amdva_audit_search_bytes=44632464",
+        "amdva_audit_embedding_bytes=324116480"
+      ]
+    }
+  },
+  "contract_tests": {
+    "passed": 38,
+    "failed": 0,
+    "seconds": 65.03
+  },
+  "copy_audit_negative_test": "Injected D2D input copy is rejected even inside the legacy broad embedding exemption",
+  "ep_internal_copy_verified": false,
+  "scope_notes": [
+    "CPU thumbnails and unchanged ReID transfers remain permitted and are not MobileCLIP input.",
+    "CPU-origin queries upload once before GPU/NPU dispatch.",
+    "Diagnostic normalized-tensor readbacks and legacy-library reference calls are explicitly exempted from the application input scope.",
+    "GPU and NPU timings in the combined sample may overlap and must not be summed as wall time.",
+    "The legacy reference call includes CPU preprocessing and host-I/O execution; the new call starts from a GPU image. Timings are diagnostic, not an end-to-end speedup claim."
+  ],
+  "nvr_native": {
+    "gpu": {
+      "schema": 1,
+      "passed": true,
+      "pid": 347632,
+      "stored": 9,
+      "english_query": true,
+      "japanese_query": true,
+      "cpu_image_query": true,
+      "budgets_updated": true,
+      "child_processes": false,
+      "input_copies": 0,
+      "audit_errors": 0
+    },
+    "npu": {
+      "schema": 1,
+      "passed": true,
+      "pid": 347742,
+      "stored": 8,
+      "english_query": true,
+      "japanese_query": true,
+      "cpu_image_query": true,
+      "budgets_updated": true,
+      "child_processes": false,
+      "input_copies": 0,
+      "audit_errors": 0
+    },
+    "gpu+npu": {
+      "schema": 1,
+      "passed": true,
+      "pid": 347863,
+      "stored": 9,
+      "english_query": true,
+      "japanese_query": true,
+      "cpu_image_query": true,
+      "budgets_updated": true,
+      "child_processes": false,
+      "input_copies": 0,
+      "audit_errors": 0
+    }
+  },
+  "builds": {
+    "mobileclip_enabled": true,
+    "mobileclip_disabled_nvr_backend": true,
+    "docs_strict": true,
+    "translations_stale": 0
+  },
+  "prepared_profiles": {
+    "image_sha256": "0b903bcdc19b31f8ab6dda87d5dba87f7e74287574c2630411a5667753c1c4b5",
+    "batches": [
+      1,
+      4
+    ],
+    "precision": "fp16",
+    "offload_copy": false,
+    "disable_passes": "simplify_algebra",
+    "artifacts": {
+      "gpu-device-b1.mxr": "cf35c389ff8675a76fdaf45624579ee9f607fd02298bc5239de5629a442546f8",
+      "gpu-device-b1.mxr.manifest.json": "94c1cc4d212440d02b23b748dcfac3b1b301210777c6faf51d367d06018c4714",
+      "gpu-device-b4.mxr": "d28fade83093f4320909c673e2a45eaa2969ff748e5fa1b85917cd62358fb64f",
+      "gpu-device-b4.mxr.manifest.json": "35f69c9bc2071b19d01caa9d944bc0d730c9a7ec5f9fbb9c5f05ac63becbcf64"
+    }
+  },
+  "tokenizer": {
+    "repository": "https://github.com/anjn/embeddinggemma2-rocm",
+    "commit": "102a9df65cd312529668daabb3e88e0a17cfc363",
+    "path": "third_party/mobileclip-tokenizer",
+    "source_path": "tokenizer",
+    "license": "MIT"
+  },
+  "final_related_contract_tests": {
+    "passed": 4,
+    "failed": 0,
+    "seconds": 0.59
+  },
+  "launch_regression": {
+    "symptom": "YOLO works but ReID and embedding never start",
+    "reproduced_error": "SessionOptionsAppendExecutionProvider_VitisAI: libdyn_dispatch_core.so not found",
+    "secondary_contamination": "Torch libtinfo shadows system dependency of libncurses (_nc_safe_fopen missing)",
+    "fix": "Checkout launcher sources the configured Ryzen AI venv after clearing inherited Torch/HIP alias paths. Local demo points to the prepared device-I/O bundle.",
+    "source_count": 17,
+    "selected_count": 16,
+    "recordings": "Validation used a separate recording root; user recordings were not deleted.",
+    "result": {
+      "schema": 1,
+      "passed": true,
+      "pid": 350488,
+      "stored": 9,
+      "english_query": true,
+      "japanese_query": true,
+      "reid_calls": 63,
+      "embedding_calls": 10,
+      "cpu_image_query": true,
+      "budgets_updated": true,
+      "child_processes": false,
+      "input_copies": 0,
+      "audit_errors": 0
+    }
+  }
+}

@@ -1,0 +1,348 @@
+{
+  "schema": 1,
+  "date": "2026-11-10",
+  "host": "amd-rai370",
+  "kernel": "6.17.0-1033-oem",
+  "hardware": "Ryzen AI 9 HX 370 / Radeon 890M gfx1150 / XDNA2 1022:17f0",
+  "rocm": "7.2.0",
+  "hip": "7.2.70200",
+  "rocr": "1.18.70200",
+  "xrt_system": "2.26.89",
+  "amdxdna": "2.26.260102.59.release_20261022,6b78ab22364c74e9bc51c667ba11ad087cde4be2",
+  "ryzen_ai": "1.9.0.dev20261016113939+ge5000e45.xmc",
+  "onnxruntime": "1.30.0",
+  "bytes": 1048576,
+  "model_zero_copy_verified": false,
+  "coexistence": {
+    "hip-first": [
+      {
+        "stage": "hipInit",
+        "passed": true
+      },
+      {
+        "stage": "npu create",
+        "passed": true
+      },
+      {
+        "stage": "npu prepare",
+        "passed": true
+      },
+      {
+        "stage": "gpu create",
+        "passed": true
+      },
+      {
+        "stage": "gpu prepare",
+        "passed": true
+      },
+      {
+        "runtime_libraries": [
+          "/home/amd/work/amd-video-analysis-framework/.deps/rocm72/opt/rocm-7.2.0/lib/libamdhip64.so.7.2.70200",
+          "/home/amd/work/amd-video-analysis-framework/.deps/rocm72/opt/rocm-7.2.0/lib/libhsa-runtime64.so.1.18.70200",
+          "/home/amd/work/rai/rai19-venv/lib/python3.12/site-packages/voe/lib/libonnxruntime.so.1",
+          "/home/amd/work/rai/rai19-venv/lib/python3.12/site-packages/voe/lib/libxrt_coreutil.so",
+          "/home/amd/work/rai/rai19-venv/lib/python3.12/site-packages/voe/lib/libxrt_coreutil.so.2",
+          "/opt/xilinx/xrt/lib/libxrt_driver_xdna.so.2.26.260102.59.release"
+        ]
+      },
+      {
+        "stage": "npu inference with both contexts alive",
+        "passed": true
+      },
+      {
+        "backend": "npu",
+        "embedding_norm": 1.0000000037065273
+      },
+      {
+        "stage": "gpu inference with both contexts alive",
+        "passed": true
+      },
+      {
+        "backend": "gpu",
+        "embedding_norm": 1.000000046870024
+      }
+    ],
+    "gpu-first": [
+      {
+        "stage": "gpu create",
+        "passed": true
+      },
+      {
+        "stage": "gpu prepare",
+        "passed": true
+      },
+      {
+        "stage": "npu create",
+        "passed": true
+      },
+      {
+        "stage": "npu prepare",
+        "passed": true
+      },
+      {
+        "runtime_libraries": [
+          "/home/amd/work/amd-video-analysis-framework/.deps/rocm72/opt/rocm-7.2.0/lib/libamdhip64.so.7.2.70200",
+          "/home/amd/work/amd-video-analysis-framework/.deps/rocm72/opt/rocm-7.2.0/lib/libhsa-runtime64.so.1.18.70200",
+          "/home/amd/work/rai/rai19-venv/lib/python3.12/site-packages/voe/lib/libonnxruntime.so.1",
+          "/home/amd/work/rai/rai19-venv/lib/python3.12/site-packages/voe/lib/libxrt_coreutil.so",
+          "/home/amd/work/rai/rai19-venv/lib/python3.12/site-packages/voe/lib/libxrt_coreutil.so.2",
+          "/opt/xilinx/xrt/lib/libxrt_driver_xdna.so.2.26.260102.59.release"
+        ]
+      },
+      {
+        "stage": "gpu inference with both contexts alive",
+        "passed": true
+      },
+      {
+        "backend": "gpu",
+        "embedding_norm": 1.000000046870024
+      },
+      {
+        "stage": "npu inference with both contexts alive",
+        "passed": true
+      },
+      {
+        "backend": "npu",
+        "embedding_norm": 1.0000000037065273
+      }
+    ],
+    "npu-first": [
+      {
+        "stage": "npu create",
+        "passed": true
+      },
+      {
+        "stage": "npu prepare",
+        "passed": true
+      },
+      {
+        "stage": "gpu create",
+        "passed": true
+      },
+      {
+        "stage": "gpu prepare",
+        "passed": true
+      },
+      {
+        "runtime_libraries": [
+          "/home/amd/work/amd-video-analysis-framework/.deps/rocm72/opt/rocm-7.2.0/lib/libamdhip64.so.7.2.70200",
+          "/home/amd/work/amd-video-analysis-framework/.deps/rocm72/opt/rocm-7.2.0/lib/libhsa-runtime64.so.1.18.70200",
+          "/home/amd/work/rai/rai19-venv/lib/python3.12/site-packages/voe/lib/libonnxruntime.so.1",
+          "/home/amd/work/rai/rai19-venv/lib/python3.12/site-packages/voe/lib/libxrt_coreutil.so",
+          "/home/amd/work/rai/rai19-venv/lib/python3.12/site-packages/voe/lib/libxrt_coreutil.so.2",
+          "/opt/xilinx/xrt/lib/libxrt_driver_xdna.so.2.26.260102.59.release"
+        ]
+      },
+      {
+        "stage": "npu inference with both contexts alive",
+        "passed": true
+      },
+      {
+        "backend": "npu",
+        "embedding_norm": 1.0000000037065273
+      },
+      {
+        "stage": "gpu inference with both contexts alive",
+        "passed": true
+      },
+      {
+        "backend": "gpu",
+        "embedding_norm": 1.000000046870024
+      }
+    ]
+  },
+  "allocation_probes": [
+    {
+      "order": "hip-first",
+      "mode": "import",
+      "npu_dma_requested": false,
+      "exit_code": 1,
+      "output": [
+        "HIP initialized",
+        "accel_fd=\"4\" /dev/accel/accel0",
+        "XRT opened",
+        "accel_fd=\"4\" /dev/accel/accel0",
+        "accel_fd=\"6\" /dev/accel/accel0",
+        "export_fd=8",
+        "probe: hipImportExternalMemory: out of memory"
+      ]
+    },
+    {
+      "order": "xrt-first",
+      "mode": "import",
+      "npu_dma_requested": false,
+      "exit_code": 1,
+      "output": [
+        "XRT opened",
+        "accel_fd=\"3\" /dev/accel/accel0",
+        "accel_fd=\"5\" /dev/accel/accel0",
+        "export_fd=7",
+        "probe: hipImportExternalMemory: out of memory"
+      ]
+    },
+    {
+      "order": "xrt-first",
+      "mode": "register",
+      "npu_dma_requested": false,
+      "exit_code": 0,
+      "output": [
+        "XRT opened",
+        "accel_fd=\"3\" /dev/accel/accel0",
+        "accel_fd=\"5\" /dev/accel/accel0",
+        "gpu_write_visible_in_xrt_mapping=1",
+        "allocation_probe_passed=1 npu_dma_verified=0 model_zero_copy_verified=0"
+      ]
+    },
+    {
+      "order": "xrt-first",
+      "mode": "userptr",
+      "npu_dma_requested": false,
+      "exit_code": 0,
+      "output": [
+        "XRT opened",
+        "accel_fd=\"3\" /dev/accel/accel0",
+        "accel_fd=\"5\" /dev/accel/accel0",
+        "userptr BO created",
+        "allocation_probe_passed=1 npu_dma_verified=0 model_zero_copy_verified=0"
+      ]
+    },
+    {
+      "order": "xrt-first",
+      "mode": "hip-export",
+      "npu_dma_requested": false,
+      "exit_code": 0,
+      "output": [
+        "XRT opened",
+        "accel_fd=\"3\" /dev/accel/accel0",
+        "accel_fd=\"5\" /dev/accel/accel0",
+        "gpu_write_visible_in_xrt_mapping=1",
+        "allocation_probe_passed=1 npu_dma_verified=0 model_zero_copy_verified=0"
+      ]
+    },
+    {
+      "order": "xrt-first",
+      "mode": "hip-export",
+      "npu_dma_requested": true,
+      "exit_code": 1,
+      "output": [
+        "XRT opened",
+        "accel_fd=\"3\" /dev/accel/accel0",
+        "accel_fd=\"5\" /dev/accel/accel0",
+        "probe: DRM_IOCTL_AMDXDNA_EXEC_CMD IOCTL failed (err=-14): Bad address"
+      ]
+    }
+  ],
+  "npu_dma_runs": [
+    {
+      "order": "hip-first",
+      "repeat": 1,
+      "exit_code": 0,
+      "output": [
+        "HIP initialized",
+        "accel_fd=\"4\" /dev/accel/accel0",
+        "XRT opened",
+        "accel_fd=\"4\" /dev/accel/accel0",
+        "accel_fd=\"6\" /dev/accel/accel0",
+        "npu_dma_passthrough_verified=1 validation_readback_bytes=1048576",
+        "gpu_write_visible_in_xrt_mapping=1",
+        "allocation_probe_passed=1 npu_dma_verified=1 model_zero_copy_verified=0"
+      ]
+    },
+    {
+      "order": "hip-first",
+      "repeat": 2,
+      "exit_code": 0,
+      "output": [
+        "HIP initialized",
+        "accel_fd=\"4\" /dev/accel/accel0",
+        "XRT opened",
+        "accel_fd=\"4\" /dev/accel/accel0",
+        "accel_fd=\"6\" /dev/accel/accel0",
+        "npu_dma_passthrough_verified=1 validation_readback_bytes=1048576",
+        "gpu_write_visible_in_xrt_mapping=1",
+        "allocation_probe_passed=1 npu_dma_verified=1 model_zero_copy_verified=0"
+      ]
+    },
+    {
+      "order": "hip-first",
+      "repeat": 3,
+      "exit_code": 0,
+      "output": [
+        "HIP initialized",
+        "accel_fd=\"4\" /dev/accel/accel0",
+        "XRT opened",
+        "accel_fd=\"4\" /dev/accel/accel0",
+        "accel_fd=\"6\" /dev/accel/accel0",
+        "npu_dma_passthrough_verified=1 validation_readback_bytes=1048576",
+        "gpu_write_visible_in_xrt_mapping=1",
+        "allocation_probe_passed=1 npu_dma_verified=1 model_zero_copy_verified=0"
+      ]
+    },
+    {
+      "order": "xrt-first",
+      "repeat": 1,
+      "exit_code": 0,
+      "output": [
+        "XRT opened",
+        "accel_fd=\"3\" /dev/accel/accel0",
+        "accel_fd=\"5\" /dev/accel/accel0",
+        "npu_dma_passthrough_verified=1 validation_readback_bytes=1048576",
+        "gpu_write_visible_in_xrt_mapping=1",
+        "allocation_probe_passed=1 npu_dma_verified=1 model_zero_copy_verified=0"
+      ]
+    },
+    {
+      "order": "xrt-first",
+      "repeat": 2,
+      "exit_code": 0,
+      "output": [
+        "XRT opened",
+        "accel_fd=\"3\" /dev/accel/accel0",
+        "accel_fd=\"5\" /dev/accel/accel0",
+        "npu_dma_passthrough_verified=1 validation_readback_bytes=1048576",
+        "gpu_write_visible_in_xrt_mapping=1",
+        "allocation_probe_passed=1 npu_dma_verified=1 model_zero_copy_verified=0"
+      ]
+    },
+    {
+      "order": "xrt-first",
+      "repeat": 3,
+      "exit_code": 0,
+      "output": [
+        "XRT opened",
+        "accel_fd=\"3\" /dev/accel/accel0",
+        "accel_fd=\"5\" /dev/accel/accel0",
+        "npu_dma_passthrough_verified=1 validation_readback_bytes=1048576",
+        "gpu_write_visible_in_xrt_mapping=1",
+        "allocation_probe_passed=1 npu_dma_verified=1 model_zero_copy_verified=0"
+      ]
+    }
+  ],
+  "passthrough": {
+    "source_checkout": "/home/amd/work/xdna2/mlir-aie",
+    "source_head": "7553ce5647ffd0989f0da15ad67a80a9b43a8bfd",
+    "source_file": "programming_examples/basic/passthrough_dmas/passthrough_dmas.py",
+    "length_int32": 262144,
+    "compute_tile_used": false,
+    "validation_readback_bytes": 1048576,
+    "artifacts_sha256": {
+      "passthrough.xclbin": "cb1e60e86389009793cbc7c27dba3f2d62e6ec7b8f034879820e8a7a95575299",
+      "insts.bin": "bcfc2abbeb3cc19b64f5ecea9c89df7900666af6ec112d832dd642becaa915fa"
+    },
+    "note": "Uses local compiler checkout; source HEAD alone does not certify a clean checkout."
+  },
+  "interpretation": {
+    "same_process_inference": true,
+    "same_process_inference_parallel_execution_tested": false,
+    "xrt_host_bo_hip_registration_npu_dma": true,
+    "hip_dmabuf_import_to_xrt_mapping": true,
+    "hip_dmabuf_import_to_xrt_npu_dma": false,
+    "xrt_dmabuf_import_to_hip": false,
+    "full_nvr_integration_tested": false,
+    "notes": [
+      "HIP memset writes input and clears output; NPU DMA copies input into a distinct output allocation; HIP reads final output for CPU validation.",
+      "No intermediate payload staging copy in the registered XRT BO path. XRT sync flushes caches in the installed amdxdna driver.",
+      "Passthrough tests NPU DMA, not an inference model. Existing MobileCLIP API still uses CPU tensors."
+    ]
+  }
+}
