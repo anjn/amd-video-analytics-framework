@@ -25,6 +25,7 @@ struct SharedBatchExecutor::Impl {
     ModelExecutor engine;
     ModelPostprocessor post;
     ImagePacker packer;
+    std::shared_ptr<HipStream> stream;
     std::mutex mutex;
     std::condition_variable ready;
     std::deque<std::unique_ptr<Job>> queue;
@@ -36,7 +37,8 @@ struct SharedBatchExecutor::Impl {
     Impl(BatchOptions o)
         : options(std::move(o)), info(ModelInfo::load(options.model_info)),
           engine(options.model, options.device),
-          post(processing_info(info, options.raw_outputs), options.device), packer(options.device) {
+          post(processing_info(info, options.raw_outputs), options.device), packer(options.device),
+          stream(std::make_shared<HipStream>(options.device)) {
         if (options.size != engine.batch() || !options.queue_limit || options.timeout_ms > 10000)
             throw std::runtime_error("Invalid shared batch configuration");
         const auto inputs = engine.inputs();
@@ -75,8 +77,8 @@ struct SharedBatchExecutor::Impl {
         try {
             hip_check(hipSetDevice(options.device), "Batch worker device");
             auto input = engine.inputs()[0];
-            input.storage = std::make_shared<DeviceBuffer>(size_t(options.size) * 3 * info.width *
-                                                           info.height * sizeof(float));
+            input.storage = std::make_shared<DeviceBuffer>(
+                size_t(options.size) * 3 * info.width * info.height * sizeof(float), stream);
             const size_t bytes = input.storage->size() / options.size;
             for (;;) {
                 std::vector<std::unique_ptr<Job>> jobs;
@@ -116,13 +118,14 @@ struct SharedBatchExecutor::Impl {
                     continue;
                 try {
                     for (unsigned i = 0; i < jobs.size(); i++)
-                        hip_check(hipMemcpy(static_cast<char *>(input.storage->data()) + i * bytes,
-                                            jobs[i]->request.tensor.storage->data(), bytes,
-                                            hipMemcpyDeviceToDevice),
-                                  "GPU batch assembly");
+                        hip_check(
+                            hipMemcpyAsync(static_cast<char *>(input.storage->data()) + i * bytes,
+                                           jobs[i]->request.tensor.storage->data(), bytes,
+                                           hipMemcpyDeviceToDevice, stream->get()),
+                            "GPU batch assembly");
                     packer.pad(input.storage->data(), jobs.size(), options.size, info.width,
-                               info.height, info.normalization);
-                    hip_check(hipDeviceSynchronize(), "Batch input completion");
+                               info.height, info.normalization, stream->get());
+                    stream->finish();
                     auto started = std::chrono::steady_clock::now();
                     auto output = engine.infer({{input.name, input}});
                     auto inferred = std::chrono::steady_clock::now();

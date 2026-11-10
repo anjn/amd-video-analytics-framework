@@ -633,9 +633,13 @@ struct SearchPage::Impl {
                 status->setText(QString::fromStdString(r.error));
         }
         auto s = service->status();
-        if (!request)
-            status->setText(s.state == "ready" ? idle_status
-                                               : QString::fromStdString(s.state + ": " + s.error));
+        if (!request) {
+            auto text = s.state == "ready" ? idle_status
+                                          : QString::fromStdString("Embedding " + s.state + ": " + s.error);
+            if (!s.tracking_error.empty())
+                text += QString::fromStdString(" · Tracking: " + s.tracking_error);
+            status->setText(text);
+        }
         auto p = player ? player->status() : TimelinePlaybackStatus{};
         if (tiles)
             tiles->paused(p.state == "paused" || p.state == "ended");

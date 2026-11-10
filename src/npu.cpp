@@ -1,7 +1,11 @@
 #include "amdva/npu.hpp"
+#include <atomic>
+#include <cstdlib>
 #include <filesystem>
+#include <iostream>
 #include <mutex>
 #include <onnxruntime_cxx_api.h>
+#include <unistd.h>
 namespace amdva {
 namespace {
 TensorType type(ONNXTensorElementDataType v) {
@@ -43,6 +47,18 @@ struct NpuExecutor::Impl {
     TensorDescriptor input;
     std::vector<TensorDescriptor> outputs;
     std::mutex mutex;
+    bool profiling{};
+    ~Impl() {
+        if (profiling && session) {
+            try {
+                Ort::AllocatorWithDefaultOptions allocator;
+                auto path = session->EndProfilingAllocated(allocator);
+                std::clog << "NPU ORT profile: " << path.get() << '\n';
+            } catch (const std::exception &e) {
+                std::clog << "NPU profiling failed: " << e.what() << '\n';
+            }
+        }
+    }
     explicit Impl(const NpuModelConfig &c) : config(c) {
         namespace fs = std::filesystem;
         if (!fs::is_regular_file(c.model) || !fs::is_regular_file(c.provider_config) ||
@@ -55,6 +71,13 @@ struct NpuExecutor::Impl {
                 "NPU requires model, provider-config and a prepared cache-dir/cache-key");
         hip_check(hipSetDevice(c.gpu_device), "NPU producer GPU device");
         Ort::SessionOptions options;
+        if (const char *prefix = std::getenv("AMDVA_NPU_PROFILE_PREFIX"); prefix && *prefix) {
+            static std::atomic<unsigned> sequence{0};
+            auto unique = std::string(prefix) + "-" + std::to_string(getpid()) + "-" +
+                          std::to_string(sequence++);
+            options.EnableProfiling(unique.c_str());
+            profiling = true;
+        }
         options.SetIntraOpNumThreads(4);
         options.AddFreeDimensionOverrideByName("batch", 1);
         options.AddConfigEntry("session.disable_cpu_ep_fallback", "1");

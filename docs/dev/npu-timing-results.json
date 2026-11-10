@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "date": "2026-11-10",
+  "host": "amd-rai370",
+  "hardware": "Ryzen AI 9 HX 370 / Radeon 890M gfx1150 / XDNA2",
+  "kernel": "6.17.0-1033-oem",
+  "rocm": "7.2.0",
+  "onnxruntime": "1.30.0",
+  "commit_before_timing_fix": "84831fc",
+  "finding": "The former Image embedding NPU metric included GPU admission wait and HIP preprocessing. Image inference remains assigned to Vitis AI EP.",
+  "demo": {
+    "sources": 17,
+    "selected": 16,
+    "backend": "npu",
+    "headless": {
+      "schema": 1,
+      "passed": true,
+      "pid": 406507,
+      "stored": 8,
+      "english_query": true,
+      "japanese_query": true,
+      "reid_calls": 138,
+      "embedding_calls": 9,
+      "npu_inference_ms": 12.8917,
+      "npu_gpu_wait_ms": 297.846,
+      "npu_gpu_prepare_ms": 0.528951,
+      "npu_total_ms": 311.274,
+      "cpu_image_query": true,
+      "budgets_updated": true,
+      "child_processes": false,
+      "input_copies": 0,
+      "audit_errors": 0
+    },
+    "gui_passed": true,
+    "gui_checks": [
+      "PASS: checkbox person search; groups=43 best=0.271091",
+      "PASS: person cards contain a single camera/person and tracklet IDs",
+      "PASS: retention-style deletion kept 50 results in place",
+      "PASS: strip image playback frames=47",
+      "PASS: video click paused",
+      "PASS: video click resumed",
+      "PASS: playback looped from 1794302631071 to 1794302626537",
+      "PASS: live collection, English/Japanese search, result playback, drag image search; groups=50",
+      "PASS: live collection, English/Japanese search, result playback, drag image search; groups=50",
+      "PASS: live collection, English/Japanese search, result playback, drag image search; groups=50",
+      "PASS: deletion removed search image; deleted=101",
+      "PASS: deletion pruned results; cards=0 status=The matching recordings were deleted.",
+      "PASS: Exit Application quit the event loop"
+    ]
+  },
+  "ort_profile": {
+    "path": "artifacts/npu-timing/nvr-406507-0_2026-11-10_18-23-34_284.json",
+    "node_providers": {
+      "VitisAIExecutionProvider": 13
+    },
+    "cpu_ep_nodes": 0,
+    "cpu_ep_fallback_disabled": true,
+    "image_runs": 13,
+    "node_duration_ms": {
+      "mean": 12.41576923076923,
+      "min": 10.977,
+      "median": 12.859,
+      "max": 13.331
+    },
+    "model_run_mean_ms": 12.477307692307692
+  },
+  "metrics": {
+    "Image embedding NPU preprocess": "Preparation wall time; wait column records GPU admission wait",
+    "Image embedding NPU": "Inference call after preparation and lease release, including GStreamer/ORT and compact outputs",
+    "Image embedding NPU total": "GPU admission wait + preparation + inference",
+    "SearchStatus.inference_ms": "Inference call only",
+    "npu_duty_limit": "Inference time only; GPU wait/preparation are excluded",
+    "gpu_duty_limit": "Unchanged"
+  },
+  "validation": {
+    "targeted_contracts_passed": 6,
+    "targeted_contracts_failed": 0,
+    "contracts": [
+      "npu-meta-contract",
+      "npu-element-contract",
+      "ai-runtime-contract",
+      "nvr-ai-overview-contract",
+      "search-contract",
+      "search-conditions-contract"
+    ],
+    "profile_internals_scope": "ORT provider assignment only; Vitis AI internal execution was not traced"
+  }
+}

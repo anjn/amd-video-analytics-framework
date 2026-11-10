@@ -16,16 +16,17 @@ extern "C" void amdva_audit_metadata_end() __attribute__((weak));
 
 namespace amdva {
 namespace {
-void metadata_copy(void* dst,const void* src,size_t bytes,hipMemcpyKind kind){
+void metadata_copy(void* dst,const void* src,size_t bytes,hipMemcpyKind kind,hipStream_t stream){
     if(!dst||!src||!bytes||bytes>256*1024)throw std::runtime_error("Metadata transfer exceeds budget");
     if(amdva_audit_metadata_begin)amdva_audit_metadata_begin(src,bytes,int(kind));
-    auto status=hipMemcpy(dst,src,bytes,kind);
+    auto status=stream ? hipMemcpyAsync(dst,src,bytes,kind,stream) : hipMemcpy(dst,src,bytes,kind);
     if(amdva_audit_metadata_end)amdva_audit_metadata_end();
     hip_check(status,"Compact metadata transfer");
+    if(stream)hip_check(hipStreamSynchronize(stream),"Metadata readiness");
 }
 }
-void readback_metadata(void* host,const void* device,size_t bytes){metadata_copy(host,device,bytes,hipMemcpyDeviceToHost);}
-void upload_metadata(void* device,const void* host,size_t bytes){metadata_copy(device,host,bytes,hipMemcpyHostToDevice);}
+void readback_metadata(void* host,const void* device,size_t bytes,hipStream_t stream){metadata_copy(host,device,bytes,hipMemcpyDeviceToHost,stream);}
+void upload_metadata(void* device,const void* host,size_t bytes,hipStream_t stream){metadata_copy(device,host,bytes,hipMemcpyHostToDevice,stream);}
 void hip_check(hipError_t s, const char* op) {
     if (s != hipSuccess) throw std::runtime_error(std::string(op) + ": " + hipGetErrorString(s));
 }
@@ -67,20 +68,57 @@ Layout validate_layout(const VADRMPRIMESurfaceDescriptor& d) {
         throw std::runtime_error("NV12 planes overlap");
     return l;
 }
-DeviceBuffer::DeviceBuffer(size_t b):bytes_(b) {
-    if (!b) throw std::runtime_error("Zero-sized device buffer");
+HipStream::HipStream(int device) : device_(device) {
+    hip_check(hipSetDevice(device_), "Stream device");
+    hip_check(hipStreamCreateWithFlags(&stream_, hipStreamNonBlocking), "Nonblocking HIP stream");
+}
+HipStream::~HipStream() {
+    (void)hipSetDevice(device_);
+    if (stream_)
+        (void)hipStreamDestroy(stream_);
+}
+void HipStream::finish() const {
+    hip_check(hipSetDevice(device_), "Stream completion device");
+    hip_check(hipStreamSynchronize(stream_), "Stream completion");
+}
+DeviceBuffer::DeviceBuffer(size_t bytes, std::shared_ptr<HipStream> stream)
+    : bytes_(bytes), stream_(std::move(stream)) {
+    if (!bytes_ || !stream_)
+        throw std::invalid_argument("Invalid stream buffer");
+    hip_check(hipSetDevice(stream_->device()), "Buffer allocation device");
+    hip_check(hipMallocAsync(&data_, bytes_, stream_->get()), "Stream ordered allocation");
+}
+DeviceBuffer::DeviceBuffer(size_t b) : bytes_(b) {
+    if (!b)
+        throw std::runtime_error("Zero-sized device buffer");
     hip_check(hipMalloc(&data_, b), "hipMalloc");
 }
-DeviceBuffer::DeviceBuffer(void* borrowed,size_t bytes):data_(borrowed),bytes_(bytes),owned_(false){
-    if(!borrowed||!bytes)throw std::runtime_error("Invalid borrowed device buffer");
+DeviceBuffer::DeviceBuffer(void *borrowed, size_t bytes)
+    : data_(borrowed), bytes_(bytes), owned_(false) {
+    if (!borrowed || !bytes)
+        throw std::runtime_error("Invalid borrowed device buffer");
 }
-DeviceBuffer::~DeviceBuffer() { if (data_&&owned_) (void)hipFree(data_); }
+DeviceBuffer::~DeviceBuffer() {
+    if (data_ && owned_) {
+        if (stream_) {
+            (void)hipSetDevice(stream_->device());
+            (void)hipFreeAsync(data_, stream_->get());
+        } else
+            (void)hipFree(data_);
+    }
+}
 ImportedSurface::ImportedSurface(VADRMPRIMESurfaceDescriptor d) {
-    auto close_all=[&] { for(unsigned i=0;i<std::min(d.num_objects,4u);++i) if(d.objects[i].fd>=0) close(d.objects[i].fd); };
+    auto close_all = [&] {
+        for (unsigned i = 0; i < std::min(d.num_objects, 4u); ++i)
+            if (d.objects[i].fd >= 0)
+                close(d.objects[i].fd);
+    };
     try {
-        layout_=validate_layout(d);
+        layout_ = validate_layout(d);
         hipExternalMemoryHandleDesc h{};
-        h.type=hipExternalMemoryHandleTypeOpaqueFd; h.handle.fd=d.objects[0].fd; h.size=layout_.object_size;
+        h.type = hipExternalMemoryHandleTypeOpaqueFd;
+        h.handle.fd = d.objects[0].fd;
+        h.size = layout_.object_size;
         // ROCm's Linux external-buffer path imports the DRM allocation. Compatibility
         // is experimental and must pass the alias probe; this is not a general FD guarantee.
         hip_check(hipImportExternalMemory(&memory_, &h), "HIP import of VA DRM object");

@@ -69,8 +69,7 @@ thumbnail readbacks are independent of the MobileCLIP input. GPU uses
 FP16 MIGraphX profiles with device I/O. NPU uses HIP-mapped host input written
 by the GPU, wrapped directly in an ORT CPU tensor and passed to Vitis AI EP.
 The copy-free claim ends at the EP boundary; its internal copies/conversions
-are outside this application's audit. NPU preprocessing briefly acquires the
-GPU gate and releases it before inference. CPU-origin search images are uploaded
+are outside this application's audit. NPU preprocessing uses its own nonblocking HIP stream. CPU-origin search images are uploaded
 once at ingestion. GPU accepts batches 1–4 (partial batches pad to four); NPU
 uses one. `embedding_batch` remains the preferred GPU batch of 1 or 4.
 Text uses the CPU encoder and 77-token tokenizer without the EmbeddingGemma
@@ -91,16 +90,15 @@ once under the fingerprint of the backend that actually encoded it. Both workers
 must initialize successfully; a missing backend is reported rather than silently
 turning this into a single-device mode.
 
-**MobileCLIP GPU duty limit** and **MobileCLIP NPU duty limit** in AI Statistics
-accept 1–100%, apply immediately and persist as
-`search.mobileclip_gpu_budget_percent` / `search.mobileclip_npu_budget_percent`.
-Both default to 100% (no intentional post-inference wait). At 20%, each device
-waits four times its previous inference duration before its next collection job.
-These are scheduling budgets, not hardware utilization caps. GPU work still yields
-to YOLO, tracking and user queries; NPU inference does not hold the GPU gate.
-The requested per-person interval remains the minimum, without MobileCLIP's
-former adaptive 20% pacing. New tracking images are required for subsequent
-embeddings; increasing the budget does not recompute an unchanged image.
+Detection/tracking frequency and the requested per-person embedding interval
+control admissions. There is no cross-model GPU gate, GPU/NPU duty limit,
+EmbeddingGemma 20% cooldown or adaptive interval. Legacy valid
+`search.mobileclip_gpu_budget_percent` / `search.mobileclip_npu_budget_percent`
+keys produce a deprecation warning, are ignored and are omitted on save. New
+tracking images are required for subsequent embeddings. Each backend has at most
+one active job, and latest pending crops replace older ones. Actual completion
+intervals, freshness, replacements and unserved deadline misses are observable
+in AI Statistics. See [execution policy](nvr-ai-performance.md).
 
 A region query is encoded on both devices concurrently and each vector searches
 only its matching backend's records. Text queries use the shared CPU FP32 text
@@ -407,7 +405,7 @@ GPU calls of 29.74 ms (batch 4) and NPU calls of 17.86 ms (batch 1).
 These figures describe this short run, not a guarantee for every input workload.
 The demo's configured person interval was not changed.
 
-UI validation applied and persisted GPU/NPU budgets of 35%/80%, then restored
+Historical UI validation (before duty limits were removed) applied and persisted GPU/NPU budgets of 35%/80%, then restored
 both original settings. A separate two-camera run passed English/Japanese
 text queries, inline playback, live/paused-live/recorded region searches and
 deletion. All 33 CTests passed; the scheduler, configuration and search contract

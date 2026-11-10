@@ -127,7 +127,8 @@ struct ReIdModel::Preprocessor {
         throw std::runtime_error("ReID preprocessing timed out");
     }
 };
-ReIdModel::ReIdModel(const std::string &path, unsigned device) : model_(path, device) {
+ReIdModel::ReIdModel(const std::string &path, unsigned device)
+    : stream_(std::make_shared<HipStream>(device)), model_(path, device) {
     auto in = model_.inputs(), out = model_.outputs();
     if (in.size() != 1 || in[0].shape.size() != 4 || in[0].shape[1] != 3 || in[0].shape[0] < 1 ||
         in[0].shape[0] > 16 || in[0].shape[2] < 64 || in[0].shape[2] > 256 || in[0].shape[3] < 32 ||
@@ -136,7 +137,7 @@ ReIdModel::ReIdModel(const std::string &path, unsigned device) : model_(path, de
         out[0].type != TensorType::Float32)
         throw std::runtime_error("Invalid OSNet input/output contract");
     input_ = in[0];
-    input_.storage = std::make_shared<DeviceBuffer>(input_.elements() * sizeof(float));
+    input_.storage = std::make_shared<DeviceBuffer>(input_.elements() * sizeof(float), stream_);
     preprocessor_ = std::make_unique<Preprocessor>();
     preprocessor_->start(input_.shape[3], input_.shape[2], device);
 }
@@ -159,18 +160,19 @@ std::vector<ReIdFeature> ReIdModel::encode_many(const std::vector<ReIdInput> &im
         else
             for (unsigned n = 0; n < batch; n++) {
                 auto &tensor = tensors[std::min(n, count - 1)];
-                hip_check(hipMemcpy(static_cast<char *>(input_.storage->data()) + n * bytes,
-                                    tensor->buffer->data(), bytes, hipMemcpyDeviceToDevice),
+                hip_check(hipMemcpyAsync(static_cast<char *>(input_.storage->data()) + n * bytes,
+                                         tensor->buffer->data(), bytes, hipMemcpyDeviceToDevice,
+                                         stream_->get()),
                           "ReID GPU batch assembly");
             }
         // D2D copies may return before completion; MIGraphX can use another stream.
-        hip_check(hipStreamSynchronize(nullptr), "ReID GPU batch readiness");
+        stream_->finish();
         prepare_ms += std::chrono::duration<double, std::milli>(Clock::now() - start).count();
         start = Clock::now();
         auto output = model_.infer({{input_.name, input_}});
         std::vector<ReIdFeature> features(batch);
         readback_metadata(features.data(), output[0].storage->data(),
-                          features.size() * sizeof(ReIdFeature));
+                          features.size() * sizeof(ReIdFeature), stream_->get());
         inference_ms += std::chrono::duration<double, std::milli>(Clock::now() - start).count();
         for (unsigned n = 0; n < count; n++) {
             auto &f = features[n];

@@ -597,11 +597,8 @@ struct Window::Vms {
             tabs->indexOf(search_page) + 1,
             new AiPage(
                 w.controller_, w.options_,
-                [this](double fps, unsigned interval, unsigned gpu_budget, unsigned npu_budget) {
+                [this](double fps, unsigned interval) {
                     w.controller_.ai_frequency(fps, interval);
-                    w.controller_.ai_runtime()->mobileclip_budget(gpu_budget, npu_budget);
-                    w.options_.search.mobileclip_gpu_budget_percent = gpu_budget;
-                    w.options_.search.mobileclip_npu_budget_percent = npu_budget;
                     w.options_.ai_fps = fps;
                     w.options_.search.interval_ms = interval;
                     try {

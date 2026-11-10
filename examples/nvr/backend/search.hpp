@@ -21,6 +21,7 @@ struct SearchOptions {
     std::string mobileclip_backend{"gpu"}, mobileclip_worker, ryzen_ai_venv;
     unsigned device{}, image_size{384}, interval_ms{5000}, queue_limit{128};
     unsigned embedding_width{}, embedding_height{}, embedding_batch{1};
+    // Deprecated config compatibility only; ignored by execution and omitted on save.
     unsigned mobileclip_gpu_budget_percent{100}, mobileclip_npu_budget_percent{100};
     double min_person_height{.1};
 };
@@ -55,9 +56,12 @@ struct SearchResult {
     std::vector<SearchGroup> groups;
 };
 struct SearchStatus {
+    // Embedding/search and person tracking have independent readiness and errors.
     std::string state{"disabled"}, error, reid_shape;
+    std::string tracking_state{"disabled"}, tracking_error;
     uint64_t stored{}, dropped{}, pending{};
     double inference_ms{};
+    uint64_t first_deadline_misses{}, update_deadline_misses{};
 };
 Detection search_crop(Detection box, unsigned width, unsigned height, float margin = 0);
 std::pair<unsigned, unsigned> search_dimensions(unsigned width, unsigned height, unsigned limit);

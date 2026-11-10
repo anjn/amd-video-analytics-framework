@@ -113,9 +113,26 @@ int main(int argc, char **argv) {
             tuned.search.mobileclip_backend = "gpu+npu";
             save_config(path, tuned);
             require(load_config(path).search.mobileclip_backend == "gpu+npu" &&
-                        load_config(path).search.mobileclip_gpu_budget_percent == 35 &&
-                        load_config(path).search.mobileclip_npu_budget_percent == 80,
-                    "Combined backend roundtrip");
+                        load_config(path).search.mobileclip_gpu_budget_percent == 100 &&
+                        load_config(path).search.mobileclip_npu_budget_percent == 100,
+                    "Combined backend roundtrip discards obsolete duty limits");
+            {
+                QFile saved(QString::fromStdString(path));
+                require(saved.open(QIODevice::ReadOnly), "Read saved config");
+                auto json = QJsonDocument::fromJson(saved.readAll()).object()["search"].toObject();
+                require(!json.contains("mobileclip_gpu_budget_percent") &&
+                            !json.contains("mobileclip_npu_budget_percent"),
+                        "Obsolete keys saved");
+                auto legacy = base;
+                legacy["search"] = QJsonObject{{"mobileclip_gpu_budget_percent", 35},
+                                               {"mobileclip_npu_budget_percent", 80}};
+                write(legacy);
+                auto loaded = load_config(path);
+                require(loaded.search.mobileclip_gpu_budget_percent == 35 &&
+                            loaded.search.mobileclip_npu_budget_percent == 80,
+                        "Legacy keys rejected");
+                save_config(path, tuned);
+            }
             require(load_config(path).search.bundle == search.search.bundle &&
                         load_config(path).search.reid_model == (dir / "osnet.mxr"),
                     "Search and ReID roundtrip");

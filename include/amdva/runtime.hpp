@@ -20,8 +20,8 @@ void hip_check(hipError_t status, const char* operation);
 void va_check(VAStatus status, const char* operation);
 // Explicit bounded control/analysis transfers. Images and raw tensors must not
 // use these helpers. The copy auditor checks the exact pointer, size and kind.
-void readback_metadata(void* host, const void* device, size_t bytes);
-void upload_metadata(void* device, const void* host, size_t bytes);
+void readback_metadata(void* host, const void* device, size_t bytes, hipStream_t stream = nullptr);
+void upload_metadata(void* device, const void* host, size_t bytes, hipStream_t stream = nullptr);
 struct Layout {
     uint32_t width{}, height{}, fourcc{};
     uint32_t object_size{}, y_offset{}, uv_offset{}, y_pitch{}, uv_pitch{};
@@ -30,24 +30,43 @@ struct Layout {
 };
 Layout validate_layout(const VADRMPRIMESurfaceDescriptor& desc);
 
+class HipStream {
+  public:
+    explicit HipStream(int device = 0);
+    ~HipStream();
+    HipStream(const HipStream &) = delete;
+    HipStream &operator=(const HipStream &) = delete;
+    hipStream_t get() const { return stream_; }
+    void finish() const;
+    int device() const { return device_; }
+
+  private:
+    int device_{};
+    hipStream_t stream_{};
+};
 class DeviceBuffer {
-public:
+  public:
     explicit DeviceBuffer(size_t bytes);
+    // Allocation/free are ordered on this stream, which the buffer retains.
+    // Finish the producer before handing raw pointers to another stream.
+    DeviceBuffer(size_t bytes, std::shared_ptr<HipStream> stream);
     // Non-owning view for synchronous APIs. The caller retains GPU ownership.
-    DeviceBuffer(void* borrowed, size_t bytes);
+    DeviceBuffer(void *borrowed, size_t bytes);
     ~DeviceBuffer();
-    DeviceBuffer(const DeviceBuffer&) = delete;
-    DeviceBuffer& operator=(const DeviceBuffer&) = delete;
-    void* data() const { return data_; }
+    DeviceBuffer(const DeviceBuffer &) = delete;
+    DeviceBuffer &operator=(const DeviceBuffer &) = delete;
+    void *data() const { return data_; }
     size_t size() const { return bytes_; }
-private:
-    void* data_{};
+
+  private:
+    void *data_{};
     size_t bytes_{};
     bool owned_{true};
+    std::shared_ptr<HipStream> stream_;
 };
 
 class ImportedSurface {
-public:
+  public:
     // Takes ownership of every FD in the export descriptor, including on failure.
     explicit ImportedSurface(VADRMPRIMESurfaceDescriptor desc);
     ~ImportedSurface();

@@ -1,0 +1,23 @@
+{
+  "cells": [
+    "cam0",
+    "cam3",
+    "cam12",
+    "cam13",
+    "cam1",
+    "cam2",
+    "cam8",
+    "cam11",
+    "cam4",
+    "cam7",
+    "cam9",
+    "cam10",
+    "cam5",
+    "cam6",
+    "cam14",
+    "resource-monitor"
+  ],
+  "layout": 16,
+  "show_stream_info": true,
+  "version": 1
+}

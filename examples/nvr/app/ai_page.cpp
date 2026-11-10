@@ -11,7 +11,6 @@
 #include <QJsonObject>
 #include <QLabel>
 #include <QPushButton>
-#include <QSpinBox>
 #include <QStackedWidget>
 #include <QTableWidget>
 #include <QTimer>
@@ -20,7 +19,7 @@
 #include <cmath>
 namespace amdva::nvr {
 AiPage::AiPage(Controller &controller, const Options &options,
-               std::function<void(double, unsigned, unsigned, unsigned)> changed,
+               std::function<void(double, unsigned)> changed,
                std::function<bool(const std::string &, const std::string &)> model_changed,
                QWidget *parent)
     : QWidget(parent) {
@@ -95,20 +94,6 @@ AiPage::AiPage(Controller &controller, const Options &options,
         });
     form->addRow("Detection / tracking", fps);
     form->addRow("Requested embedding interval", interval);
-    auto *gpu_budget = new QSpinBox, *npu_budget = new QSpinBox;
-    gpu_budget->setObjectName("mobileclip-gpu-budget");
-    npu_budget->setObjectName("mobileclip-npu-budget");
-    for (auto *spin : {gpu_budget, npu_budget}) {
-        spin->setRange(1, 100);
-        spin->setSuffix(" %");
-        spin->setToolTip("100%: no intentional wait. 20%: wait four times the preceding inference "
-                         "duration. Not measured hardware utilization.");
-        spin->setEnabled(false);
-    }
-    gpu_budget->setValue(options.search.mobileclip_gpu_budget_percent);
-    npu_budget->setValue(options.search.mobileclip_npu_budget_percent);
-    form->addRow("MobileCLIP GPU duty limit", gpu_budget);
-    form->addRow("MobileCLIP NPU duty limit", npu_budget);
     fps->setEnabled(false);
     interval->setEnabled(false);
     layout->addLayout(form);
@@ -128,9 +113,8 @@ AiPage::AiPage(Controller &controller, const Options &options,
     };
     auto *models = new QLabel(
         QString("YOLO: %1 · %9 · %2×%3 · batch ≤%4\nReID: %5 · %10\nEmbedding: %6×%7 · batch %8 "
-                "(padded) · "
-                "token "
-                "budget 70\nCompleted wall time over 60 seconds; not GPU utilization. Wait "
+                "(padded) · token budget 70\n"
+                "Completed wall time over 60 seconds; not GPU utilization. Wait "
                 "includes queue delay; per-camera update rows show frame age.")
             .arg(QFileInfo(QString::fromStdString(options.model)).fileName())
             .arg(info.width)
@@ -177,37 +161,34 @@ AiPage::AiPage(Controller &controller, const Options &options,
     auto *detail = new QComboBox;
     detail->addItems({"Stage summary", "All stages and cameras"});
     layout->addWidget(detail);
-    auto *table = new QTableWidget(0, 12);
+    auto *table = new QTableWidget(0, 13);
     table->setObjectName("ai-metrics");
     table->setHorizontalHeaderLabels({"Stage", "Camera", "Mean ms", "P50 ms", "P95 ms", "Max ms",
                                       "Wait ms", "Calls/s", "Mean batch", "Pending", "Dropped",
-                                      "Samples"});
+                                      "Samples (60s)", "Completed (total)"});
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     table->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     table->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    table->horizontalHeader()->setSectionResizeMode(11, QHeaderView::ResizeToContents);
+    table->horizontalHeader()->setSectionResizeMode(12, QHeaderView::ResizeToContents);
     table->verticalHeader()->setDefaultSectionSize(24);
     camera->verticalHeader()->setDefaultSectionSize(24);
     layout->addWidget(table, 1);
-    auto change = [fps, interval, gpu_budget, npu_budget, changed] {
-        changed(fps->value(), unsigned(std::lround(interval->value() * 1000)), gpu_budget->value(),
-                npu_budget->value());
+    auto change = [fps, interval, changed] {
+        changed(fps->value(), unsigned(std::lround(interval->value() * 1000)));
     };
     connect(fps, &QDoubleSpinBox::editingFinished, this, change);
     connect(interval, &QDoubleSpinBox::editingFinished, this, change);
-    connect(gpu_budget, &QSpinBox::editingFinished, this, change);
-    connect(npu_budget, &QSpinBox::editingFinished, this, change);
     auto *timer = new QTimer(this);
     connect(
         timer, &QTimer::timeout, this,
-        [&, state, table, camera, detail, fps, interval, model, gpu_budget, npu_budget,
-         active_model, stack, overview, startup = options] {
+        [&, state, table, camera, detail, fps, interval, model, active_model, stack, overview,
+         startup = options] {
             const bool ready = controller.status_ready() && controller.fatal().empty();
             fps->setEnabled(ready);
             model->setEnabled(ready);
             interval->setEnabled(ready);
-            gpu_budget->setEnabled(ready && (active_model == 1 || active_model == 3));
-            npu_budget->setEnabled(ready && (active_model == 2 || active_model == 3));
             if (!isVisible())
                 return;
             auto runtime = controller.ai_runtime();
@@ -219,26 +200,23 @@ AiPage::AiPage(Controller &controller, const Options &options,
                     tracks[s.source.id] = search->tracks(s.source.id);
             // The trend keeps advancing while the detailed tables are shown.
             overview->push(summarize_overview(sources, controller.telemetry(), metrics, tracks,
-                                              startup, !controller.fatal().empty(),
-                                              Clock::now()));
+                                              startup, !controller.fatal().empty(), Clock::now()));
             if (stack->currentWidget() == overview)
                 return;
-            QString text = QString("Requested %1 Hz · embedding requested %2 s / effective %3 s · "
-                                   "priority: tracking → query → collection")
+            QString text = QString("Configured detection/tracking %1 Hz · embedding interval %2 s "
+                                   "· independent model workers")
                                .arg(runtime->fps())
-                               .arg(runtime->interval_ms() / 1000.)
-                               .arg(runtime->effective_interval() / 1000.);
-            if (active_model != 0) {
-                const auto budgets = runtime->mobileclip_budget();
-                text += QString("\nMobileCLIP: GPU limit %1% · NPU limit %2% · independent device "
-                                "queues · requested interval remains the minimum")
-                            .arg(budgets.first)
-                            .arg(budgets.second);
-            }
+                               .arg(runtime->interval_ms() / 1000.);
             if (auto *s = controller.search_service()) {
                 auto status = s->status();
                 text += "\nSearch: " + QString::fromStdString(status.state) + " · " +
                         QString::fromStdString(status.error);
+                text += QString(" · first deadline misses %1 · update deadline misses %2")
+                            .arg(status.first_deadline_misses)
+                            .arg(status.update_deadline_misses);
+                text += "\nTracking: " + QString::fromStdString(status.tracking_state);
+                if (!status.tracking_error.empty())
+                    text += " · " + QString::fromStdString(status.tracking_error);
                 if (!status.reid_shape.empty())
                     text += " · ReID NCHW: " + QString::fromStdString(status.reid_shape);
             }
@@ -260,7 +238,13 @@ AiPage::AiPage(Controller &controller, const Options &options,
                                                   "Tracking association",
                                                   "Image embedding",
                                                   "Image embedding GPU",
+                                                  "Image embedding NPU preprocess",
                                                   "Image embedding NPU",
+                                                  "Image embedding NPU total",
+                                                  "Embedding first result",
+                                                  "Embedding update interval",
+                                                  "Embedding freshness",
+                                                  "Embedding replacements",
                                                   "Text query",
                                                   "Image query",
                                                   "Vector search",
@@ -288,7 +272,8 @@ AiPage::AiPage(Controller &controller, const Options &options,
                      {m.mean_ms, m.p50_ms, m.p95_ms, m.max_ms, m.wait_ms, m.rate, m.mean_batch})
                     row << QString::number(v, 'f', 2);
                 row << QString::number(m.pending) << QString::number(m.dropped)
-                    << QString::number(m.samples) + (m.truncated ? " (capped)" : "");
+                    << QString::number(m.samples) + (m.truncated ? " (capped)" : "")
+                    << QString::number(m.completed);
                 for (int c = 0; c < row.size(); ++c)
                     set(table, i, c, row[c]);
             }

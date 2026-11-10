@@ -200,11 +200,12 @@ std::vector<OverlayLine> make_overlay_lines(const OverlayFrame &frame, unsigned 
 }
 struct OverlayRenderer::Impl {
     int device;
+    std::shared_ptr<HipStream> stream;
     Kernel lines, mask;
     DeviceBuffer commands;
     Impl(int d)
-        : device(d), lines(source, "lines", gpu_arch(d)), mask(source, "mask", gpu_arch(d)),
-          commands(8192 * sizeof(OverlayLine)) {}
+        : device(d), stream(std::make_shared<HipStream>(d)), lines(source, "lines", gpu_arch(d)),
+          mask(source, "mask", gpu_arch(d)), commands(8192 * sizeof(OverlayLine), stream) {}
 };
 OverlayRenderer::OverlayRenderer(int device) : impl_(std::make_unique<Impl>(device)) {}
 OverlayRenderer::~OverlayRenderer() = default;
@@ -218,8 +219,9 @@ void OverlayRenderer::draw(ImportedSurface &image, unsigned width, unsigned heig
     auto *pixels = const_cast<uint8_t *>(image.data());
     auto offset = layout.y_offset, pitch = layout.y_pitch;
     struct Guard {
-        ~Guard() { (void)hipDeviceSynchronize(); }
-    } guard;
+        hipStream_t stream;
+        ~Guard() { (void)hipStreamSynchronize(stream); }
+    } guard{s.stream->get()};
     for (const auto &attachment : frame.attachments)
         for (const auto &tensor : attachment.result.tensors) {
             int semantic = tensor.name == "semantic-mask";
@@ -250,17 +252,18 @@ void OverlayRenderer::draw(ImportedSurface &image, unsigned width, unsigned heig
                 void *args[] = {&pixels, &offset, &pitch, &width, &height, &raw, &semantic, &mw,
                                 &mh,     &plane,  &ow,    &oh,    &cx,     &cy,  &cw,       &ch,
                                 &tw,     &th,     &sw,    &sh,    &px,     &py};
-                s.mask.launch(width * height, args);
+                s.mask.launch(width * height, args, s.stream->get());
             }
         }
     auto commands = make_overlay_lines(frame, width, height);
     if (!commands.empty()) {
-        upload_metadata(s.commands.data(), commands.data(), commands.size() * sizeof(OverlayLine));
+        upload_metadata(s.commands.data(), commands.data(), commands.size() * sizeof(OverlayLine),
+                        s.stream->get());
         void *command = s.commands.data();
         unsigned count = commands.size(), stride = std::max(width, height) + 1;
         void *args[] = {&pixels, &offset, &pitch, &width, &height, &command, &count, &stride};
-        s.lines.launch(count * stride, args);
+        s.lines.launch(count * stride, args, s.stream->get());
     }
-    hip_check(hipDeviceSynchronize(), "GPU overlay completion");
+    s.stream->finish();
 }
 } // namespace amdva

@@ -15,9 +15,7 @@ int main() {
     try {
         AiRuntime r;
         r.configure(5, 15000);
-        r.effective_interval(5000);
-        require(r.fps() == 5 && r.effective_interval() == 15000,
-                "Requested interval is a lower bound");
+        require(r.fps() == 5 && r.interval_ms() == 15000, "Requested interval is a lower bound");
         bool invalid = false;
         try {
             r.configure(0, 5000);
@@ -26,9 +24,7 @@ int main() {
         }
         require(invalid && r.fps() == 5, "Invalid configuration is atomic");
         r.configure(.3, 700);
-        r.effective_interval(800);
-        require(r.fps() == .3 && r.interval_ms() == 700 && r.effective_interval() == 800,
-                "Fractional Hz and subsecond intervals");
+        require(r.fps() == .3 && r.interval_ms() == 700, "Fractional Hz and subsecond intervals");
         r.record("inference", "cam0", 2, 3, 4);
         r.record("inference", "cam0", 4, 5, 2);
         r.record("inference", "cam0", std::numeric_limits<double>::quiet_NaN());
@@ -44,74 +40,14 @@ int main() {
             r.record("inference", "cam0", 1);
         require(r.snapshot().front().samples == 8192 && r.snapshot().front().truncated,
                 "Bounded statistics");
-        r.mobileclip_budget(35, 100);
-        require(r.mobileclip_budget() == std::pair<unsigned, unsigned>{35, 100},
-                "Per-device budget configuration");
-        bool bad_budget = false;
-        try {
-            r.mobileclip_budget(0, 100);
-        } catch (const std::invalid_argument &) {
-            bad_budget = true;
-        }
-        require(bad_budget && r.mobileclip_budget().first == 35, "Invalid budgets are atomic");
-        AiRuntime gate;
-        {
-            auto lease = gate.acquire(AiRuntime::Embedding);
-            std::this_thread::sleep_for(std::chrono::milliseconds(20));
-        }
-        require(!gate.embedding_ready() && gate.embedding_ready(true),
-                "MobileCLIP bypasses Gemma cooldown");
-        {
-            auto lease = gate.acquire(AiRuntime::Tracking);
-            require(!gate.embedding_ready(true), "MobileCLIP still yields to tracking");
-        }
-        std::atomic<int> inside{0}, overlap{0};
-        auto run = [&](AiRuntime::Priority p) {
-            for (int i = 0; i < 20; ++i) {
-                auto lease = r.acquire(p);
-                if (inside.fetch_add(1))
-                    ++overlap;
-                std::this_thread::yield();
-                --inside;
-            }
-        };
-        auto a = std::async(std::launch::async, run, AiRuntime::Tracking);
-        auto b = std::async(std::launch::async, run, AiRuntime::Query);
-        auto c = std::async(std::launch::async, run, AiRuntime::Embedding);
-        auto d = std::async(std::launch::async, run, AiRuntime::MobileClip);
-        a.get();
-        b.get();
-        c.get();
-        d.get();
-        require(overlap == 0, "GPU stages are serialized");
-        // Keep two tracking callers queued continuously. A lower-priority
-        // request must get a turn without stopping tracking or overlapping it.
-        AiRuntime loaded;
-        auto hold = std::make_unique<AiRuntime::Lease>(&loaded, AiRuntime::Tracking);
-        std::atomic<bool> stop_pressure{false};
-        std::atomic<unsigned> pressure_started{0};
-        auto pressure = [&] {
-            ++pressure_started;
-            while (!stop_pressure) {
-                auto lease = loaded.acquire(AiRuntime::Tracking);
-                std::this_thread::sleep_for(std::chrono::milliseconds(2));
-            }
-        };
-        auto high_a = std::async(std::launch::async, pressure);
-        auto high_b = std::async(std::launch::async, pressure);
-        while (pressure_started < 2)
-            std::this_thread::yield();
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
-        auto low = std::async(std::launch::async,
-                              [&] { auto lease = loaded.acquire(AiRuntime::MobileClip); });
-        hold.reset();
-        bool serviced = low.wait_for(std::chrono::seconds(2)) == std::future_status::ready;
-        stop_pressure = true;
-        high_a.get();
-        high_b.get();
-        low.get();
-        require(serviced, "Continuous tracking starved a queued MobileCLIP request");
-        std::cout << "AI statistics and execution gate passed\n";
+        require(r.snapshot().front().completed == 9002, "Cumulative count survives rolling limit");
+        r.reset_measurements();
+        require(r.snapshot().empty(), "Measurement reset clears counters");
+        // Configuration/metrics have no global execution gate or adaptive interval.
+        r.configure(4, 3000);
+        require(r.fps() == 4 && r.interval_ms() == 3000,
+                "Frequency configuration unchanged by load");
+        std::cout << "AI statistics and frequency controls passed\n";
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';
         return 1;

@@ -226,6 +226,13 @@ Options load_config(const std::string &path) {
     if (!o.search.mobileclip_gpu_budget_percent || o.search.mobileclip_gpu_budget_percent > 100 ||
         !o.search.mobileclip_npu_budget_percent || o.search.mobileclip_npu_budget_percent > 100)
         throw std::runtime_error("MobileCLIP budgets must be 1 to 100 percent");
+    if (json_object_has_member(root, "search")) {
+        auto *legacy = required_object(root, "search");
+        if (json_object_has_member(legacy, "mobileclip_gpu_budget_percent") ||
+            json_object_has_member(legacy, "mobileclip_npu_budget_percent"))
+            g_warning(
+                "MobileCLIP duty limits are deprecated and ignored; configure fps and interval_ms");
+    }
     const bool mobileclip = o.search.embedding_model == "mobileclip2-s2";
     if (mobileclip &&
         (o.search.device != 0 || (o.search.embedding_batch != 1 && o.search.embedding_batch != 4)))
@@ -382,10 +389,6 @@ void save_config(const std::string &path, const Options &o) {
     json_object_set_int_member(search, "embedding_width", o.search.embedding_width);
     json_object_set_int_member(search, "embedding_height", o.search.embedding_height);
     json_object_set_int_member(search, "embedding_batch", o.search.embedding_batch);
-    json_object_set_int_member(search, "mobileclip_gpu_budget_percent",
-                               o.search.mobileclip_gpu_budget_percent);
-    json_object_set_int_member(search, "mobileclip_npu_budget_percent",
-                               o.search.mobileclip_npu_budget_percent);
     json_object_set_double_member(search, "min_person_height", o.search.min_person_height);
     json_object_set_object_member(root, "search", search);
     auto *output = json_object_new();

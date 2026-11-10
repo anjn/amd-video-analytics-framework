@@ -1,4 +1,4 @@
-<!-- source: docs/guide/nvr-demo.ja.md d3287065f834fb501021f14e9e3e91d03f7d7c1e -->
+<!-- source: docs/guide/nvr-demo.ja.md ee582f76f4604d3cb20a9bbce5f9e438c93a90cb -->
 # NVR demo
 
 The NVR demo is a sample network video recorder built with this framework. It records all registered RTSP cameras while showing up to 16 of them on the desktop, and runs person and vehicle detection and tracking on the cameras being displayed. Recordings can be played back from a timeline, and if you prepare a native embedding model, you can also search for people by text or image.
@@ -133,3 +133,7 @@ Click the figure to enlarge it. MobileCLIP green arrows cover application input 
 
 - Settings, processing architecture, validation results: [NVR developer documentation](../dev/nvr/README.md)
 - Screen operations and recording management: [Desktop video management](../dev/nvr/vms.md)
+
+## Move the prepared 1440p demo to another environment
+
+For `artifacts/1440p-demo`, use the [Git-managed templates and migration guide](../../examples/nvr/demo/1440p/README.md). Launch/configuration/layout files stay in Git while models and videos are exported separately. Generate local settings using destination paths instead of retaining the source machine's absolute config paths. NPU caches also contain internal absolute paths and SDK dependencies, so reprepare and validate them on the destination.

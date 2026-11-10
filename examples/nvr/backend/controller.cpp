@@ -818,8 +818,6 @@ struct Controller::Channel {
 };
 Controller::Controller(Options options) : options_(std::move(options)) {
     ai_runtime_->configure(options_.ai_fps, options_.search.interval_ms);
-    ai_runtime_->mobileclip_budget(options_.search.mobileclip_gpu_budget_percent,
-                                   options_.search.mobileclip_npu_budget_percent);
     if (options_.search.enabled)
         options_.background_ai_enabled = true;
     if (options_.batch != 1 && options_.batch != 2 && options_.batch != 4 && options_.batch != 8 &&
@@ -1402,8 +1400,9 @@ void Controller::gpu_loop() {
             configuration.instance_id = prefix + "/single";
             single = SharedBatchExecutor::acquire(configuration);
         }
+        auto stream=std::make_shared<HipStream>(0);
         auto input = std::make_shared<DeviceBuffer>(size_t(options_.batch) * 3 * info.width *
-                                                    info.height * sizeof(float));
+                                                    info.height * sizeof(float),stream);
         auto view = [&](unsigned slot) {
             auto *ptr =
                 static_cast<float *>(input->data()) + size_t(slot) * 3 * info.width * info.height;
@@ -1416,8 +1415,8 @@ void Controller::gpu_loop() {
         // resource baselines; lazy kernels/workspaces must not first appear on
         // a later reconnect's single-image batch.
         {
-            pack.pad(input->data(), 0, options_.batch, info.width, info.height);
-            hip_check(hipDeviceSynchronize(), "Warmup input");
+            pack.pad(input->data(), 0, options_.batch, info.width, info.height,{},stream->get());
+            stream->finish();
             std::vector<InferenceRequest> requests;
             for (unsigned i = 0; i < options_.batch; i++)
                 requests.push_back(
@@ -1446,6 +1445,14 @@ void Controller::gpu_loop() {
         unsigned cursor = 0;
         double rate = ai_runtime_->fps();
         auto waiting = Clock::time_point{};
+        auto phase_origin = Clock::now();
+        double phase_rate = rate;
+        std::map<std::string, Clock::time_point> due;
+        std::map<std::string, unsigned> ranks;
+        for (unsigned i = 0; i < options_.sources.size(); i++)
+            ranks[options_.sources[i].id] = i;
+        const auto groups =
+            std::max<size_t>(1, (options_.sources.size() + options_.batch - 1) / options_.batch);
         struct Item {
             unsigned slot;
             Frame frame;
@@ -1454,6 +1461,13 @@ void Controller::gpu_loop() {
         };
         while (!stopping_) {
             rate = ai_runtime_->fps();
+            if (rate != phase_rate) {
+                phase_rate = rate;
+                phase_origin = Clock::now();
+                due.clear();
+            }
+            const auto cadence = std::chrono::duration_cast<Clock::duration>(
+                std::chrono::duration<double>(1.0 / rate));
             std::vector<Item> items;
             const auto now = Clock::now();
             std::vector<unsigned> order;
@@ -1495,7 +1509,11 @@ void Controller::gpu_loop() {
                     s.latest.sample == previous[index] ||
                     ((index < 16 ||
                       (options_.search.enabled && !options_.search.reid_model.empty())) &&
-                     std::chrono::duration<double>(now - s.last_ai).count() < 1.0 / rate))
+                     now <
+                         due.try_emplace(s.channel,
+                                         phase_origin +
+                                             cadence * (ranks[s.channel] / options_.batch) / groups)
+                             .first->second))
                     continue;
                 const auto &f = s.latest;
                 const double scale =
@@ -1517,8 +1535,7 @@ void Controller::gpu_loop() {
                 continue;
             }
             waiting = {};
-            // Decoders hand frames on before they finish; wait for them before taking the
-            // GPU lease that tracking shares, or a busy video engine stalls both.
+            // Decoders hand frames on before completion; wait before reading their pixels.
             for (auto &item : items) {
                 const auto synced = Clock::now();
                 auto *buffer = gst_sample_get_buffer(item.frame.sample.get());
@@ -1531,7 +1548,7 @@ void Controller::gpu_loop() {
                                         .count());
             }
             const auto waiting_gpu = Clock::now();
-            auto gpu_lease = ai_runtime_->acquire(AiRuntime::Tracking);
+
             const auto started = Clock::now();
             unsigned valid = 0;
             std::vector<Item> prepared;
@@ -1558,16 +1575,16 @@ void Controller::gpu_loop() {
                 pack.pack(*s.image,
                           ImageTransform::make(item.frame.width, item.frame.height, info.width,
                                                info.height),
-                          output);
-                hip_check(hipDeviceSynchronize(), "AI packing completion");
+                          output, {}, stream->get());
+                stream->finish();
                 const auto period = std::chrono::duration_cast<Clock::duration>(
                     std::chrono::duration<double>(1.0 / rate));
                 const auto admitted = Clock::now();
-                // Keep the cadence after a short non-preemptible GPU task, retaining at most one
-                // overdue update.
-                s.last_ai = s.last_ai == Clock::time_point{}
-                                ? admitted
-                                : std::max(s.last_ai + period, admitted - period);
+                // Keep the configured phase; skip missed periods without catch-up bursts.
+                s.last_ai = admitted;
+                auto &deadline = due[item.channel];
+                if (admitted >= deadline)
+                    deadline += period * (1 + (admitted - deadline) / period);
                 previous[item.slot] = item.frame.sample;
                 prepared.push_back(item);
                 ++valid;
@@ -1575,8 +1592,9 @@ void Controller::gpu_loop() {
             if (!valid)
                 continue;
             if (valid > 1 && valid < options_.batch) {
-                pack.pad(input->data(), valid, options_.batch, info.width, info.height);
-                hip_check(hipDeviceSynchronize(), "Batch padding completion");
+                pack.pad(input->data(), valid, options_.batch, info.width, info.height, {},
+                         stream->get());
+                stream->finish();
             }
             auto executor = valid == 1 && single ? single : batch;
             std::vector<InferenceRequest> requests;

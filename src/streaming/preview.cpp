@@ -13,6 +13,8 @@ void initialize_runtime() {
     const auto *arenas = std::getenv("MALLOC_ARENA_MAX");
     if (!arenas || !*arenas)
         mallopt(M_ARENA_MAX, 4);
+    // Must precede HIP initialization. Preserve explicit operator overrides.
+    setenv("GPU_MAX_HW_QUEUES", "32", 0);
     gst_init(nullptr, nullptr);
 }
 PreviewSlot::~PreviewSlot() {

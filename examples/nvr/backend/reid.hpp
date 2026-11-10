@@ -8,6 +8,7 @@ struct ReIdInput {
 };
 class ReIdModel {
     struct Preprocessor;
+    std::shared_ptr<HipStream> stream_;
     ModelExecutor model_;
     DeviceTensor input_;
     std::unique_ptr<Preprocessor> preprocessor_;

@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "date": "2026-11-10",
+  "cause": "Embedding warmup XRT timeout prevented the ReID worker from starting; frame admission was also coupled to embedding readiness.",
+  "before": {
+    "reid_calls": 0,
+    "embedding_error": "NPU inference failed: /home/amd/work/amd-video-analysis-framework/src/gst/npu.cpp(110): transform (): /GstPipeline:pipeline0/AmdNpu:amdnpu0:\nNon-zero status code returned while running vitis_ai_ep_1 node. Name:'VitisAIExecutionProvider_vitis_ai_ep_1_0' Status Message: ERROR: Failed to run forwardNoFailsafeImpl(), Reason: Subgraph vaiml_par_0 execution failed: Command failed to complete successfully (ERT_CMD_STATE_TIMEOUT)\nKernel Instance: DPU\nELF UUID:        26df823d-0122-4d15-3385-1926fc020084\ntxn_op_idx = 0xFFFFFFFF\nctx_pc = 0x28B06005\nfatal_error_type = 0x00000000\nfatal_error_exception_type = 0x00000000\nfatal_error_exception_pc = 0x00000000\nfatal_error_app_module = 0x00000000\n: XRT run index 0 failed! Error State=ERT_CMD_STATE_TIMEOUT",
+    "log": "/tmp/reid-demo-before.log"
+  },
+  "contracts": {
+    "passed": 42,
+    "total": 42,
+    "seconds": 69.87,
+    "fault_phases": [
+      "load",
+      "warmup",
+      "runtime"
+    ],
+    "real_reid_updates_per_phase": 6,
+    "stable_confirmed_person_id": true
+  },
+  "demo": {
+    "sources": 17,
+    "selected": 16,
+    "configured_fps": 3,
+    "embedding_interval_ms": 4000,
+    "duration_seconds": 75.171502056,
+    "reid_calls": 3212,
+    "fresh_confirmed_people": 52,
+    "embedding_state": "ready",
+    "tracking_state": "ready",
+    "calls_at_60_seconds": 2556,
+    "statistics_widget_total": 3254,
+    "log": "artifacts/reid-demo-fix/after.jsonl"
+  },
+  "counter_semantics": {
+    "samples": "rolling 60-second window",
+    "completed": "cumulative stage measurements"
+  },
+  "remaining_limit": "NPU driver/provider timeout itself is not fixed; failures are reported explicitly while ReID continues.",
+  "fault_demo": {
+    "duration_seconds": 15.352123099,
+    "embedding_error": "Simulated embedding warmup failure",
+    "tracking_state": "ready",
+    "reid_calls": 614,
+    "fresh_confirmed_people": 45,
+    "statistics_widget_total": 681,
+    "camera_wall_presented": true,
+    "log": "artifacts/reid-demo-fix/fault.jsonl",
+    "live_capture": "artifacts/reid-demo-fix/fault.jsonl.png",
+    "statistics_capture": "artifacts/reid-demo-fix/fault.jsonl.statistics.png"
+  },
+  "healthy_gpu_regression": {
+    "schema": 1,
+    "passed": true,
+    "pid": 457686,
+    "stored": 9,
+    "english_query": true,
+    "japanese_query": true,
+    "reid_calls": 4,
+    "embedding_calls": 4,
+    "npu_inference_ms": 0,
+    "npu_gpu_wait_ms": 0,
+    "npu_gpu_prepare_ms": 0,
+    "npu_total_ms": 0,
+    "cpu_image_query": true,
+    "frequencies_updated": true,
+    "child_processes": false,
+    "input_copies": 0,
+    "audit_errors": 0
+  }
+}

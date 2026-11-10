@@ -2,6 +2,7 @@
 #include <chrono>
 #include <cmath>
 #include <filesystem>
+#include <future>
 #include <iostream>
 using namespace amdva;
 static void require(bool value, const char *why) {
@@ -63,6 +64,67 @@ int main(int argc, char **argv) {
         }
         require(read(retained[0]) == std::vector<float>({1, 7, 3}),
                 "Output ownership after model destruction");
+        {
+            // Prewarm before blocking an unrelated nonblocking stream. A device-wide
+            // wait in infer() would prevent completion until the callback is released.
+            ModelExecutor engine((dir / "batch1.mxr").string());
+            auto img = image(1);
+            (void)engine.infer({{"images", img}});
+            auto unrelated = std::make_shared<HipStream>();
+            // A host callback can hold HIP runtime locks; use a GPU-side semaphore
+            // instead so the test measures stream dependencies, not callback locking.
+            struct Gate {
+                void *host{};
+                volatile unsigned *flag{};
+                std::shared_ptr<HipStream> stream;
+                ~Gate() {
+                    if (flag)
+                        *flag = 1;
+                    if (stream)
+                        (void)hipStreamSynchronize(stream->get());
+                    if (host)
+                        (void)hipHostFree(host);
+                }
+            } gate;
+            gate.stream = unrelated;
+            hip_check(hipHostMalloc(&gate.host, sizeof(unsigned), hipHostMallocMapped),
+                      "Gate allocation");
+            gate.flag = static_cast<volatile unsigned *>(gate.host);
+            *gate.flag = 0;
+            void *device_flag{};
+            hip_check(hipHostGetDevicePointer(&device_flag, gate.host, 0), "Gate device pointer");
+            hipDeviceProp_t props{};
+            hip_check(hipGetDeviceProperties(&props, 0), "Gate architecture");
+            Kernel blocker(R"(extern "C" __global__ void block(volatile unsigned *flag) {
+                if (blockIdx.x == 0 && threadIdx.x == 0) while (*flag == 0) {}
+            })",
+                           "block", props.gcnArchName);
+            void *args[]{&device_flag};
+            blocker.launch(1, args, unrelated->get());
+            auto job =
+                std::async(std::launch::async, [&] { return engine.infer({{"images", img}}); });
+            const bool independent =
+                job.wait_for(std::chrono::seconds(2)) == std::future_status::ready;
+            const auto pending = hipStreamQuery(unrelated->get());
+            *gate.flag = 1;
+            auto output = job.get();
+            unrelated->finish();
+            require(independent && pending == hipErrorNotReady,
+                    "Inference waited for an unrelated HIP stream");
+            require(!read(output[0]).empty(), "Independent inference output missing");
+            std::shared_ptr<DeviceBuffer> memory;
+            {
+                auto owner = std::make_shared<HipStream>();
+                memory = std::make_shared<DeviceBuffer>(4096, owner);
+                hip_check(hipMemsetAsync(memory->data(), 42, memory->size(), owner->get()),
+                          "Owned allocation");
+                owner->finish();
+            }
+            std::vector<unsigned char> bytes(4096);
+            hip_check(hipMemcpy(bytes.data(), memory->data(), bytes.size(), hipMemcpyDeviceToHost),
+                      "Owned readback");
+            require(bytes.front() == 42 && bytes.back() == 42, "Allocation lost its stream owner");
+        }
         for (unsigned size : {1u, 2u, 4u, 8u, 16u}) {
             BatchOptions o;
             o.model = (dir / ("batch" + std::to_string(size) + ".mxr")).string();

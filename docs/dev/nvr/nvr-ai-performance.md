@@ -9,42 +9,52 @@ shows detection/tracking update rates, confirmed people and tracking-frame age.
 Detection/tracking can be changed from 0.1 to 10 Hz per camera in 0.1 Hz steps.
 Embedding intervals can be changed from 0.1 to 60 seconds per person in
 0.1-second steps. Press Enter or leave the field to apply the edit; changes take effect
-immediately and are saved to the current configuration. The effective embedding
-interval is also shown because it can be longer than the requested interval.
+immediately and are saved to the current configuration. Actual completion intervals and frame freshness are shown separately from the requested interval.
 
 ## Execution policy
 
-YOLO and person crop/ReID work share the highest priority, followed by user
-queries, then background image embedding. GPU inference sections, including MobileCLIP GPU inference, are serialized
-with FIFO ordering within a priority. An eligible request waiting at least
-250 ms gets a turn in oldest-first order after the active lease finishes. This
-prevents continuous YOLO/ReID traffic from starving NPU input preprocessing or
-user queries. EmbeddingGemma cooldowns and per-device MobileCLIP duty limits
-still apply. MobileCLIP queues at most one task per backend at the execution
-gate rather than requiring an idle instant before enqueueing. MobileCLIP NPU
-inference runs independently after GPU preprocessing. Active work is not preempted.
-For EmbeddingGemma 2, after each background embedding batch, the scheduler waits four times that
-batch's execution duration before allowing another. This caps collection's
-scheduled inference duty at approximately 20%; it is not a GPU-utilization cap
-and does not include video decode, rendering or CPU/database work.
+Frequency and interval settings control admissions. There is no cross-model GPU
+execution gate, priority aging, duty limit, automatic 20% EmbeddingGemma cooldown,
+or adaptive extension of the requested interval. Each backend has one persistent worker and one active
+job; each model retains its own serialization. Legacy valid
+`mobileclip_gpu_budget_percent` / `mobileclip_npu_budget_percent` keys are accepted
+with a deprecation warning, ignored and omitted when saving.
 
-MobileCLIP has separate **GPU duty limit** and **NPU duty limit** settings in
-AI Statistics (1–100%, default 100%, applied and saved immediately). At 100%
-there is no intentional post-inference wait; at 20% the wait is four times that
-device's last inference duration. GPU and NPU dispatch independently, without a
-paired-batch barrier. The requested per-person interval is retained; MobileCLIP
-does not lengthen it using the EmbeddingGemma adaptive budget. GPU collection
-still yields to detection/tracking and queries, while NPU does not use the GPU gate.
+Preprocessing, batch assembly, MIGraphX inference, postprocessing and thumbnails
+use independent nonblocking HIP streams. Completion waits apply only to the
+owning stream or readiness event. Stream-ordered allocations retain their stream
+owner until release. MIGraphX uses `run_async` followed by its context and owning
+stream completion; callers still receive completed synchronous results.
+The environment helper and native NVR initialization default `GPU_MAX_HW_QUEUES`
+to 32 before HIP initialization, preserving explicit operator overrides. HIP
+otherwise defaults to four hardware queues and can map unrelated streams to
+the same queue; a stalled queue then blocks both. See [AMD HIP environment
+variables](https://rocm.docs.amd.com/projects/HIP/en/docs-6.4.2/reference/env_variables.html).
+The isolation contract holds a GPU semaphore on an unrelated stream and requires
+inference to complete before releasing it.
 
-Each camera is admitted on its requested cadence using its newest frame.
-Tracking has at most 16 queued camera frames; a new frame replaces that camera's
-older queued frame. Embedding retains the newest high-confidence crop for each
-confirmed person, up to `search.queue_limit` (default 128). Old departed-person
-entries expire. Overload can drop collection, but does not accumulate an
-unbounded backlog. For EmbeddingGemma 2, the effective interval adapts to
-estimated active-person cost and is bounded at 60 seconds. New people can receive an initial embedding
-before that periodic interval. Five-second coverage is therefore a target,
-not a guarantee for 128 simultaneous people.
+ReID keeps VPE contexts across changing ROIs; the pinned Mesa implementation
+recomputes coefficients when ratios change. Recreating these contexts for every
+person had dominated preprocessing and stalled other work. ROI/batch parity is
+checked against fresh-context features (cosine at least 0.9999). Thumbnails use
+one lossless PNG encoding with libpng's fast flag and its documented output-size
+bound, avoiding a full trial compression. The decoded pixels, preprocessing
+namespace, model weights and database schema are unchanged; compressed PNGs can
+be larger and continue to count against the recording quota.
+
+Camera admissions are staggered in compiled-batch-sized groups in stable source
+order across the configured period. Missed periods are skipped, without catch-up
+bursts. Each camera uses its newest frame. Tracking holds at most 16 queued
+camera frames, replacing older queued frames from the same camera. Embedding
+holds the latest eligible crop per person up to `search.queue_limit` (default
+128), expires departed people and never recomputes an unchanged image. The first
+embedding is eligible immediately; later updates use the requested interval.
+These are requested rates, subject to available hardware capacity.
+
+`Embedding first result`, `Embedding update interval` (continuously eligible
+people) and `Embedding freshness` expose actual delivery times. Deadline-miss
+counters also include eligible requests that remain unserved; replacement and
+queue-drop counters expose overload instead of silently changing settings.
 
 The tracker retains its existing high/low confidence association and appearance
 thresholds. Detection confidence 0.1 remains available for low-score recovery;
@@ -63,6 +73,43 @@ count rejected/replaced work items, not distinct people: one person can have
 many candidates skipped while the queue is full. Model loading
 and warmup are excluded. These are wall-clock measurements, not GPU event
 utilization counters. Samples and row counts are bounded.
+
+## NPU embedding timing
+
+`Image embedding NPU` and the NPU overview show the inference call after GPU
+preprocessing has completed. They
+include the GStreamer/ORT call and compact result handling. They exclude GPU
+input preprocessing.
+
+| Row | Execution time | Wait column |
+| --- | --- | --- |
+| `Image embedding NPU preprocess` | HIP input preparation | Dispatch overhead (no application execution gate) |
+| `Image embedding NPU` | NPU inference call | 0 |
+| `Image embedding NPU total` | Preparation + inference | 0 |
+
+The generic `Image embedding` row still measures the entire device job. Do not
+sum these overlapping rows. No artificial cooldown is applied.
+
+Before removing the execution gate, on the 17-source demo a measured 311.27 ms total consisted of 297.85 ms waiting
+for the GPU, 0.53 ms preparation and 12.89 ms inference. ORT profiling assigned
+all 13 image runs to `VitisAIExecutionProvider` (mean node duration 12.42 ms),
+with no CPU EP nodes. The earlier NPU row included GPU admission wait; its
+roughly 300 ms value did not represent NPU compute time. See the
+[recorded timing investigation](../npu-timing-results.json).
+
+The runtime disables CPU EP fallback. `Ort::MemoryInfo::CreateCpu` describes the
+shared host input allocation, not the execution provider. To collect an optional
+image-session ORT profile, set `AMDVA_NPU_PROFILE_PREFIX` to a file prefix in an
+existing directory before launch. Files include PID/session identifiers and
+are flushed when the image session is released. Text sessions are not profiled.
+
+```bash
+mkdir -p artifacts/npu-profile
+AMDVA_NPU_PROFILE_PREFIX="$PWD/artifacts/npu-profile/image" \
+  examples/nvr/scripts/run.sh /path/to/nvr-config.json
+```
+
+This verifies ORT provider assignment; it does not inspect Vitis AI internals.
 
 ## Selected configuration
 
@@ -105,8 +152,7 @@ VA frame ROI through `amdpreproc`, independently of this limit. Embedding
 gets a separate smaller, aspect-preserving input with black padding and no
 upscaling. Both embedding dimensions must be set together. Leaving both zero
 preserves the legacy square preprocessing namespace. Collection
-intervals down to 100 ms are honored as requested targets. EmbeddingGemma adaptive intervals are
-rounded up in 100 ms increments, still constrained by the 20% collection budget.
+intervals down to 100 ms are honored as requested targets for every embedding backend.
 Changing preprocessing or ReID weights selects a different search namespace;
 old observations remain in the catalog and can be queried with their original
 configuration. There is no automatic backfill.
@@ -214,8 +260,8 @@ produced these average batch times:
 Embedding reduction is only about 7% per image here. Its approximately 196 ms
 non-preemptible batch remains the largest inference section, so frequency and
 pacing matter more than pixel reduction. At that isolated cost, 128 active
-people would require about 31 seconds between embeddings to fit a 20% duty
-budget; the adaptive discrete interval would be 60 seconds. This calculation
+people would have required about 31 seconds between embeddings under the former 20% duty
+budget. That automatic throttle has been removed. This historical calculation
 is an estimate, not a measured 128-person throughput result.
 
 On the reviewed 53-box subset, YOLO11n 640 × 384 matched 52 boxes at confidence
@@ -262,3 +308,79 @@ fixture is sixteen 30-second 1080p excerpts, not the full ten-minute originals.
 Neither this throughput run nor the reviewed still-image subsets establishes
 IDF1 or that all 40 physical people retain one identity throughout the source
 videos. Tracking remains camera-local.
+
+## Frequency-only validation
+
+`examples/nvr/config/nvr-frequency-17.json` provides the fixed-load configuration.
+Set `AMDVA_RYZEN_AI_VENV` to the prepared Ryzen AI environment when launching it.
+Its input servers use ports 18570 (16 video files) and 18572 (dashboard).
+Run `amdva-scheduling-validate CONFIG [SECONDS=120]` with
+`libamdva_copy_audit.so` preloaded after starting the configured RTSP fixtures.
+It warms up for 15 seconds and measures the fixed 17-source demo with 16 selected
+sources, detection/tracking at 4 Hz and embedding interval 3000 ms. Preview is
+disabled for reproducible backend measurements. Settings are never lowered by
+the verifier. It reports per-camera detection rates, tracking completions against
+all eligible submissions, worst observed rolling-window P95 and unserved deadline
+misses. For the backend verifier, initialize Ryzen AI before running the binary:
+
+```bash
+source scripts/env.sh
+source examples/nvr/scripts/mobileclip-env.sh "$AMDVA_RYZEN_AI_VENV"
+LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+  build/examples/nvr/amdva-scheduling-validate examples/nvr/config/nvr-frequency-17.json
+```
+
+Targets are detection at least 90% of configured frequency, tracking at
+least 90% of eligible frames, NPU preparation through inference P95 at most 50 ms,
+first embedding within 1 second and continuous update interval P95 at most 1.2
+times the requested interval. Missed unserved requests also fail the check.
+
+### Measured result and remaining limit
+
+The [recorded frequency-only validation](frequency-scheduling-results.json) uses
+17 inputs / 16 selected, 4 Hz and 3000 ms without lowering the settings. Over
+120.634 seconds after warmup, tracking completed 8134/8134 eligible frames with
+no queued-frame drops. NPU preparation through inference had a worst observed
+rolling P95 of 19.69 ms; application input copies and audit violations were zero.
+
+**The full deadline acceptance check did not pass.** Eight first-result deadlines
+and six update deadlines were missed. The maximum first-result delay was
+3074 ms, maximum continuous update interval 5083 ms, and one NPU job took about
+2098 ms despite the low P95. During the run, the kernel logged
+`amdxdna ... aie2_tdr_detect: TDR timeout detected` at 22:52:07 JST, context 10.
+An earlier run also returned `ERT_CMD_STATE_TIMEOUT`. Persistent backend workers
+do not eliminate these outliers. These observations locate a remaining problem
+at the NPU execution boundary; provider/firmware internals and a permanent fix
+were outside this change. No fallback, hidden frequency reduction, retry that
+conceals a failed sample, or relaxed acceptance threshold was introduced.
+
+The 30-second check after VPE-context reuse passed all targets, but does not
+replace the longer failing measurement. The reference disables preview; separate
+GUI checks cover rendering and search behavior, not the same 17-source latency
+claim. Compressed thumbnail storage may increase with fast lossless PNG encoding.
+
+## ReID readiness and counters
+
+Person tracking has its own `tracking_state` / `tracking_error`, independent of
+embedding/search `state` / `error`. An embedding model load or warmup failure
+still starts the ReID worker after the attempted HIP graph capture has ended.
+Live detection submits tracking frames whenever tracking is ready. A later
+embedding failure stops that backend and clears its pending crops; confirmed
+person IDs and tracking updates continue. The provider error remains visible,
+and embedding queries fail explicitly without a CPU/GPU fallback.
+
+The detailed AI table distinguishes **Samples (60s)** (the bounded rolling
+window, which can stay constant at steady load) from **Completed (total)**
+(cumulative completed stage measurements for this process). Use the latter to
+verify that ReID continues to execute. Tracking readiness/errors are shown
+separately from the embedding state.
+
+`reid-isolation-contract` injects embedding load, warmup and live-inference
+failures and requires six real GPU ReID updates with a stable confirmed ID in
+each case. Enable it with `AMDVA_HARDWARE_TESTS=ON`, `AMDVA_TEST_VIDEO` and
+`AMDVA_REID_TEST_MODEL` pointing to prepared H.264/OSNet fixtures. The fault
+library is test-only. `amdva-reid-demo-validate CONFIG SECONDS OUTPUT.jsonl`
+checks live ReID progress, fresh confirmed people and the cumulative count in
+the actual GUI while retaining embedding errors in its log. This validator
+checks ReID availability, not embedding success. See the
+[ReID isolation results](reid-isolation-results.json).

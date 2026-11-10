@@ -131,6 +131,7 @@ struct SearchCropper::Impl {
     VASurfaceID converted{VA_INVALID_SURFACE};
     std::unique_ptr<ImportedSurface> imported;
     Kernel kernel;
+    std::shared_ptr<HipStream> stream;
     unsigned limit, device;
     Impl(GstVaDisplay *display, unsigned limit, unsigned device)
         : va(static_cast<VADisplay>(gst_va_display_get_va_dpy(display))),
@@ -148,7 +149,7 @@ extern "C" __global__ void crop_rgb(const unsigned char *src,unsigned pitch,unsi
  dst[i*3+c]=(unsigned char)(a*(1-ay)+b*ay+0.5f);}
 })",
                  "crop_rgb", gpu_arch(device)),
-          limit(limit), device(device) {
+          stream(std::make_shared<HipStream>(device)), limit(limit), device(device) {
         converted = va.create_bgra(max_video_width, max_video_height);
         imported = std::make_unique<ImportedSurface>(va.export_surface(converted));
     }
@@ -185,18 +186,20 @@ std::vector<SearchImage> SearchCropper::crop_many(VASurfaceID surface, unsigned 
         auto src = p.imported->data();
         auto layout = p.imported->layout();
         image.gpu_device = int(p.device);
-        image.gpu_rgb = std::make_shared<DeviceBuffer>(image.rgb.size());
+        image.gpu_rgb = std::make_shared<DeviceBuffer>(image.rgb.size(), p.stream);
         auto dst = image.gpu_rgb->data();
         unsigned x = unsigned(b.x), y = unsigned(b.y), w = unsigned(b.w), h = unsigned(b.h);
         void *args[] = {&src, &layout.y_pitch, &layout.y_offset, &width, &height, &x, &y, &w,
                         &h,   &image.width,    &image.height,    &dst};
-        p.kernel.launch(image.width * image.height, args);
+        p.kernel.launch(image.width * image.height, args, p.stream->get());
         if (amdva_audit_search_begin)
             amdva_audit_search_begin(dst, image.rgb.size(), int(hipMemcpyDeviceToHost));
-        auto rc = hipMemcpy(image.rgb.data(), dst, image.rgb.size(), hipMemcpyDeviceToHost);
+        auto rc = hipMemcpyAsync(image.rgb.data(), dst, image.rgb.size(), hipMemcpyDeviceToHost,
+                                 p.stream->get());
         if (amdva_audit_search_end)
             amdva_audit_search_end();
         hip_check(rc, "Search crop readback");
+        p.stream->finish();
         images.push_back(std::move(image));
     }
     return images;
@@ -214,9 +217,10 @@ std::vector<uint8_t> png_encode(const SearchImage &im) {
     p.width = im.width;
     p.height = im.height;
     p.format = PNG_FORMAT_RGB;
-    png_alloc_size_t bytes = 0;
-    if (!png_image_write_to_memory(&p, nullptr, &bytes, 0, im.rgb.data(), 0, nullptr))
-        throw std::runtime_error(p.message);
+    // Lossless thumbnail encoding: reserve the documented upper bound to avoid
+    // compressing twice, and prefer speed over compressed byte size.
+    p.flags |= PNG_IMAGE_FLAG_FAST;
+    png_alloc_size_t bytes = PNG_IMAGE_PNG_SIZE_MAX(p);
     std::vector<uint8_t> out(bytes);
     if (!png_image_write_to_memory(&p, out.data(), &bytes, 0, im.rgb.data(), 0, nullptr))
         throw std::runtime_error(p.message);
@@ -239,26 +243,43 @@ struct Embedder {
     unsigned gpu_capacity{};
     size_t last_gpu_count{};
     std::shared_ptr<AiRuntime> metrics;
-    std::vector<std::array<float, 768>>
-    mobile_images(MobileClipClient &client, const std::vector<SearchImage> &source, bool npu) {
+    std::vector<std::array<float, 768>> mobile_images(MobileClipClient &client,
+                                                      const std::vector<SearchImage> &source,
+                                                      bool npu, double *inference_ms = nullptr) {
         const auto start = Clock::now();
-        std::vector<std::array<float,768>> result;
+        double run_ms{};
+        std::vector<std::array<float, 768>> result;
 #ifdef AMDVA_HAS_MOBILECLIP
-        // NPU uses the GPU briefly for preprocessing, then releases the gate
-        // before entering Vitis AI. GPU callers already hold their own lease.
-        if(npu && metrics) {
+        // Time GPU input preparation separately from the Vitis AI inference call.
+        if (npu && metrics) {
+            double wait_ms{}, prepare_ms{};
             auto input = [&] {
-                auto lease = metrics->acquire(AiRuntime::MobileClip);
-                return client.prepare(source);
+                const auto prepared = Clock::now();
+                wait_ms = std::chrono::duration<double, std::milli>(prepared - start).count();
+                auto input = client.prepare(source);
+                prepare_ms =
+                    std::chrono::duration<double, std::milli>(Clock::now() - prepared).count();
+                return input;
             }();
+            metrics->record("Image embedding NPU preprocess", "", prepare_ms, wait_ms,
+                            source.size());
+            const auto infer_start = Clock::now();
             result = client.infer(input);
-        } else
-#endif
-            result = client.images(source);
-        if (metrics)
-            metrics->record(npu ? "Image embedding NPU" : "Image embedding GPU", "",
+            run_ms = std::chrono::duration<double, std::milli>(Clock::now() - infer_start).count();
+            metrics->record("Image embedding NPU total", "",
                             std::chrono::duration<double, std::milli>(Clock::now() - start).count(),
                             0, source.size());
+        } else
+#endif
+        {
+            result = client.images(source);
+            run_ms = std::chrono::duration<double, std::milli>(Clock::now() - start).count();
+        }
+        if (inference_ms)
+            *inference_ms = run_ms;
+        if (metrics)
+            metrics->record(npu ? "Image embedding NPU" : "Image embedding GPU", "", run_ms, 0,
+                            source.size());
         return result;
     }
     void *library{}, *context{};
@@ -484,11 +505,64 @@ struct SearchService::Impl {
     struct Pending {
         SearchObservation observation;
         SearchImage image;
-        Clock::time_point queued, updated;
+        Clock::time_point queued, updated, received;
     };
     std::deque<Job> jobs;
     std::map<std::string, Pending> pending;
     std::map<std::string, int64_t> last_saved;
+    struct Demand {
+        Clock::time_point continuous{}, seen{}, saved{};
+        bool first_missed{}, update_missed{};
+    };
+    std::map<std::string, Demand> demands;
+    void eligible_demand(const std::string &id, Clock::time_point received) {
+        auto &d = demands[id];
+        const auto gap = std::chrono::duration<double>(std::max(.5, 2.0 / runtime->fps()));
+        if (d.seen == Clock::time_point{} || received - d.seen > gap)
+            d.continuous = received;
+        d.seen = received;
+        const auto now = Clock::now();
+        if (d.saved == Clock::time_point{} && !d.first_missed &&
+            now - d.continuous > std::chrono::seconds(1)) {
+            d.first_missed = true;
+            ++status.first_deadline_misses;
+        }
+        if (d.saved != Clock::time_point{} && d.continuous <= d.saved && !d.update_missed &&
+            now - d.saved >
+                std::chrono::duration<double, std::milli>(runtime->interval_ms() * 1.2)) {
+            d.update_missed = true;
+            ++status.update_deadline_misses;
+        }
+        if (demands.size() > 4096)
+            for (auto it = demands.begin(); it != demands.end();) {
+                if (now - it->second.seen > std::chrono::minutes(2))
+                    it = demands.erase(it);
+                else
+                    ++it;
+            }
+    }
+    void embedding_stored(const std::string &id, const Pending &p) {
+        const auto now = Clock::now();
+        auto &d = demands[id];
+        runtime->record("Embedding freshness", p.observation.channel, elapsed(p.received));
+        if (d.saved == Clock::time_point{}) {
+            const double first = elapsed(d.continuous);
+            runtime->record("Embedding first result", p.observation.channel, first);
+            if (first > 1000 && !d.first_missed) {
+                d.first_missed = true;
+                ++status.first_deadline_misses;
+            }
+        } else if (d.continuous <= d.saved) {
+            const double interval = elapsed(d.saved);
+            runtime->record("Embedding update interval", p.observation.channel, interval);
+            if (interval > runtime->interval_ms() * 1.2 && !d.update_missed) {
+                ++status.update_deadline_misses;
+            }
+        }
+        d.saved = now;
+        d.update_missed = false;
+    }
+
     std::map<std::string, PersonTrackFrame> track_frames;
     struct Request {
         uint64_t id{};
@@ -521,11 +595,10 @@ struct SearchService::Impl {
           runtime(r ? r : std::make_shared<AiRuntime>()) {
         if (!r) {
             runtime->configure(runtime->fps(), options.interval_ms);
-            runtime->mobileclip_budget(options.mobileclip_gpu_budget_percent,
-                                      options.mobileclip_npu_budget_percent);
         }
         gst_object_ref(display);
         status.state = "loading";
+        status.tracking_state = "loading";
         worker = std::thread([this] { run(); });
     }
     ~Impl() {
@@ -550,12 +623,40 @@ struct SearchService::Impl {
     static double elapsed(Clock::time_point start) {
         return std::chrono::duration<double, std::milli>(Clock::now() - start).count();
     }
+    // Called with mutex held. A failed embedding backend must not stop tracking.
+    void embedding_failed(const std::string &error) {
+        status.state = "error";
+        status.error = error;
+        pending.clear();
+        status.pending = 0;
+        runtime->queue("Embedding queue", "", 0);
+        if (query.id) {
+            result = {query.id, error, {}};
+            query = {};
+        }
+        cv.notify_all();
+    }
     void fail(const std::exception &e) {
         std::lock_guard<std::mutex> l(mutex);
-        status.state = "error";
-        status.error = e.what();
+        embedding_failed(e.what());
         std::cerr << "NVR person search stopped: " << status.error << '\n';
         cv.notify_all();
+    }
+    void fail_tracking(const std::exception &e) {
+        std::lock_guard<std::mutex> lock(mutex);
+        status.tracking_state = "error";
+        status.tracking_error = e.what();
+        std::cerr << "NVR person tracking stopped: " << status.tracking_error << '\n';
+        cv.notify_all();
+    }
+    void start_tracking() {
+        if (tracking_worker.joinable())
+            return;
+        try {
+            tracking_worker = std::thread([this] { track(); });
+        } catch (const std::exception &e) {
+            fail_tracking(e);
+        }
     }
     void track() {
         try {
@@ -563,7 +664,7 @@ struct SearchService::Impl {
             SearchCropper cropper(display, options.image_size, options.device);
             std::unique_ptr<ReIdModel> reid;
             if (!options.reid_model.empty()) {
-                auto lease = runtime->acquire(AiRuntime::Tracking);
+
                 reid = std::make_unique<ReIdModel>(options.reid_model, options.device);
             }
             std::map<std::string, std::unique_ptr<PersonTracker>> trackers;
@@ -575,11 +676,10 @@ struct SearchService::Impl {
                     status.reid_shape = std::to_string(shape[0]) + " × 3 × " +
                                         std::to_string(shape[2]) + " × " + std::to_string(shape[3]);
                 }
-                status.state = "ready";
+                status.tracking_state = "ready";
                 cv.notify_all();
             }
-            // Jobs hold one frame per camera. A batch of them shares one GPU lease and one
-            // ReID call, so fewer lease hand-offs with detection and fuller ReID batches.
+            // Keep one queued frame per camera and combine people into fuller ReID batches.
             constexpr size_t batch_jobs = 8;
             for (;;) {
                 std::vector<Job> batch;
@@ -597,9 +697,7 @@ struct SearchService::Impl {
                 std::vector<std::vector<SearchImage>> crops(batch.size());
                 std::vector<std::vector<PersonDetection>> people(batch.size());
                 std::vector<std::string> failed(batch.size());
-                // VA decoders hand frames on before decoding finishes. Wait here, not under
-                // the GPU lease, so encode-heavy video engine queues do not hold up
-                // detection and the other cameras' tracking.
+                // VA frames arrive before decode completion. Wait before reading their pixels.
                 for (auto &job : batch) {
                     auto synced = Clock::now();
                     auto *buffer = gst_sample_get_buffer(job.frame.sample.get());
@@ -610,7 +708,7 @@ struct SearchService::Impl {
                     runtime->record("Decoded frame wait", job.channel, elapsed(synced));
                 }
                 {
-                    auto lease = runtime->acquire(AiRuntime::Tracking);
+
                     std::vector<ReIdInput> all;
                     for (size_t j = 0; j < batch.size(); ++j) {
                         auto &job = batch[j];
@@ -712,6 +810,9 @@ struct SearchService::Impl {
                             auto box = detections[i].box;
                             if (reid && identity.confirmed)
                                 frame.objects.push_back({box, identity.person});
+                            // Tracking remains live when embedding initialization or inference fails.
+                            if (status.state != "ready")
+                                continue;
                             if ((reid && (!identity.confirmed || box.score < .5f)) ||
                                 box.h < job.frame.height * options.min_person_height)
                                 continue;
@@ -729,14 +830,17 @@ struct SearchService::Impl {
                                 id = o.person_id;
                             } else
                                 id += std::to_string(i);
+                            eligible_demand(id,job.frame.received);
                             if (!pending.count(id) && pending.size() >= options.queue_limit) {
                                 ++status.dropped;
                                 runtime->queue("Embedding queue", "", pending.size(), 1);
                                 continue;
                             }
+                            if (pending.count(id))
+                                runtime->queue("Embedding replacements", "", 0, 1);
                             auto queued = pending.count(id) ? pending[id].queued : Clock::now();
                             pending[id] = {std::move(o), std::move(images[i]), queued,
-                                           Clock::now()};
+                                           Clock::now(),job.frame.received};
                         }
                         if (reid)
                             track_frames[job.channel] = std::move(frame);
@@ -745,50 +849,103 @@ struct SearchService::Impl {
                         cv.notify_all();
                     } catch (const std::exception &e) {
                         std::lock_guard<std::mutex> l(mutex);
-                        status.error = e.what();
+                        status.tracking_error = e.what();
                         status.dropped += job.boxes.size();
                     }
                 }
             }
         } catch (const std::exception &e) {
-            fail(e);
+            fail_tracking(e);
         }
     }
-    // Independent device jobs: NPU never owns the GPU gate, and finishing one
-    // device immediately permits another job on that device (no paired barrier).
+    // One independent bounded job per backend; completion admits the next job.
     void run_mobileclip(Embedder &model, const std::string &npu_key) {
         struct Completion {
             std::vector<std::pair<std::string, Pending>> items;
             std::vector<std::array<float, 768>> embeddings;
             std::string error;
             Clock::time_point finished{};
-            double ms{};
+            double ms{}, inference_ms{};
         };
         const bool enabled[] = {options.mobileclip_backend != "npu",
                                 options.mobileclip_backend != "gpu"};
         auto client = [&](unsigned device) -> MobileClipClient & {
             return device == 1 && model.combined ? *model.secondary : *model.mobileclip;
         };
+        // Keep HIP/provider thread state on persistent backend workers. A new
+        // std::async thread for every crop accumulates transient runtime state.
+        struct Runner {
+            using Task = std::packaged_task<Completion()>;
+            std::mutex mutex;
+            std::condition_variable ready;
+            std::unique_ptr<Task> task;
+            bool stopping{};
+            std::thread worker;
+            Runner()
+                : worker([this] {
+                      for (;;) {
+                          std::unique_ptr<Task> next;
+                          {
+                              std::unique_lock<std::mutex> lock(mutex);
+                              ready.wait(lock, [&] { return stopping || task; });
+                              if (!task)
+                                  return;
+                              next = std::move(task);
+                          }
+                          (*next)();
+                      }
+                  }) {}
+            ~Runner() {
+                {
+                    std::lock_guard<std::mutex> lock(mutex);
+                    stopping = true;
+                }
+                ready.notify_all();
+                worker.join();
+            }
+            std::future<Completion> submit(std::function<Completion()> work) {
+                auto next = std::make_unique<Task>(std::move(work));
+                auto future = next->get_future();
+                {
+                    std::lock_guard<std::mutex> lock(mutex);
+                    if (task || stopping)
+                        throw std::logic_error("Backend queue is full");
+                    task = std::move(next);
+                }
+                ready.notify_one();
+                return future;
+            }
+        } workers[2];
         std::array<std::future<Completion>, 2> running;
-        std::array<Clock::time_point, 2> last_end{};
-        std::array<double, 2> last_ms{};
         std::set<std::string> in_flight;
         auto ready = [](auto &future) {
             return future.valid() &&
                    future.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
         };
         for (;;) {
+            bool stop_requested;
             {
                 std::lock_guard<std::mutex> lock(mutex);
-                if (stopping)
-                    return; // Futures drain before the in-process models are destroyed.
+                stop_requested = stopping || status.state == "error";
+            }
+            if (stop_requested) {
+                // Drain before destroying models; preserve provider errors from the
+                // final admitted job instead of silently discarding them on shutdown.
+                for (auto &future : running)
+                    if (future.valid()) {
+                        auto done = future.get();
+                        if (!done.error.empty()) {
+                            std::lock_guard<std::mutex> lock(mutex);
+                            status.error = done.error;
+                            status.state = "error";
+                        }
+                    }
+                return;
             }
             for (unsigned device = 0; device < 2; ++device) {
                 if (!ready(running[device]))
                     continue;
                 auto done = running[device].get();
-                last_end[device] = done.finished;
-                last_ms[device] = done.ms;
                 for (size_t i = 0; i < done.items.size(); ++i) {
                     auto &[id, item] = done.items[i];
                     bool stored = false;
@@ -810,12 +967,13 @@ struct SearchService::Impl {
                     in_flight.erase(id);
                     if (stored) {
                         ++status.stored;
+                        embedding_stored(id,item);
                         last_saved[id] = item.observation.time_ms;
                     } else
                         ++status.dropped;
                     if (!error.empty())
-                        status.error = error;
-                    status.inference_ms = done.ms;
+                        embedding_failed(error);
+                    status.inference_ms = done.inference_ms;
                 }
                 runtime->queue(device ? "Embedding NPU in flight" : "Embedding GPU in flight", "",
                                0);
@@ -836,7 +994,7 @@ struct SearchService::Impl {
                     const auto start = Clock::now();
                     std::array<float, 768> gpu{}, npu{};
                     if (request.image.rgb.empty()) {
-                        // CPU text encoder does not consume the GPU gate.
+                        // Text queries use the CPU encoder.
                         gpu = text_query(request, [&](const std::string &text) {
                             return model.mobileclip->text(text);
                         });
@@ -844,7 +1002,7 @@ struct SearchService::Impl {
                     } else {
 #ifdef AMDVA_HAS_MOBILECLIP
                         if (!request.image.gpu_rgb) {
-                            auto lease = runtime->acquire(AiRuntime::Query);
+
                             model.mobileclip->ingest(request.image);
                         }
 #endif
@@ -855,7 +1013,6 @@ struct SearchService::Impl {
                                 return model.mobile_images(client(1), input, true);
                             });
                         if (enabled[0]) {
-                            auto lease = runtime->acquire(AiRuntime::Query);
                             gpu = model.mobile_images(client(0), input, false).front();
                         }
                         if (npu_query.valid())
@@ -885,19 +1042,11 @@ struct SearchService::Impl {
                 }
             }
             const auto requested = runtime->interval_ms();
-            runtime->effective_interval(requested);
-            const auto budgets = runtime->mobileclip_budget();
-            // Prefer free NPU capacity, leaving GPU time available for tracking.
+
+            // One in-flight job per backend; cadence comes only from configured interval.
             for (unsigned device : {1u, 0u}) {
                 if (query_pending || !enabled[device] || running[device].valid())
                     continue;
-                const unsigned budget = device ? budgets.second : budgets.first;
-                const double idle_ms = last_ms[device] * (100. - budget) / budget;
-                if (std::chrono::duration<double, std::milli>(Clock::now() - last_end[device])
-                        .count() < idle_ms)
-                    continue;
-                // At most one task per backend waits at the execution gate.
-                // Queue it directly so short idle windows cannot starve GPU embedding.
                 std::vector<std::pair<std::string, Pending>> items;
                 {
                     std::lock_guard<std::mutex> lock(mutex);
@@ -928,7 +1077,7 @@ struct SearchService::Impl {
                 runtime->queue(device ? "Embedding NPU in flight" : "Embedding GPU in flight", "",
                                items.size());
                 running[device] =
-                    std::async(std::launch::async, [&, device, items = std::move(items)]() mutable {
+                    workers[device].submit([&, device, items = std::move(items)]() mutable {
                         Completion done;
                         done.items = std::move(items);
                         auto start = Clock::now();
@@ -938,12 +1087,12 @@ struct SearchService::Impl {
                                 images.push_back(mobileclip_input(item.second.image));
                             if (device) {
                                 start = Clock::now();
-                                done.embeddings = model.mobile_images(client(device), images, true);
+                                done.embeddings = model.mobile_images(client(device), images, true,
+                                                                      &done.inference_ms);
                             } else {
-                                auto lease = runtime->acquire(AiRuntime::MobileClip);
                                 start = Clock::now();
-                                done.embeddings =
-                                    model.mobile_images(client(device), images, false);
+                                done.embeddings = model.mobile_images(client(device), images, false,
+                                                                      &done.inference_ms);
                             }
                             done.ms = elapsed(start);
                             runtime->record("Image embedding", "", done.ms,
@@ -1011,11 +1160,14 @@ struct SearchService::Impl {
             // Warm the fixed image execution profile before accepting cameras.
             model.encode_batch(std::vector<SearchImage>(options.embedding_batch, warm), options);
             model.encode(nullptr, "person", options.image_size);
-            auto warm_started = Clock::now();
             model.encode_batch(std::vector<SearchImage>(options.embedding_batch, warm), options);
-            double image_ms = elapsed(warm_started) / options.embedding_batch;
             model.metrics = runtime;
-            tracking_worker = std::thread([this] { track(); });
+            {
+                std::lock_guard<std::mutex> lock(mutex);
+                status.state = "ready";
+                cv.notify_all();
+            }
+            start_tracking();
             if (model.mobileclip) {
                 run_mobileclip(model, npu_key);
                 return;
@@ -1028,7 +1180,7 @@ struct SearchService::Impl {
                     std::unique_lock<std::mutex> l(mutex);
                     cv.wait_for(l, std::chrono::milliseconds(100),
                                 [&] { return stopping || query.id; });
-                    if (stopping)
+                    if (stopping || status.state == "error")
                         break;
                     if (query.id) {
                         request = std::move(query);
@@ -1036,7 +1188,6 @@ struct SearchService::Impl {
                     } else {
                         auto now = Clock::now();
                         const unsigned requested = runtime->interval_ms();
-                        unsigned active = 0;
                         for (auto it = pending.begin(); it != pending.end();) {
                             const auto age = now - it->second.updated;
                             const auto saved = last_saved.find(it->first);
@@ -1050,26 +1201,18 @@ struct SearchService::Impl {
                                     runtime->queue("Embedding queue", "", pending.size(), 1);
                                 }
                             } else {
-                                if (age <= std::chrono::seconds(5) || saved == last_saved.end())
-                                    ++active;
                                 ++it;
                             }
                         }
-                        const double required = active * image_ms / .2;
-                        const unsigned effective = std::max(
-                            requested,
-                            unsigned(std::clamp(std::ceil(required / 100.) * 100., 100., 60000.)));
-                        runtime->effective_interval(effective);
                         std::vector<std::pair<std::string, Clock::time_point>> eligible;
                         for (auto &[id, p] : pending)
-                            if (p.observation.time_ms - last_saved[id] >= effective ||
+                            if (p.observation.time_ms - last_saved[id] >= requested ||
                                 (now - p.updated > std::chrono::seconds(5) &&
                                  p.observation.time_ms - last_saved[id] >= requested))
                                 eligible.emplace_back(id, p.queued);
                         std::sort(eligible.begin(), eligible.end(),
                                   [](auto &a, auto &b) { return a.second < b.second; });
-                        if (runtime->embedding_ready() &&
-                            (eligible.size() >= options.embedding_batch ||
+                        if ((eligible.size() >= options.embedding_batch ||
                              (!eligible.empty() &&
                               now - eligible.front().second >=
                                   std::chrono::milliseconds(std::min(1000u, requested)))))
@@ -1096,7 +1239,7 @@ struct SearchService::Impl {
                         std::array<float, 768> embedding, npu_embedding;
                         auto wait = Clock::now();
                         {
-                            auto lease = runtime->acquire(AiRuntime::Query);
+
                             auto t = Clock::now();
                             if (model.combined && request.image.rgb.empty()) {
                                 // Text is the same CPU encoder for both image backends.
@@ -1143,7 +1286,7 @@ struct SearchService::Impl {
                         std::vector<std::array<float, 768>> embeddings;
                         double ms;
                         {
-                            auto lease = runtime->acquire(AiRuntime::Embedding);
+
                             auto t = Clock::now();
                             embeddings = model.encode_batch(images, options);
                             ms = elapsed(t);
@@ -1153,8 +1296,7 @@ struct SearchService::Impl {
                                     .count(),
                                 batch.size());
                         }
-                        image_ms =
-                            image_ms ? image_ms * .8 + ms / batch.size() * .2 : ms / batch.size();
+
                         for (size_t i = 0; i < batch.size(); ++i) {
                             auto &p = batch[i];
                             p.observation.embedding = embeddings[i];
@@ -1167,6 +1309,7 @@ struct SearchService::Impl {
                             std::lock_guard<std::mutex> l(mutex);
                             if (stored) {
                                 ++status.stored;
+                                embedding_stored(ids[i],p);
                                 last_saved[ids[i]] = p.observation.time_ms;
                             } else
                                 ++status.dropped;
@@ -1178,12 +1321,17 @@ struct SearchService::Impl {
                     status.error = e.what();
                     if (request.id && request.id == serial)
                         result = {request.id, e.what(), {}};
-                    else
+                    else {
                         status.dropped += batch.size();
+                        embedding_failed(e.what());
+                    }
                 }
             }
         } catch (const std::exception &e) {
             fail(e);
+            // Finish any attempted HIP graph capture before starting tracking, even
+            // when the embedding provider failed during construction or warmup.
+            start_tracking();
         }
     }
 };
@@ -1194,14 +1342,18 @@ SearchService::~SearchService() = default;
 void SearchService::shutdown() { impl_->stop(); }
 void SearchService::wait_initialized() {
     std::unique_lock<std::mutex> lock(impl_->mutex);
-    impl_->cv.wait(lock, [this] { return impl_->status.state != "loading"; });
+    impl_->cv.wait(lock, [this] {
+        return impl_->status.state != "loading" && impl_->status.tracking_state != "loading";
+    });
 }
 void SearchService::submit(const Frame &f, const std::string &channel,
                            const std::vector<Detection> &boxes) {
     auto &p = *impl_;
     std::lock_guard<std::mutex> l(p.mutex);
-    if (p.stopping || p.status.state != "ready" || !f.wall_time_ms || f.recording_session.empty())
+    if (p.stopping || p.status.tracking_state != "ready" || !f.wall_time_ms ||
+        f.recording_session.empty())
         return;
+    p.runtime->record("Tracking eligible", channel, 0);
     // Detection admission already applies the per-camera sampling frequency.
     std::vector<Detection> people;
     for (auto b : boxes)

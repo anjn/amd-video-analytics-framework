@@ -3,74 +3,12 @@
 #include <cmath>
 #include <stdexcept>
 namespace amdva::nvr {
-int AiRuntime::next_priority(Clock::time_point now) const {
-    auto eligible = [&](int p) { return waiting_[p] && (p != Embedding || now >= low_due_); };
-    int oldest = -1;
-    for (int p = 0; p < 4; p++)
-        if (eligible(p) && now - waiting_since_[p].front() >= std::chrono::milliseconds(250) &&
-            (oldest < 0 || waiting_since_[p].front() < waiting_since_[oldest].front()))
-            oldest = p;
-    if (oldest >= 0)
-        return oldest;
-    for (int p = 0; p < 4; p++)
-        if (eligible(p))
-            return p;
-    return -1;
-}
-
-AiRuntime::Lease::Lease(AiRuntime *owner, Priority p) : owner_(owner), priority_(p) {
-    auto &o = *owner;
-    std::unique_lock<std::mutex> lock(o.gate_);
-    ++o.waiting_[p];
-    o.waiting_since_[p].push_back(Clock::now());
-    const auto ticket = o.next_ticket_[p]++;
-    for (;;) {
-        if (!o.busy_ && o.next_priority(Clock::now()) == p && ticket == o.serving_ticket_[p])
-            break;
-        if (p == Embedding && o.low_due_ > Clock::now())
-            o.cv_.wait_until(lock, o.low_due_);
-        else
-            o.cv_.wait(lock);
-    }
-    --o.waiting_[p];
-    o.waiting_since_[p].pop_front();
-    ++o.serving_ticket_[p];
-    o.busy_ = true;
-    started_ = Clock::now();
-}
-AiRuntime::Lease::~Lease() {
-    if (!owner_)
-        return;
-    auto &o = *owner_;
-    std::lock_guard<std::mutex> lock(o.gate_);
-    if (priority_ == Embedding)
-        o.low_due_ = Clock::now() + (Clock::now() - started_) * 4;
-    o.busy_ = false;
-    o.cv_.notify_all();
-}
 void AiRuntime::configure(double fps, unsigned interval) {
     if ((!std::isfinite(fps) || fps < .1 || fps > 10) || interval < 100 || interval > 60000)
         throw std::invalid_argument("Invalid AI frequency");
     std::lock_guard<std::mutex> lock(mutex_);
     fps_ = fps;
     interval_ = interval;
-    effective_ = std::max(effective_, interval);
-}
-bool AiRuntime::embedding_ready(bool mobileclip) const {
-    std::lock_guard<std::mutex> l(gate_);
-    return !busy_ && !waiting_[Tracking] && !waiting_[Query] &&
-           (mobileclip || Clock::now() >= low_due_);
-}
-void AiRuntime::mobileclip_budget(unsigned gpu, unsigned npu) {
-    if (!gpu || gpu > 100 || !npu || npu > 100)
-        throw std::invalid_argument("MobileCLIP budgets must be 1 to 100 percent");
-    std::lock_guard<std::mutex> lock(mutex_);
-    mobile_gpu_ = gpu;
-    mobile_npu_ = npu;
-}
-std::pair<unsigned, unsigned> AiRuntime::mobileclip_budget() const {
-    std::lock_guard<std::mutex> lock(mutex_);
-    return {mobile_gpu_, mobile_npu_};
 }
 double AiRuntime::fps() const {
     std::lock_guard<std::mutex> l(mutex_);
@@ -79,14 +17,6 @@ double AiRuntime::fps() const {
 unsigned AiRuntime::interval_ms() const {
     std::lock_guard<std::mutex> l(mutex_);
     return interval_;
-}
-void AiRuntime::effective_interval(unsigned ms) {
-    std::lock_guard<std::mutex> l(mutex_);
-    effective_ = std::clamp(ms, interval_, 60000u);
-}
-unsigned AiRuntime::effective_interval() const {
-    std::lock_guard<std::mutex> l(mutex_);
-    return effective_;
 }
 void AiRuntime::record(const std::string &stage, const std::string &camera, double ms, double wait,
                        unsigned batch) {
@@ -107,6 +37,7 @@ void AiRuntime::record(const std::string &stage, const std::string &camera, doub
         r.truncated = true;
     }
     r.samples.push_back({now, ms, wait, batch});
+    ++r.completed;
 }
 void AiRuntime::queue(const std::string &s, const std::string &c, unsigned pending,
                       uint64_t drops) {
@@ -118,6 +49,11 @@ void AiRuntime::queue(const std::string &s, const std::string &c, unsigned pendi
     r.pending = pending;
     r.dropped += drops;
 }
+void AiRuntime::reset_measurements() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    rows_.clear();
+    started_ = Clock::now();
+}
 std::vector<AiMetric> AiRuntime::snapshot() const {
     std::lock_guard<std::mutex> l(mutex_);
     std::vector<AiMetric> out;
@@ -127,6 +63,7 @@ std::vector<AiMetric> AiRuntime::snapshot() const {
     for (const auto &[key, r] : rows_) {
         AiMetric m;
         m.stage = key.first;
+        m.completed = r.completed;
         m.camera = key.second;
         m.pending = r.pending;
         m.dropped = r.dropped;

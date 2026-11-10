@@ -88,6 +88,8 @@ int main(int argc, char **argv) {
                               << " stored=" << state.stored << " dropped=" << state.dropped
                               << " pending=" << state.pending << " ms=" << state.inference_ms
                               << " error=" << state.error << std::endl;
+                if (!state.tracking_error.empty())
+                    throw std::runtime_error(state.tracking_error);
                 if (state.state == "error" || !state.error.empty())
                     throw std::runtime_error(state.error);
                 if (tick > 600)

@@ -155,7 +155,8 @@ struct Memory {
     void *host = nullptr, *device = nullptr;
     size_t bytes;
     int ordinal;
-    Memory(bool npu, unsigned batch, int d) : bytes(batch * elements * sizeof(float)), ordinal(d) {
+    Memory(bool npu, unsigned batch, int d, const std::shared_ptr<HipStream> &stream)
+        : bytes(batch * elements * sizeof(float)), ordinal(d) {
         hip_check(hipSetDevice(d), "MobileCLIP allocation device");
         if (npu) {
             shared = std::make_shared<SharedTensor>(
@@ -163,7 +164,7 @@ struct Memory {
             host = shared->host_data();
             device = shared->device_data();
         } else {
-            gpu = std::make_shared<DeviceBuffer>(bytes);
+            gpu = std::make_shared<DeviceBuffer>(bytes, stream);
             device = gpu->data();
         }
     }
@@ -198,6 +199,7 @@ struct Runtime::Impl {
     fs::path root;
     std::string backend;
     int device;
+    std::shared_ptr<HipStream> stream;
     Ort::Env env{ORT_LOGGING_LEVEL_WARNING, "amdva-mobileclip"};
     std::unique_ptr<Ort::Session> text_session;
 #ifdef AMDVA_HAVE_NPU
@@ -210,7 +212,8 @@ struct Runtime::Impl {
     std::mutex mutex;
     uint64_t sequence{};
     Impl(fs::path r, std::string b, int d)
-        : root(fs::absolute(r)), backend(std::move(b)), device(d) {
+        : root(fs::absolute(r)), backend(std::move(b)), device(d),
+          stream(std::make_shared<HipStream>(d)) {
         if (backend != "gpu" && backend != "npu")
             throw std::invalid_argument("Expected gpu or npu");
         Json manifest(root / "manifest.json");
@@ -279,14 +282,17 @@ Image upload(const uint8_t *rgb, unsigned w, unsigned h, int device) {
     if (!rgb || !w || !h || w > 1024 || h > 1024)
         throw std::invalid_argument("Invalid RGB image");
     hip_check(hipSetDevice(device), "Image upload device");
-    Image result{w, h, std::make_shared<DeviceBuffer>(size_t(w) * h * 3), device};
+    auto stream = std::make_shared<HipStream>(device);
+    Image result{w, h, std::make_shared<DeviceBuffer>(size_t(w) * h * 3, stream), device};
     // Explicit CPU-source ingestion, outside the copy-free GPU-input contract.
     if (amdva_audit_embedding_scope)
         amdva_audit_embedding_scope(true);
-    auto rc = hipMemcpy(result.storage->data(), rgb, result.storage->size(), hipMemcpyHostToDevice);
+    auto rc = hipMemcpyAsync(result.storage->data(), rgb, result.storage->size(),
+                             hipMemcpyHostToDevice, stream->get());
     if (amdva_audit_embedding_scope)
         amdva_audit_embedding_scope(false);
     hip_check(rc, "CPU image ingestion");
+    stream->finish();
     return result;
 }
 PreparedInput Runtime::prepare(const std::vector<Image> &images) {
@@ -314,24 +320,24 @@ PreparedInput Runtime::prepare(const std::vector<Image> &images) {
             break;
         }
     if (!memory) {
-        memory = std::make_shared<Memory>(s.backend == "npu", physical, s.device);
+        memory = std::make_shared<Memory>(s.backend == "npu", physical, s.device, s.stream);
         s.pool.push_back(memory);
     }
     InputScope audit;
     for (unsigned i = 0; i < physical; i++) {
         const auto &im = images[std::min<size_t>(i, images.size() - 1)];
         int w = im.width, h = im.height, side = std::max(w, h);
-        DeviceBuffer tmp(size_t(side) * 256 * 3);
+        DeviceBuffer tmp(size_t(side) * 256 * 3, s.stream);
         auto rgb = im.storage->data(), scratch = tmp.data();
         auto dst = static_cast<float *>(memory->device) + i * elements;
         void *horizontal_args[] = {&rgb, &w, &h, &scratch};
         void *vertical_args[] = {&scratch, &side, &dst};
-        s.horizontal->launch(side * 256 * 3, horizontal_args);
-        s.vertical->launch(elements, vertical_args);
-        hip_check(hipDeviceSynchronize(), "MobileCLIP GPU preprocessing completion");
+        s.horizontal->launch(side * 256 * 3, horizontal_args, s.stream->get());
+        s.vertical->launch(elements, vertical_args, s.stream->get());
+        s.stream->finish();
     }
     if (memory->shared)
-        memory->shared->record_ready();
+        memory->shared->record_ready(s.stream->get());
     PreparedInput result;
     result.impl_ = std::make_unique<PreparedInput::Impl>();
     result.impl_->memory = memory;
@@ -377,7 +383,7 @@ std::vector<std::array<float, 512>> Runtime::infer(PreparedInput &input) {
         e.bound = reinterpret_cast<uintptr_t>(tensor.storage->data());
         auto outputs = model.infer({{"images", tensor}});
         readback_metadata(result.data(), outputs[0].storage->data(),
-                          e.physical * 512 * sizeof(float));
+                          e.physical * 512 * sizeof(float), s.stream->get());
         e.output_readback_bytes = e.physical * 512 * sizeof(float);
     }
     result.resize(e.valid);

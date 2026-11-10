@@ -124,14 +124,12 @@ before they are decoded, so with the engine full of encode work, detection
 preprocessing on sixteen 1440p cameras went from 4 ms to 34 ms and person tracking
 fell to a quarter of the detection rate while GPU load dropped. Two measures keep live
 analysis first. Detection and tracking wait for their frame to finish decoding
-before taking the GPU lease they share, so a slow decode no longer holds the lease
-while the GPU idles; the wait is reported as **Decoded frame wait** (about 0.15 ms
+before submitting work on their independent streams; the wait is reported as **Decoded frame wait** (about 0.15 ms
 with engine headroom). Every 2 s the controller also lowers a frame-rate cap shared
 by all transcoders (factor 0.7, at least 5 fps) while that wait averages more than
 2 ms, and raises it by 2 fps while it stays under 0.5 ms, until it is removed. The tracking worker takes up to eight
-queued frames (one per camera) at a time, crops them under one lease and runs ReID
-for all their people in one call, which halves lease hand-offs with detection and
-fills ReID batches. On the Radeon 890M with sixteen 1440p30 HEVC cameras on screen
+queued frames (one per camera) at a time, crops them and runs ReID
+for all their people in one call to fill ReID batches. On the Radeon 890M with sixteen 1440p30 HEVC cameras on screen
 and person tracking on all of them, tracking keeps up with detection and drops no
 frames (it dropped about one per second before batching); with four re-encoded
 cameras, encoding settles near 20 fps, detection runs at 95% of its full 68

@@ -16,6 +16,8 @@ export GST_REGISTRY="$AMDVA_ROOT/.deps/gst-registry.bin"
 export BISON_PKGDATADIR="$AMDVA_ROOT/.deps/sysroot/usr/share/bison"
 # The host login environment overrides gfx1150 as gfx1151. Use real hardware.
 unset HSA_OVERRIDE_GFX_VERSION HSA_ENABLE_SDMA
+# Keep independent inference/preprocessing streams off shared hardware queues.
+export GPU_MAX_HW_QUEUES="${GPU_MAX_HW_QUEUES:-32}"
 
 # Rootless Qt runtime and development packages.
 export QT_PLUGIN_PATH="$AMDVA_ROOT/.deps/sysroot/usr/lib/x86_64-linux-gnu/qt6/plugins"

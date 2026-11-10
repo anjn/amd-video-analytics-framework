@@ -1,0 +1,1304 @@
+{
+  "schema": 1,
+  "date": "2026-11-10",
+  "gpu": "AMD Radeon 890M gfx1150",
+  "cpu": "AMD Ryzen AI 9 HX 370",
+  "rocm": "7.2.0",
+  "gpu_max_hw_queues": 32,
+  "fixed_config": "examples/nvr/config/nvr-frequency-17.json",
+  "preview_enabled": false,
+  "contract_tests": {
+    "passed": 41,
+    "total": 41,
+    "seconds": 67.44
+  },
+  "reid_roi_parity": {
+    "passed": true,
+    "preprocessing": "amdpreproc",
+    "source": "NV12 VAMemory with ROI",
+    "input_uploads": 0,
+    "small_roi_requests": 100,
+    "encode_requests": 100,
+    "batch": 4,
+    "different_roi_cosine": 0.79649,
+    "min_batch_cosine": 1,
+    "audit_errors": 0
+  },
+  "initial_without_context_reuse": {
+    "schema": 1,
+    "seconds": 120.61,
+    "warmup_seconds": 15,
+    "configured_fps": 4,
+    "interval_ms": 3000,
+    "cameras": [
+      {
+        "id": "cam0",
+        "detection_fps": 3.87197
+      },
+      {
+        "id": "cam1",
+        "detection_fps": 3.87197
+      },
+      {
+        "id": "cam2",
+        "detection_fps": 3.86368
+      },
+      {
+        "id": "cam3",
+        "detection_fps": 3.86368
+      },
+      {
+        "id": "cam4",
+        "detection_fps": 3.87197
+      },
+      {
+        "id": "cam5",
+        "detection_fps": 3.87197
+      },
+      {
+        "id": "cam6",
+        "detection_fps": 3.86368
+      },
+      {
+        "id": "cam7",
+        "detection_fps": 3.86368
+      },
+      {
+        "id": "cam8",
+        "detection_fps": 3.85539
+      },
+      {
+        "id": "cam9",
+        "detection_fps": 3.85539
+      },
+      {
+        "id": "cam10",
+        "detection_fps": 3.85539
+      },
+      {
+        "id": "cam11",
+        "detection_fps": 3.85539
+      },
+      {
+        "id": "cam12",
+        "detection_fps": 3.85539
+      },
+      {
+        "id": "cam13",
+        "detection_fps": 3.85539
+      },
+      {
+        "id": "cam14",
+        "detection_fps": 3.8471
+      },
+      {
+        "id": "cam15",
+        "detection_fps": 3.98805
+      },
+      {
+        "id": "resource-monitor",
+        "detection_fps": 3.85539
+      }
+    ],
+    "tracking_eligible": 7932,
+    "tracking_completed": 4377,
+    "first_deadline_misses": 75,
+    "update_deadline_misses": 0,
+    "stored": 2228,
+    "stages": [
+      {
+        "stage": "Analysis DB save",
+        "completed": 430,
+        "mean_ms": 2.33894,
+        "worst_window_p95_ms": 4.48644,
+        "max_ms": 12.782,
+        "dropped": 0
+      },
+      {
+        "stage": "Analysis save queue",
+        "completed": 0,
+        "mean_ms": 0,
+        "worst_window_p95_ms": 0,
+        "max_ms": 0,
+        "dropped": 0
+      },
+      {
+        "stage": "Decoded frame wait",
+        "completed": 12309,
+        "mean_ms": 1.21005,
+        "worst_window_p95_ms": 6.24899,
+        "max_ms": 69.1258,
+        "dropped": 0
+      },
+      {
+        "stage": "Detection update",
+        "completed": 7932,
+        "mean_ms": 11.5075,
+        "worst_window_p95_ms": 16.1703,
+        "max_ms": 68.9979,
+        "dropped": 0
+      },
+      {
+        "stage": "Embedding NPU in flight",
+        "completed": 0,
+        "mean_ms": 0,
+        "worst_window_p95_ms": 0,
+        "max_ms": 0,
+        "dropped": 0
+      },
+      {
+        "stage": "Embedding first result",
+        "completed": 449,
+        "mean_ms": 709.396,
+        "worst_window_p95_ms": 2550.91,
+        "max_ms": 4602.74,
+        "dropped": 0
+      },
+      {
+        "stage": "Embedding freshness",
+        "completed": 2228,
+        "mean_ms": 581.481,
+        "worst_window_p95_ms": 1001.72,
+        "max_ms": 4602.74,
+        "dropped": 0
+      },
+      {
+        "stage": "Embedding queue",
+        "completed": 0,
+        "mean_ms": 0,
+        "worst_window_p95_ms": 0,
+        "max_ms": 0,
+        "dropped": 0
+      },
+      {
+        "stage": "Embedding update interval",
+        "completed": 82,
+        "mean_ms": 3221.78,
+        "worst_window_p95_ms": 3490.46,
+        "max_ms": 3490.46,
+        "dropped": 0
+      },
+      {
+        "stage": "Image embedding",
+        "completed": 2228,
+        "mean_ms": 20.864,
+        "worst_window_p95_ms": 19.8,
+        "max_ms": 2121.43,
+        "dropped": 0
+      },
+      {
+        "stage": "Image embedding NPU",
+        "completed": 2228,
+        "mean_ms": 19.9608,
+        "worst_window_p95_ms": 18.3896,
+        "max_ms": 2119.98,
+        "dropped": 0
+      },
+      {
+        "stage": "Image embedding NPU preprocess",
+        "completed": 2227,
+        "mean_ms": 0.873964,
+        "worst_window_p95_ms": 1.4884,
+        "max_ms": 27.191,
+        "dropped": 0
+      },
+      {
+        "stage": "Image embedding NPU total",
+        "completed": 2228,
+        "mean_ms": 20.8458,
+        "worst_window_p95_ms": 19.7548,
+        "max_ms": 2121.43,
+        "dropped": 0
+      },
+      {
+        "stage": "PNG + DB save",
+        "completed": 2228,
+        "mean_ms": 18.7864,
+        "worst_window_p95_ms": 35.43,
+        "max_ms": 65.2675,
+        "dropped": 0
+      },
+      {
+        "stage": "Person crop",
+        "completed": 4377,
+        "mean_ms": 3.16042,
+        "worst_window_p95_ms": 4.49618,
+        "max_ms": 31.2926,
+        "dropped": 0
+      },
+      {
+        "stage": "ReID inference + transfer",
+        "completed": 3774,
+        "mean_ms": 4.23532,
+        "worst_window_p95_ms": 9.6113,
+        "max_ms": 34.3788,
+        "dropped": 0
+      },
+      {
+        "stage": "ReID preprocess",
+        "completed": 3774,
+        "mean_ms": 25.119,
+        "worst_window_p95_ms": 61.0612,
+        "max_ms": 161.895,
+        "dropped": 0
+      },
+      {
+        "stage": "Tracking association",
+        "completed": 4377,
+        "mean_ms": 0.0361937,
+        "worst_window_p95_ms": 0.115656,
+        "max_ms": 0.459887,
+        "dropped": 0
+      },
+      {
+        "stage": "Tracking eligible",
+        "completed": 7932,
+        "mean_ms": 0,
+        "worst_window_p95_ms": 0,
+        "max_ms": 0,
+        "dropped": 0
+      },
+      {
+        "stage": "Tracking queue",
+        "completed": 0,
+        "mean_ms": 0,
+        "worst_window_p95_ms": 0,
+        "max_ms": 0,
+        "dropped": 3549
+      },
+      {
+        "stage": "YOLO executor total",
+        "completed": 2271,
+        "mean_ms": 28.7098,
+        "worst_window_p95_ms": 48.5769,
+        "max_ms": 255.774,
+        "dropped": 0
+      },
+      {
+        "stage": "YOLO inference",
+        "completed": 2271,
+        "mean_ms": 7.31862,
+        "worst_window_p95_ms": 9.48596,
+        "max_ms": 37.649,
+        "dropped": 0
+      },
+      {
+        "stage": "YOLO postprocess",
+        "completed": 2271,
+        "mean_ms": 20.7913,
+        "worst_window_p95_ms": 39.7414,
+        "max_ms": 241.456,
+        "dropped": 0
+      },
+      {
+        "stage": "YOLO preprocess",
+        "completed": 2271,
+        "mean_ms": 11.9337,
+        "worst_window_p95_ms": 23.7367,
+        "max_ms": 59.1235,
+        "dropped": 0
+      }
+    ],
+    "detection_pass": true,
+    "tracking_pass": false,
+    "npu_latency_pass": true,
+    "first_embedding_pass": false,
+    "embedding_interval_pass": true,
+    "audit_errors": 0,
+    "input_copies": 0,
+    "passed": false
+  },
+  "short_context_reuse_check": {
+    "schema": 1,
+    "seconds": 30.0484,
+    "warmup_seconds": 15,
+    "configured_fps": 4,
+    "interval_ms": 3000,
+    "cameras": [
+      {
+        "id": "cam0",
+        "detection_fps": 4.02684
+      },
+      {
+        "id": "cam1",
+        "detection_fps": 4.02684
+      },
+      {
+        "id": "cam2",
+        "detection_fps": 4.02684
+      },
+      {
+        "id": "cam3",
+        "detection_fps": 4.02684
+      },
+      {
+        "id": "cam4",
+        "detection_fps": 3.99356
+      },
+      {
+        "id": "cam5",
+        "detection_fps": 3.99356
+      },
+      {
+        "id": "cam6",
+        "detection_fps": 3.99356
+      },
+      {
+        "id": "cam7",
+        "detection_fps": 3.99356
+      },
+      {
+        "id": "cam8",
+        "detection_fps": 3.99356
+      },
+      {
+        "id": "cam9",
+        "detection_fps": 3.99356
+      },
+      {
+        "id": "cam10",
+        "detection_fps": 3.99356
+      },
+      {
+        "id": "cam11",
+        "detection_fps": 3.99356
+      },
+      {
+        "id": "cam12",
+        "detection_fps": 3.99356
+      },
+      {
+        "id": "cam13",
+        "detection_fps": 3.99356
+      },
+      {
+        "id": "cam14",
+        "detection_fps": 3.99356
+      },
+      {
+        "id": "cam15",
+        "detection_fps": 3.99356
+      },
+      {
+        "id": "resource-monitor",
+        "detection_fps": 3.99356
+      }
+    ],
+    "tracking_eligible": 2044,
+    "tracking_completed": 2040,
+    "first_deadline_misses": 0,
+    "update_deadline_misses": 0,
+    "stored": 625,
+    "stages": [
+      {
+        "stage": "Analysis DB save",
+        "completed": 119,
+        "mean_ms": 2.49865,
+        "worst_window_p95_ms": 9.13086,
+        "max_ms": 9.13086,
+        "dropped": 0
+      },
+      {
+        "stage": "Analysis save queue",
+        "completed": 0,
+        "mean_ms": 0,
+        "worst_window_p95_ms": 0,
+        "max_ms": 0,
+        "dropped": 0
+      },
+      {
+        "stage": "Decoded frame wait",
+        "completed": 4084,
+        "mean_ms": 0.182181,
+        "worst_window_p95_ms": 0.667452,
+        "max_ms": 10.8641,
+        "dropped": 0
+      },
+      {
+        "stage": "Detection update",
+        "completed": 2044,
+        "mean_ms": 8.4607,
+        "worst_window_p95_ms": 10.5423,
+        "max_ms": 12.1736,
+        "dropped": 0
+      },
+      {
+        "stage": "Embedding NPU in flight",
+        "completed": 0,
+        "mean_ms": 0,
+        "worst_window_p95_ms": 0,
+        "max_ms": 0,
+        "dropped": 0
+      },
+      {
+        "stage": "Embedding first result",
+        "completed": 102,
+        "mean_ms": 125.262,
+        "worst_window_p95_ms": 294.582,
+        "max_ms": 294.582,
+        "dropped": 0
+      },
+      {
+        "stage": "Embedding freshness",
+        "completed": 625,
+        "mean_ms": 128.43,
+        "worst_window_p95_ms": 294.58,
+        "max_ms": 303.73,
+        "dropped": 0
+      },
+      {
+        "stage": "Embedding queue",
+        "completed": 0,
+        "mean_ms": 0,
+        "worst_window_p95_ms": 0,
+        "max_ms": 0,
+        "dropped": 0
+      },
+      {
+        "stage": "Embedding update interval",
+        "completed": 439,
+        "mean_ms": 3007.24,
+        "worst_window_p95_ms": 3224.61,
+        "max_ms": 3325.72,
+        "dropped": 0
+      },
+      {
+        "stage": "Image embedding",
+        "completed": 625,
+        "mean_ms": 15.3405,
+        "worst_window_p95_ms": 16.8625,
+        "max_ms": 17.9965,
+        "dropped": 0
+      },
+      {
+        "stage": "Image embedding NPU",
+        "completed": 625,
+        "mean_ms": 14.6315,
+        "worst_window_p95_ms": 15.9672,
+        "max_ms": 17.133,
+        "dropped": 0
+      },
+      {
+        "stage": "Image embedding NPU preprocess",
+        "completed": 625,
+        "mean_ms": 0.695759,
+        "worst_window_p95_ms": 1.44428,
+        "max_ms": 1.93245,
+        "dropped": 0
+      },
+      {
+        "stage": "Image embedding NPU total",
+        "completed": 625,
+        "mean_ms": 15.3313,
+        "worst_window_p95_ms": 16.8569,
+        "max_ms": 17.9898,
+        "dropped": 0
+      },
+      {
+        "stage": "PNG + DB save",
+        "completed": 625,
+        "mean_ms": 3.10638,
+        "worst_window_p95_ms": 5.23488,
+        "max_ms": 12.363,
+        "dropped": 0
+      },
+      {
+        "stage": "Person crop",
+        "completed": 2043,
+        "mean_ms": 2.5543,
+        "worst_window_p95_ms": 3.6073,
+        "max_ms": 4.47916,
+        "dropped": 0
+      },
+      {
+        "stage": "ReID inference + transfer",
+        "completed": 1726,
+        "mean_ms": 3.04888,
+        "worst_window_p95_ms": 7.05842,
+        "max_ms": 11.7501,
+        "dropped": 0
+      },
+      {
+        "stage": "ReID preprocess",
+        "completed": 1726,
+        "mean_ms": 2.2042,
+        "worst_window_p95_ms": 6.9099,
+        "max_ms": 8.99963,
+        "dropped": 0
+      },
+      {
+        "stage": "Tracking association",
+        "completed": 2040,
+        "mean_ms": 0.0273015,
+        "worst_window_p95_ms": 0.077009,
+        "max_ms": 0.160878,
+        "dropped": 0
+      },
+      {
+        "stage": "Tracking eligible",
+        "completed": 2044,
+        "mean_ms": 0,
+        "worst_window_p95_ms": 0,
+        "max_ms": 0,
+        "dropped": 0
+      },
+      {
+        "stage": "Tracking queue",
+        "completed": 0,
+        "mean_ms": 0,
+        "worst_window_p95_ms": 0,
+        "max_ms": 0,
+        "dropped": 0
+      },
+      {
+        "stage": "YOLO executor total",
+        "completed": 601,
+        "mean_ms": 24.5033,
+        "worst_window_p95_ms": 36.5365,
+        "max_ms": 39.6713,
+        "dropped": 0
+      },
+      {
+        "stage": "YOLO inference",
+        "completed": 601,
+        "mean_ms": 6.42835,
+        "worst_window_p95_ms": 9.47854,
+        "max_ms": 10.0318,
+        "dropped": 0
+      },
+      {
+        "stage": "YOLO postprocess",
+        "completed": 601,
+        "mean_ms": 17.6529,
+        "worst_window_p95_ms": 28.6211,
+        "max_ms": 32.192,
+        "dropped": 0
+      },
+      {
+        "stage": "YOLO preprocess",
+        "completed": 601,
+        "mean_ms": 4.27152,
+        "worst_window_p95_ms": 11.034,
+        "max_ms": 11.9726,
+        "dropped": 0
+      }
+    ],
+    "detection_pass": true,
+    "tracking_pass": true,
+    "npu_latency_pass": true,
+    "first_embedding_pass": true,
+    "embedding_interval_pass": true,
+    "audit_errors": 0,
+    "input_copies": 0,
+    "passed": true
+  },
+  "sustained_before_persistent_workers": {
+    "result": {
+      "schema": 1,
+      "seconds": 120.561,
+      "warmup_seconds": 15,
+      "configured_fps": 4,
+      "interval_ms": 3000,
+      "cameras": [
+        {
+          "id": "cam0",
+          "detection_fps": 3.98139
+        },
+        {
+          "id": "cam1",
+          "detection_fps": 3.98139
+        },
+        {
+          "id": "cam2",
+          "detection_fps": 3.97309
+        },
+        {
+          "id": "cam3",
+          "detection_fps": 3.97309
+        },
+        {
+          "id": "cam4",
+          "detection_fps": 3.97309
+        },
+        {
+          "id": "cam5",
+          "detection_fps": 3.97309
+        },
+        {
+          "id": "cam6",
+          "detection_fps": 3.97309
+        },
+        {
+          "id": "cam7",
+          "detection_fps": 3.97309
+        },
+        {
+          "id": "cam8",
+          "detection_fps": 3.98139
+        },
+        {
+          "id": "cam9",
+          "detection_fps": 3.98139
+        },
+        {
+          "id": "cam10",
+          "detection_fps": 3.98139
+        },
+        {
+          "id": "cam11",
+          "detection_fps": 3.98139
+        },
+        {
+          "id": "cam12",
+          "detection_fps": 3.97309
+        },
+        {
+          "id": "cam13",
+          "detection_fps": 3.97309
+        },
+        {
+          "id": "cam14",
+          "detection_fps": 3.97309
+        },
+        {
+          "id": "cam15",
+          "detection_fps": 3.99798
+        },
+        {
+          "id": "resource-monitor",
+          "detection_fps": 3.97309
+        }
+      ],
+      "tracking_eligible": 8152,
+      "tracking_completed": 8151,
+      "first_deadline_misses": 6,
+      "update_deadline_misses": 0,
+      "stored": 2391,
+      "stages": [
+        {
+          "stage": "Analysis DB save",
+          "completed": 476,
+          "mean_ms": 3.69598,
+          "worst_window_p95_ms": 9.56477,
+          "max_ms": 21.2323,
+          "dropped": 0
+        },
+        {
+          "stage": "Analysis save queue",
+          "completed": 0,
+          "mean_ms": 0,
+          "worst_window_p95_ms": 0,
+          "max_ms": 0,
+          "dropped": 0
+        },
+        {
+          "stage": "Decoded frame wait",
+          "completed": 16308,
+          "mean_ms": 0.214938,
+          "worst_window_p95_ms": 2.2125,
+          "max_ms": 28.3257,
+          "dropped": 0
+        },
+        {
+          "stage": "Detection update",
+          "completed": 8152,
+          "mean_ms": 9.2086,
+          "worst_window_p95_ms": 11.3722,
+          "max_ms": 58.6594,
+          "dropped": 0
+        },
+        {
+          "stage": "Embedding NPU in flight",
+          "completed": 0,
+          "mean_ms": 0,
+          "worst_window_p95_ms": 0,
+          "max_ms": 0,
+          "dropped": 0
+        },
+        {
+          "stage": "Embedding first result",
+          "completed": 363,
+          "mean_ms": 155.718,
+          "worst_window_p95_ms": 494.449,
+          "max_ms": 606.699,
+          "dropped": 0
+        },
+        {
+          "stage": "Embedding freshness",
+          "completed": 2391,
+          "mean_ms": 146.26,
+          "worst_window_p95_ms": 302.741,
+          "max_ms": 405.916,
+          "dropped": 0
+        },
+        {
+          "stage": "Embedding queue",
+          "completed": 0,
+          "mean_ms": 0,
+          "worst_window_p95_ms": 0,
+          "max_ms": 0,
+          "dropped": 0
+        },
+        {
+          "stage": "Embedding update interval",
+          "completed": 1627,
+          "mean_ms": 3014.9,
+          "worst_window_p95_ms": 3249.79,
+          "max_ms": 3540.58,
+          "dropped": 0
+        },
+        {
+          "stage": "Image embedding",
+          "completed": 2391,
+          "mean_ms": 19.5541,
+          "worst_window_p95_ms": 43.0409,
+          "max_ms": 72.7362,
+          "dropped": 0
+        },
+        {
+          "stage": "Image embedding NPU",
+          "completed": 2391,
+          "mean_ms": 18.7245,
+          "worst_window_p95_ms": 42.233,
+          "max_ms": 71.3769,
+          "dropped": 0
+        },
+        {
+          "stage": "Image embedding NPU preprocess",
+          "completed": 2392,
+          "mean_ms": 0.781078,
+          "worst_window_p95_ms": 1.17293,
+          "max_ms": 5.33345,
+          "dropped": 0
+        },
+        {
+          "stage": "Image embedding NPU total",
+          "completed": 2391,
+          "mean_ms": 19.5147,
+          "worst_window_p95_ms": 43.0283,
+          "max_ms": 72.706,
+          "dropped": 0
+        },
+        {
+          "stage": "PNG + DB save",
+          "completed": 2391,
+          "mean_ms": 3.72048,
+          "worst_window_p95_ms": 6.31563,
+          "max_ms": 20.9642,
+          "dropped": 0
+        },
+        {
+          "stage": "Person crop",
+          "completed": 8153,
+          "mean_ms": 2.76059,
+          "worst_window_p95_ms": 3.88033,
+          "max_ms": 28.6667,
+          "dropped": 0
+        },
+        {
+          "stage": "ReID inference + transfer",
+          "completed": 6957,
+          "mean_ms": 3.60402,
+          "worst_window_p95_ms": 8.2705,
+          "max_ms": 32.3358,
+          "dropped": 0
+        },
+        {
+          "stage": "ReID preprocess",
+          "completed": 6957,
+          "mean_ms": 2.61992,
+          "worst_window_p95_ms": 6.15496,
+          "max_ms": 26.9969,
+          "dropped": 0
+        },
+        {
+          "stage": "Tracking association",
+          "completed": 8151,
+          "mean_ms": 0.0353141,
+          "worst_window_p95_ms": 0.091748,
+          "max_ms": 0.268396,
+          "dropped": 0
+        },
+        {
+          "stage": "Tracking eligible",
+          "completed": 8152,
+          "mean_ms": 0,
+          "worst_window_p95_ms": 0,
+          "max_ms": 0,
+          "dropped": 0
+        },
+        {
+          "stage": "Tracking queue",
+          "completed": 0,
+          "mean_ms": 0,
+          "worst_window_p95_ms": 0,
+          "max_ms": 0,
+          "dropped": 0
+        },
+        {
+          "stage": "YOLO executor total",
+          "completed": 2392,
+          "mean_ms": 26.6706,
+          "worst_window_p95_ms": 37.8696,
+          "max_ms": 218.064,
+          "dropped": 0
+        },
+        {
+          "stage": "YOLO inference",
+          "completed": 2392,
+          "mean_ms": 6.61835,
+          "worst_window_p95_ms": 8.72868,
+          "max_ms": 46.4898,
+          "dropped": 0
+        },
+        {
+          "stage": "YOLO postprocess",
+          "completed": 2392,
+          "mean_ms": 19.4545,
+          "worst_window_p95_ms": 29.2189,
+          "max_ms": 204.513,
+          "dropped": 0
+        },
+        {
+          "stage": "YOLO preprocess",
+          "completed": 2393,
+          "mean_ms": 4.78572,
+          "worst_window_p95_ms": 10.8083,
+          "max_ms": 74.0083,
+          "dropped": 0
+        }
+      ],
+      "detection_pass": true,
+      "tracking_pass": true,
+      "npu_latency_pass": true,
+      "first_embedding_pass": false,
+      "embedding_interval_pass": true,
+      "audit_errors": 0,
+      "input_copies": 0,
+      "passed": false
+    },
+    "error": "Vitis AI/XRT ERT_CMD_STATE_TIMEOUT near measurement end; this run failed. Provider internals were not investigated."
+  },
+  "reference": {
+    "schema": 1,
+    "seconds": 120.634,
+    "warmup_seconds": 15,
+    "configured_fps": 4,
+    "interval_ms": 3000,
+    "cameras": [
+      {
+        "id": "cam0",
+        "detection_fps": 3.9624
+      },
+      {
+        "id": "cam1",
+        "detection_fps": 3.9624
+      },
+      {
+        "id": "cam2",
+        "detection_fps": 3.9624
+      },
+      {
+        "id": "cam3",
+        "detection_fps": 3.9624
+      },
+      {
+        "id": "cam4",
+        "detection_fps": 3.9624
+      },
+      {
+        "id": "cam5",
+        "detection_fps": 3.9624
+      },
+      {
+        "id": "cam6",
+        "detection_fps": 3.9624
+      },
+      {
+        "id": "cam7",
+        "detection_fps": 3.9624
+      },
+      {
+        "id": "cam8",
+        "detection_fps": 3.97069
+      },
+      {
+        "id": "cam9",
+        "detection_fps": 3.9624
+      },
+      {
+        "id": "cam10",
+        "detection_fps": 3.9624
+      },
+      {
+        "id": "cam11",
+        "detection_fps": 3.9624
+      },
+      {
+        "id": "cam12",
+        "detection_fps": 3.97069
+      },
+      {
+        "id": "cam13",
+        "detection_fps": 3.9624
+      },
+      {
+        "id": "cam14",
+        "detection_fps": 3.9624
+      },
+      {
+        "id": "cam15",
+        "detection_fps": 4.00385
+      },
+      {
+        "id": "resource-monitor",
+        "detection_fps": 3.97069
+      }
+    ],
+    "tracking_eligible": 8134,
+    "tracking_completed": 8134,
+    "first_deadline_misses": 8,
+    "update_deadline_misses": 6,
+    "stored": 2423,
+    "stages": [
+      {
+        "stage": "Analysis DB save",
+        "completed": 477,
+        "mean_ms": 3.17305,
+        "worst_window_p95_ms": 6.91591,
+        "max_ms": 19.1241,
+        "dropped": 0
+      },
+      {
+        "stage": "Analysis save queue",
+        "completed": 0,
+        "mean_ms": 0,
+        "worst_window_p95_ms": 0,
+        "max_ms": 0,
+        "dropped": 0
+      },
+      {
+        "stage": "Decoded frame wait",
+        "completed": 16264,
+        "mean_ms": 0.496293,
+        "worst_window_p95_ms": 3.04195,
+        "max_ms": 47.5362,
+        "dropped": 0
+      },
+      {
+        "stage": "Detection update",
+        "completed": 8134,
+        "mean_ms": 9.587,
+        "worst_window_p95_ms": 12.7383,
+        "max_ms": 47.6947,
+        "dropped": 0
+      },
+      {
+        "stage": "Embedding NPU in flight",
+        "completed": 0,
+        "mean_ms": 0,
+        "worst_window_p95_ms": 0,
+        "max_ms": 0,
+        "dropped": 0
+      },
+      {
+        "stage": "Embedding first result",
+        "completed": 381,
+        "mean_ms": 171.412,
+        "worst_window_p95_ms": 915.921,
+        "max_ms": 3074.3,
+        "dropped": 0
+      },
+      {
+        "stage": "Embedding freshness",
+        "completed": 2423,
+        "mean_ms": 153.731,
+        "worst_window_p95_ms": 277.683,
+        "max_ms": 2236.24,
+        "dropped": 0
+      },
+      {
+        "stage": "Embedding queue",
+        "completed": 0,
+        "mean_ms": 0,
+        "worst_window_p95_ms": 0,
+        "max_ms": 0,
+        "dropped": 0
+      },
+      {
+        "stage": "Embedding update interval",
+        "completed": 1582,
+        "mean_ms": 3023.24,
+        "worst_window_p95_ms": 3251.43,
+        "max_ms": 5082.54,
+        "dropped": 0
+      },
+      {
+        "stage": "Image embedding",
+        "completed": 2423,
+        "mean_ms": 18.4093,
+        "worst_window_p95_ms": 19.9343,
+        "max_ms": 2097.68,
+        "dropped": 0
+      },
+      {
+        "stage": "Image embedding NPU",
+        "completed": 2423,
+        "mean_ms": 17.5213,
+        "worst_window_p95_ms": 18.3355,
+        "max_ms": 2096.88,
+        "dropped": 0
+      },
+      {
+        "stage": "Image embedding NPU preprocess",
+        "completed": 2423,
+        "mean_ms": 0.801597,
+        "worst_window_p95_ms": 1.4003,
+        "max_ms": 19.1975,
+        "dropped": 0
+      },
+      {
+        "stage": "Image embedding NPU total",
+        "completed": 2423,
+        "mean_ms": 18.3438,
+        "worst_window_p95_ms": 19.6924,
+        "max_ms": 2097.67,
+        "dropped": 0
+      },
+      {
+        "stage": "PNG + DB save",
+        "completed": 2423,
+        "mean_ms": 3.77765,
+        "worst_window_p95_ms": 6.29997,
+        "max_ms": 21.4969,
+        "dropped": 0
+      },
+      {
+        "stage": "Person crop",
+        "completed": 8134,
+        "mean_ms": 2.94154,
+        "worst_window_p95_ms": 4.11508,
+        "max_ms": 17.9801,
+        "dropped": 0
+      },
+      {
+        "stage": "ReID inference + transfer",
+        "completed": 6930,
+        "mean_ms": 3.89044,
+        "worst_window_p95_ms": 8.91235,
+        "max_ms": 53.4337,
+        "dropped": 0
+      },
+      {
+        "stage": "ReID preprocess",
+        "completed": 6930,
+        "mean_ms": 2.86844,
+        "worst_window_p95_ms": 7.12073,
+        "max_ms": 15.6246,
+        "dropped": 0
+      },
+      {
+        "stage": "Tracking association",
+        "completed": 8134,
+        "mean_ms": 0.0377663,
+        "worst_window_p95_ms": 0.100478,
+        "max_ms": 0.291214,
+        "dropped": 0
+      },
+      {
+        "stage": "Tracking eligible",
+        "completed": 8134,
+        "mean_ms": 0,
+        "worst_window_p95_ms": 0,
+        "max_ms": 0,
+        "dropped": 0
+      },
+      {
+        "stage": "Tracking queue",
+        "completed": 0,
+        "mean_ms": 0,
+        "worst_window_p95_ms": 0,
+        "max_ms": 0,
+        "dropped": 0
+      },
+      {
+        "stage": "YOLO executor total",
+        "completed": 2370,
+        "mean_ms": 28.0906,
+        "worst_window_p95_ms": 42.9252,
+        "max_ms": 186.198,
+        "dropped": 0
+      },
+      {
+        "stage": "YOLO inference",
+        "completed": 2370,
+        "mean_ms": 7.10603,
+        "worst_window_p95_ms": 9.81188,
+        "max_ms": 73.238,
+        "dropped": 0
+      },
+      {
+        "stage": "YOLO postprocess",
+        "completed": 2370,
+        "mean_ms": 20.4084,
+        "worst_window_p95_ms": 33.4925,
+        "max_ms": 130.839,
+        "dropped": 0
+      },
+      {
+        "stage": "YOLO preprocess",
+        "completed": 2369,
+        "mean_ms": 5.00949,
+        "worst_window_p95_ms": 11.3596,
+        "max_ms": 20.3545,
+        "dropped": 0
+      }
+    ],
+    "detection_pass": true,
+    "tracking_pass": true,
+    "npu_latency_pass": true,
+    "first_embedding_pass": false,
+    "embedding_interval_pass": false,
+    "audit_errors": 0,
+    "input_copies": 0,
+    "passed": false,
+    "min_camera_fps": 3.9624,
+    "max_camera_fps": 4.00385
+  },
+  "acceptance_passed": false,
+  "limitations": [
+    "NPU amdxdna TDR timeout/recovery produced rare roughly 2-second inference outliers; first/update deadlines failed despite P95 below 50 ms. Provider/firmware internals were not investigated.",
+    "Reference measurement disables preview. GUI behavior is checked separately; the reference does not establish rendered 17-source latency.",
+    "Fast lossless PNGs may occupy more catalog storage than the previous compression policy."
+  ],
+  "kernel_evidence": [
+    "Nov 10 22:52:07 amd-rai370 kernel: amdxdna 0000:66:00.1: [drm] *ERROR* aie2_tdr_detect: TDR timeout detected",
+    "Nov 10 22:52:07 amd-rai370 kernel: amdxdna 0000:66:00.1: [drm] *ERROR* aie2_set_cmd_timeout:         Context ID: 10",
+    "Nov 10 22:52:07 amd-rai370 kernel: amdxdna 0000:66:00.1: [drm] *ERROR* aie2_set_cmd_timeout:         Context PC: 0x28b060ad"
+  ],
+  "final_targeted_contracts": {
+    "passed": 4,
+    "total": 4,
+    "seconds": 3.08
+  },
+  "installed_sdk": {
+    "configure": true,
+    "build": true,
+    "run": true,
+    "retained_stream_allocation": true
+  },
+  "regressions": {
+    "gpu": {
+      "native": {
+        "schema": 1,
+        "passed": true,
+        "pid": 442909,
+        "stored": 9,
+        "english_query": true,
+        "japanese_query": true,
+        "reid_calls": 4,
+        "embedding_calls": 4,
+        "npu_inference_ms": 0,
+        "npu_gpu_wait_ms": 0,
+        "npu_gpu_prepare_ms": 0,
+        "npu_total_ms": 0,
+        "cpu_image_query": true,
+        "frequencies_updated": true,
+        "child_processes": false,
+        "input_copies": 0,
+        "audit_errors": 0
+      },
+      "gui": {
+        "passed": true,
+        "english_and_japanese_queries": true,
+        "image_query": true,
+        "recording_playback": true,
+        "deletion": true,
+        "log": "artifacts/frequency-regression/gpu/gui.log"
+      }
+    },
+    "npu": {
+      "native": {
+        "schema": 1,
+        "passed": true,
+        "pid": 443480,
+        "stored": 9,
+        "english_query": true,
+        "japanese_query": true,
+        "reid_calls": 4,
+        "embedding_calls": 10,
+        "npu_inference_ms": 11.9491,
+        "npu_gpu_wait_ms": 3.7e-05,
+        "npu_gpu_prepare_ms": 0.54411,
+        "npu_total_ms": 12.4976,
+        "cpu_image_query": true,
+        "frequencies_updated": true,
+        "child_processes": false,
+        "input_copies": 0,
+        "audit_errors": 0
+      },
+      "gui": {
+        "passed": true,
+        "english_and_japanese_queries": true,
+        "image_query": true,
+        "recording_playback": true,
+        "deletion": true,
+        "log": "artifacts/frequency-regression/npu/gui.log"
+      }
+    },
+    "gpu+npu": {
+      "native": {
+        "schema": 1,
+        "passed": true,
+        "pid": 444126,
+        "stored": 9,
+        "english_query": true,
+        "japanese_query": true,
+        "reid_calls": 4,
+        "embedding_calls": 7,
+        "npu_inference_ms": 17.0492,
+        "npu_gpu_wait_ms": 6.25e-05,
+        "npu_gpu_prepare_ms": 0.965533,
+        "npu_total_ms": 18.0201,
+        "cpu_image_query": true,
+        "frequencies_updated": true,
+        "child_processes": false,
+        "input_copies": 0,
+        "audit_errors": 0
+      },
+      "gui": {
+        "passed": true,
+        "english_and_japanese_queries": true,
+        "image_query": true,
+        "recording_playback": true,
+        "deletion": true,
+        "log": "artifacts/frequency-regression/gpu+npu/gui.log"
+      }
+    },
+    "embeddinggemma2": {
+      "gui_passed": true,
+      "text_and_region_queries": true,
+      "recording_playback": true,
+      "deletion": true,
+      "log": "artifacts/frequency-regression/gemma/gui.log"
+    },
+    "ai_statistics_gpu": {
+      "passed": true,
+      "frequency_and_interval_persistence": true,
+      "obsolete_duty_controls_absent": true,
+      "all_four_model_choices_persist": true,
+      "log": "artifacts/frequency-regression/ai-ui-gpu.log"
+    },
+    "additional_ai_statistics_npu": {
+      "passed": false,
+      "error": "Vitis AI/XRT ERT_CMD_STATE_TIMEOUT; NPU pipeline subsequently failed. The validator now rejects a nonempty SearchStatus.error even when state remains ready.",
+      "log": "artifacts/frequency-regression/ai-ui.log"
+    }
+  },
+  "implementation_notes": [
+    "No cross-model GPU gate, duty cooldown or adaptive requested interval.",
+    "Persistent backend workers and nonblocking owner streams; GPU_MAX_HW_QUEUES defaults to 32 before HIP initialization.",
+    "VPE contexts are reused across ROIs; lossless PNG compression executes once with the fast flag.",
+    "Final code also retains provider errors when draining the last admitted job and aggregates replacement counts for the summary UI."
+  ]
+}

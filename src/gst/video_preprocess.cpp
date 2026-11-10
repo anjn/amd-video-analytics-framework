@@ -11,14 +11,15 @@ struct VideoPreprocessor::Impl {
     GstVaDisplay *display{};
     std::unique_ptr<VaSession> va;
     ImagePacker pack;
+    std::shared_ptr<HipStream> stream;
     VASurfaceID surface{VA_INVALID_SURFACE};
     std::unique_ptr<ImportedSurface> image;
-    std::array<unsigned, 4> last_geometry{};
     std::vector<std::unique_ptr<VaSession>> scale_contexts;
     std::unique_ptr<VaSession> intermediate_owner;
     std::array<VASurfaceID, 2> intermediate{VA_INVALID_SURFACE, VA_INVALID_SURFACE};
     unsigned intermediate_width{}, intermediate_height{};
-    Impl(ModelInfo m, int d) : info(std::move(m)), device(d), pack(d) {}
+    Impl(ModelInfo m, int d)
+        : info(std::move(m)), device(d), pack(d), stream(std::make_shared<HipStream>(d)) {}
     void clear_intermediate() {
         if (intermediate_owner)
             for (auto &id : intermediate) {
@@ -81,8 +82,6 @@ std::shared_ptr<Tensor> VideoPreprocessor::prepare_into(GstBuffer *buffer,
     const auto geometry =
         ImageTransform::make(video.width, video.height, s.info.width, s.info.height,
                              s.info.letterbox, x, y, right - x, bottom - y);
-    const std::array<unsigned, 4> context_geometry{geometry.crop_width, geometry.crop_height,
-                                                   geometry.scaled_width, geometry.scaled_height};
     auto va_display = static_cast<VADisplay>(gst_va_display_get_va_dpy(display));
     if (!s.display) {
         s.display = GST_VA_DISPLAY(gst_object_ref(display));
@@ -91,11 +90,8 @@ std::shared_ptr<Tensor> VideoPreprocessor::prepare_into(GstBuffer *buffer,
     }
     if (display != s.display)
         throw std::runtime_error("VA display changed; recreate preprocessor");
-    if (s.last_geometry[0] && context_geometry != s.last_geometry) {
-        s.va = std::make_unique<VaSession>(va_display);
-        s.scale_contexts.clear();
-    }
-    s.last_geometry = context_geometry;
+    // Mesa recomputes VPE coefficients when the scale ratio changes. Reuse the
+    // contexts across ROIs instead of destroying their queues and workspaces.
     auto checked_scale = [&](VaSession &va, VASurfaceID source, VASurfaceID target, unsigned cx,
                              unsigned cy, unsigned cw, unsigned ch, unsigned tw, unsigned th) {
         auto before = engine_times_ns("vpe");
@@ -103,19 +99,24 @@ std::shared_ptr<Tensor> VideoPreprocessor::prepare_into(GstBuffer *buffer,
         // job cannot be observed, repeat only the identical VPE operation. A
         // successful logical stage still requires an observed VPE increment;
         // unsupported paths cannot succeed through a CPU/shader fallback.
-        bool refreshed=false;
+        bool refreshed = false;
         auto advanced = [&] {
-            auto changed=[&](const auto &after) {
-                for(const auto &[client,time]:after) {
-                    auto old=before.find(client);
-                    if(time>(old==before.end()?0:old->second))return true;
+            auto changed = [&](const auto &after) {
+                for (const auto &[client, time] : after) {
+                    auto old = before.find(client);
+                    if (time > (old == before.end() ? 0 : old->second))
+                        return true;
                 }
                 return false;
             };
-            if(changed(engine_times_ns("vpe")))return true;
+            if (changed(engine_times_ns("vpe")))
+                return true;
             // Discover a newly opened DRM client immediately on a miss. Normal
             // stages read only known DRM fds, not every RTSP/recording/socket fd.
-            if(!refreshed){refreshed=true;return changed(engine_times_ns("vpe",true));}
+            if (!refreshed) {
+                refreshed = true;
+                return changed(engine_times_ns("vpe", true));
+            }
             return false;
         };
         const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(20);
@@ -187,17 +188,18 @@ std::shared_ptr<Tensor> VideoPreprocessor::prepare_into(GstBuffer *buffer,
             new DeviceBuffer(destination->device_data(), destination->descriptor().bytes()),
             [owner = destination](DeviceBuffer *view) { delete view; });
     } else
-        tensor->buffer = std::make_shared<DeviceBuffer>(size_t(3) * s.info.width * s.info.height *
-                                                        sizeof(float));
+        tensor->buffer = std::make_shared<DeviceBuffer>(
+            size_t(3) * s.info.width * s.info.height * sizeof(float), s.stream);
     struct Guard {
-        ~Guard() { (void)hipDeviceSynchronize(); }
-    } guard;
-    s.pack.pack(*s.image, geometry, tensor->buffer->data(), s.info.normalization);
+        std::shared_ptr<HipStream> stream;
+        ~Guard() { (void)hipStreamSynchronize(stream->get()); }
+    } guard{s.stream};
+    s.pack.pack(*s.image, geometry, tensor->buffer->data(), s.info.normalization, s.stream->get());
     hip_check(hipEventCreateWithFlags(&tensor->ready, hipEventDisableTiming), "Tensor event");
-    hip_check(hipEventRecord(tensor->ready, nullptr), "Record tensor readiness");
+    hip_check(hipEventRecord(tensor->ready, s.stream->get()), "Record tensor readiness");
     hip_check(hipEventSynchronize(tensor->ready), "Preprocessing completion");
     if (destination)
-        destination->record_ready();
+        destination->record_ready(s.stream->get());
     return tensor;
 }
 } // namespace amdva

@@ -1,0 +1,266 @@
+{
+  "model": "assets/detector-b4.mxr",
+  "single_model": "assets/detector-b1.mxr",
+  "model_info": "model-info.json",
+  "recording_root": "recordings",
+  "tracking_enabled": true,
+  "telemetry": {
+    "enabled": true,
+    "stall_ms": 1000
+  },
+  "ai_fps": 3.0,
+  "batch_size": 4,
+  "segment_seconds": 5,
+  "retention_minutes": 10,
+  "background_ai_enabled": true,
+  "background_ai_interval_seconds": 5,
+  "quota_gib": 8.0,
+  "reserve_gib": 1.0,
+  "search": {
+    "enabled": true,
+    "mobileclip_backend": "npu",
+    "ryzen_ai_venv": "",
+    "embedding_model": "mobileclip2-s2",
+    "mobileclip_bundle": "assets/mobileclip",
+    "reid_model": "assets/reid-b4.mxr",
+    "device": 0,
+    "image_size": 256,
+    "interval_ms": 3000,
+    "queue_limit": 128,
+    "embedding_width": 108,
+    "embedding_height": 192,
+    "embedding_batch": 4,
+    "min_person_height": 0.1
+  },
+  "results": {
+    "method": "none",
+    "file_path": "",
+    "address": "",
+    "topic": "amdva/analytics",
+    "queue_limit": 256,
+    "byte_limit": 4194304
+  },
+  "sources": [
+    {
+      "id": "cam0",
+      "name": "Gallery A SW",
+      "uri": "rtsp://127.0.0.1:18570/cam0",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "av1",
+        "rate_control": "vbr",
+        "bitrate_kbps": 750,
+        "height": 720
+      }
+    },
+    {
+      "id": "cam1",
+      "name": "Gallery A NW",
+      "uri": "rtsp://127.0.0.1:18570/cam1",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "h264",
+        "rate_control": "vbr",
+        "bitrate_kbps": 750,
+        "height": 720
+      }
+    },
+    {
+      "id": "cam2",
+      "name": "Gallery A NE",
+      "uri": "rtsp://127.0.0.1:18570/cam2",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "h264",
+        "rate_control": "vbr",
+        "bitrate_kbps": 750,
+        "height": 720
+      }
+    },
+    {
+      "id": "cam3",
+      "name": "Gallery A SE",
+      "uri": "rtsp://127.0.0.1:18570/cam3",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "h265",
+        "rate_control": "vbr",
+        "bitrate_kbps": 750,
+        "height": 720
+      }
+    },
+    {
+      "id": "cam4",
+      "name": "Gallery B SW",
+      "uri": "rtsp://127.0.0.1:18570/cam4",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "h265",
+        "rate_control": "vbr",
+        "bitrate_kbps": 2000,
+        "height": 0
+      }
+    },
+    {
+      "id": "cam5",
+      "name": "Gallery B NW",
+      "uri": "rtsp://127.0.0.1:18570/cam5",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "h265",
+        "rate_control": "vbr",
+        "bitrate_kbps": 2000,
+        "height": 0
+      }
+    },
+    {
+      "id": "cam6",
+      "name": "Gallery B NE",
+      "uri": "rtsp://127.0.0.1:18570/cam6",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "h265",
+        "rate_control": "vbr",
+        "bitrate_kbps": 2000,
+        "height": 0
+      }
+    },
+    {
+      "id": "cam7",
+      "name": "Gallery B SE",
+      "uri": "rtsp://127.0.0.1:18570/cam7",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "h265",
+        "rate_control": "vbr",
+        "bitrate_kbps": 2000,
+        "height": 0
+      }
+    },
+    {
+      "id": "cam8",
+      "name": "Gallery C SW",
+      "uri": "rtsp://127.0.0.1:18570/cam8",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "h265",
+        "rate_control": "vbr",
+        "bitrate_kbps": 2000,
+        "height": 0
+      }
+    },
+    {
+      "id": "cam9",
+      "name": "Gallery C NW",
+      "uri": "rtsp://127.0.0.1:18570/cam9",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "h265",
+        "rate_control": "vbr",
+        "bitrate_kbps": 2000,
+        "height": 0
+      }
+    },
+    {
+      "id": "cam10",
+      "name": "Gallery C NE",
+      "uri": "rtsp://127.0.0.1:18570/cam10",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "h265",
+        "rate_control": "vbr",
+        "bitrate_kbps": 2000,
+        "height": 0
+      }
+    },
+    {
+      "id": "cam11",
+      "name": "Gallery C SE",
+      "uri": "rtsp://127.0.0.1:18570/cam11",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "h265",
+        "rate_control": "vbr",
+        "bitrate_kbps": 2000,
+        "height": 0
+      }
+    },
+    {
+      "id": "cam12",
+      "name": "Entrance",
+      "uri": "rtsp://127.0.0.1:18570/cam12",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "h265",
+        "rate_control": "vbr",
+        "bitrate_kbps": 2000,
+        "height": 0
+      }
+    },
+    {
+      "id": "cam13",
+      "name": "Ticket Desk",
+      "uri": "rtsp://127.0.0.1:18570/cam13",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "h265",
+        "rate_control": "vbr",
+        "bitrate_kbps": 2000,
+        "height": 0
+      }
+    },
+    {
+      "id": "cam14",
+      "name": "Exit Lobby",
+      "uri": "rtsp://127.0.0.1:18570/cam14",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "h265",
+        "rate_control": "vbr",
+        "bitrate_kbps": 2000,
+        "height": 0
+      }
+    },
+    {
+      "id": "cam15",
+      "name": "Exit",
+      "uri": "rtsp://127.0.0.1:18570/cam15",
+      "selected": false,
+      "transcode": {
+        "enabled": false,
+        "codec": "h265",
+        "rate_control": "vbr",
+        "bitrate_kbps": 2000,
+        "height": 0
+      }
+    },
+    {
+      "id": "resource-monitor",
+      "name": "Resource Monitor",
+      "uri": "rtsp://127.0.0.1:18572/dashboard",
+      "selected": true,
+      "transcode": {
+        "enabled": false,
+        "codec": "h265",
+        "rate_control": "vbr",
+        "bitrate_kbps": 2000,
+        "height": 0
+      }
+    }
+  ]
+}

@@ -64,14 +64,15 @@ namespace amdva {
 struct ModelPostprocessor::Impl {
     ModelInfo info;
     int device;
+    std::shared_ptr<HipStream> stream;
     Kernel decode, nms, topk, semantic, masks, pose;
     std::unique_ptr<DeviceBuffer> candidates, compact, keypoints;
     Impl(ModelInfo m, int d)
-        : info(std::move(m)), device(d), decode(source, "decode", gpu_arch(d)),
-          nms(source, "nms", gpu_arch(d)), topk(source, "topk", gpu_arch(d)),
-          semantic(source, "semantic", gpu_arch(d)), masks(source, "masks", gpu_arch(d)),
-          pose(source, "pose", gpu_arch(d)) {
-        compact = std::make_unique<DeviceBuffer>(sizeof(Detections));
+        : info(std::move(m)), device(d), stream(std::make_shared<HipStream>(d)),
+          decode(source, "decode", gpu_arch(d)), nms(source, "nms", gpu_arch(d)),
+          topk(source, "topk", gpu_arch(d)), semantic(source, "semantic", gpu_arch(d)),
+          masks(source, "masks", gpu_arch(d)), pose(source, "pose", gpu_arch(d)) {
+        compact = std::make_unique<DeviceBuffer>(sizeof(Detections), stream);
     }
 };
 ModelPostprocessor::ModelPostprocessor(ModelInfo info, int device)
@@ -119,9 +120,9 @@ std::vector<AnalysisResult> ModelPostprocessor::process(const std::vector<Device
             void *out = s.compact->data();
             auto k = m.top_k;
             void *args[] = {&raw, &classes, &k, &out};
-            s.topk.launch(1, args);
+            s.topk.launch(1, args, s.stream->get());
             TopK top{};
-            readback_metadata(&top, out, sizeof(top));
+            readback_metadata(&top, out, sizeof(top), s.stream->get());
             if (top.count > 100)
                 throw std::runtime_error("Invalid top-k result");
             r.classifications.assign(top.items, top.items + top.count);
@@ -136,12 +137,12 @@ std::vector<AnalysisResult> ModelPostprocessor::process(const std::vector<Device
             DeviceTensor mask{"semantic-mask",
                               TensorType::Int32,
                               {shape[2], shape[3]},
-                              std::make_shared<DeviceBuffer>(size * sizeof(int)),
+                              std::make_shared<DeviceBuffer>(size * sizeof(int), s.stream),
                               s.device};
             void *out = mask.storage->data();
             void *args[] = {&raw, &classes, &size, &out};
-            s.semantic.launch(size, args);
-            hip_check(hipDeviceSynchronize(), "Semantic mask completion");
+            s.semantic.launch(size, args, s.stream->get());
+            s.stream->finish();
             r.tensors.push_back(std::move(mask));
             continue;
         }
@@ -164,15 +165,15 @@ std::vector<AnalysisResult> ModelPostprocessor::process(const std::vector<Device
         if (shape[1] != 4 + classes + extra)
             throw std::runtime_error("YOLO channel count differs from model-info");
         if (!s.candidates || s.candidates->size() < n * sizeof(Candidate))
-            s.candidates = std::make_unique<DeviceBuffer>(n * sizeof(Candidate));
+            s.candidates = std::make_unique<DeviceBuffer>(n * sizeof(Candidate), s.stream);
         void *candidate = s.candidates->data();
         void *out = s.compact->data();
         void *decode_args[] = {&raw, &n, &classes, &confidence, &candidate};
-        s.decode.launch(n, decode_args);
+        s.decode.launch(n, decode_args, s.stream->get());
         void *nms_args[] = {&candidate, &n, &threshold, &out};
-        s.nms.launch(1, nms_args);
+        s.nms.launch(1, nms_args, s.stream->get());
         Detections detections{};
-        readback_metadata(&detections, out, sizeof(detections));
+        readback_metadata(&detections, out, sizeof(detections), s.stream->get());
         if (detections.count > limit)
             throw std::runtime_error("Invalid object count");
         for (unsigned j = 0; j < detections.count; j++) {
@@ -184,13 +185,13 @@ std::vector<AnalysisResult> ModelPostprocessor::process(const std::vector<Device
             unsigned points = m.keypoints;
             size_t bytes = size_t(detections.count) * points * 3 * sizeof(float);
             if (!s.keypoints || s.keypoints->size() < bytes)
-                s.keypoints = std::make_unique<DeviceBuffer>(bytes);
+                s.keypoints = std::make_unique<DeviceBuffer>(bytes, s.stream);
             void *target = s.keypoints->data();
             void *args[] = {&raw, &out, &n, &classes, &points, &target};
-            s.pose.launch(detections.count * points * 3, args);
+            s.pose.launch(detections.count * points * 3, args, s.stream->get());
             std::vector<Keypoint> host(detections.count * points);
             static_assert(sizeof(Keypoint) == 3 * sizeof(float));
-            readback_metadata(host.data(), target, bytes);
+            readback_metadata(host.data(), target, bytes, s.stream->get());
             for (unsigned j = 0; j < detections.count; j++)
                 r.objects[j].keypoints.assign(host.begin() + j * points,
                                               host.begin() + (j + 1) * points);
@@ -203,7 +204,7 @@ std::vector<AnalysisResult> ModelPostprocessor::process(const std::vector<Device
             DeviceTensor masks{"instance-masks",
                                TensorType::Float32,
                                {detections.count, mask_height, mask_width},
-                               std::make_shared<DeviceBuffer>(count * sizeof(float)),
+                               std::make_shared<DeviceBuffer>(count * sizeof(float), s.stream),
                                s.device};
             auto *proto = static_cast<float *>(outputs[1].storage->data()) +
                           b * mask_channels * mask_width * mask_height;
@@ -211,8 +212,8 @@ std::vector<AnalysisResult> ModelPostprocessor::process(const std::vector<Device
             unsigned mw = m.width, mh = m.height;
             void *args[] = {&raw,        &proto,       &out, &n,  &classes, &mask_channels,
                             &mask_width, &mask_height, &mw,  &mh, &target};
-            s.masks.launch(count, args);
-            hip_check(hipDeviceSynchronize(), "Instance mask completion");
+            s.masks.launch(count, args, s.stream->get());
+            s.stream->finish();
             for (unsigned j = 0; j < detections.count; j++)
                 r.objects[j].mask_index = j;
             r.tensors.push_back(std::move(masks));

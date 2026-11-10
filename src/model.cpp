@@ -171,6 +171,7 @@ struct ModelExecutor::Impl {
     int device{};
     unsigned batch{1};
     migraphx::program program;
+    std::shared_ptr<HipStream> stream;
     std::map<std::string, migraphx::shape> shapes;
     std::vector<DeviceTensor> inputs, outputs;
     std::map<std::string, std::shared_ptr<DeviceBuffer>> output_pool;
@@ -187,6 +188,7 @@ ModelExecutor::ModelExecutor(const std::string &path, int device) {
         throw std::runtime_error("Incompatible model manifest: GPU, hash or device I/O");
     auto state = std::make_unique<Impl>();
     state->device = device;
+    state->stream = std::make_shared<HipStream>(device);
     state->batch = integer(m, "batch", 1, 16);
     state->program = migraphx::load(path.c_str());
     auto shapes = state->program.get_parameter_shapes();
@@ -210,7 +212,7 @@ ModelExecutor::ModelExecutor(const std::string &path, int device) {
 ModelExecutor::~ModelExecutor() {
     if (impl_) {
         (void)hipSetDevice(impl_->device);
-        (void)hipDeviceSynchronize();
+        (void)hipStreamSynchronize(impl_->stream->get());
     }
 }
 std::vector<DeviceTensor> ModelExecutor::inputs() const { return impl_->inputs; }
@@ -238,12 +240,13 @@ std::vector<DeviceTensor> ModelExecutor::infer(const std::map<std::string, Devic
         if (name.find("#output_") != std::string::npos) {
             auto &memory = s.output_pool[name];
             if (!memory || memory.use_count() > 1)
-                memory = std::make_shared<DeviceBuffer>(shape.bytes());
+                memory = std::make_shared<DeviceBuffer>(shape.bytes(), s.stream);
             params.add(name.c_str(), migraphx::argument(shape, memory->data()));
             bindings.push_back(memory);
         }
-    auto outputs = s.program.eval(params);
-    hip_check(hipDeviceSynchronize(), "Model completion");
+    auto outputs = s.program.run_async(params, s.stream->get());
+    s.program.experimental_get_context().finish();
+    s.stream->finish();
     auto result = s.outputs;
     for (unsigned i = 0; i < outputs.size(); i++) {
         device_pointer(outputs[i].data(), s.device);
@@ -252,12 +255,14 @@ std::vector<DeviceTensor> ModelExecutor::infer(const std::map<std::string, Devic
                 result[i].storage = memory;
         if (!result[i].storage) {
             result[i].storage =
-                std::make_shared<DeviceBuffer>(s.program.get_output_shapes()[i].bytes());
-            hip_check(hipMemcpy(result[i].storage->data(), outputs[i].data(),
-                                result[i].storage->size(), hipMemcpyDeviceToDevice),
+                std::make_shared<DeviceBuffer>(s.program.get_output_shapes()[i].bytes(), s.stream);
+            hip_check(hipMemcpyAsync(result[i].storage->data(), outputs[i].data(),
+                                     result[i].storage->size(), hipMemcpyDeviceToDevice,
+                                     s.stream->get()),
                       "Owned model output");
         }
     }
+    s.stream->finish();
     return result;
 }
 } // namespace amdva

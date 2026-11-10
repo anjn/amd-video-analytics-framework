@@ -68,23 +68,9 @@ int main(int argc, char **argv) {
                         throw std::runtime_error("AI controls did not persist");
                     change("ai-frequency", options.ai_fps);
                     change("embedding-interval", options.search.interval_ms / 1000.);
-                    auto budget = [&](const char *name, unsigned value) {
-                        auto *spin = window.findChild<QSpinBox *>(name);
-                        if (!spin)
-                            throw std::runtime_error("Missing budget control");
-                        spin->setValue(value);
-                        QMetaObject::invokeMethod(spin, "editingFinished", Qt::DirectConnection);
-                    };
-                    budget("mobileclip-gpu-budget", 35);
-                    budget("mobileclip-npu-budget", 80);
-                    const auto budgets_saved = load_config(argv[1]).search;
-                    if (controller.ai_runtime()->mobileclip_budget() !=
-                            std::pair<unsigned, unsigned>{35, 80} ||
-                        budgets_saved.mobileclip_gpu_budget_percent != 35 ||
-                        budgets_saved.mobileclip_npu_budget_percent != 80)
-                        throw std::runtime_error("Device budgets did not persist/apply");
-                    budget("mobileclip-gpu-budget", options.search.mobileclip_gpu_budget_percent);
-                    budget("mobileclip-npu-budget", options.search.mobileclip_npu_budget_percent);
+                    if (window.findChild<QSpinBox *>("mobileclip-gpu-budget") ||
+                        window.findChild<QSpinBox *>("mobileclip-npu-budget"))
+                        throw std::runtime_error("Obsolete duty limit control remains");
                     if (!options.search.mobileclip_bundle.empty() &&
                         !options.search.ryzen_ai_venv.empty()) {
                         auto *model = window.findChild<QComboBox *>("embedding-model");
@@ -179,7 +165,9 @@ int main(int argc, char **argv) {
                     {"cameras", cameras},
                     {"stored", double(state.stored)},
                     {"search_error", QString::fromStdString(state.error)},
-                    {"effective_interval_ms", int(controller.ai_runtime()->effective_interval())}};
+                    {"tracking_state", QString::fromStdString(state.tracking_state)},
+                    {"tracking_error", QString::fromStdString(state.tracking_error)},
+                    {"configured_interval_ms", int(controller.ai_runtime()->interval_ms())}};
                 size_t pages = 0, resident = 0;
                 std::ifstream memory("/proc/self/statm");
                 memory >> pages >> resident;
@@ -193,7 +181,9 @@ int main(int argc, char **argv) {
                 log.flush();
                 std::cout << "elapsed=" << elapsed << " mode=" << mode << " stored=" << state.stored
                           << " pending=" << state.pending << " error=" << state.error << std::endl;
-                if (state.state == "error")
+                if (!state.tracking_error.empty())
+                    throw std::runtime_error(state.tracking_error);
+                if (state.state == "error" || !state.error.empty())
                     throw std::runtime_error(state.error);
                 if (elapsed >= seconds) {
                     if (search && state.stored == 0)
