@@ -46,6 +46,24 @@ remain alive through the HIP completion event. Each submitted tensor owns its
 storage independently, including every ROI; later preprocessing cannot
 overwrite a queued batch input.
 
+## Shared NPU tensors
+
+The optional `amdnpu` element accepts a `SharedTensor` in `AmdSharedTensorMeta`.
+HIP writes directly to the GPU alias of mapped host memory; a retained completion
+event orders the producer before the Vitis AI EP call. ORT wraps the same host
+pointer without an application input copy. `amdpreproc output-memory=host-mapped`
+produces this metadata while retaining the original VA video buffer. Native
+MobileCLIP preprocessing produces the same shared tensor for NVR's persistent
+`appsrc → amdnpu → appsink` pipeline.
+
+`AmdNpuResultMeta` retains named, typed, shaped ORT output allocations through
+shared owners, including after stop and subsequent inference. Full buffer copies
+share ownership; region copies omit both NPU metas. Producers must not overwrite
+an input while downstream consumers still use it. NPU EP-internal copies, DMA
+and cache synchronization are outside the application contract. The element
+supports static batch-one float32 NCHW image inputs and raw numeric outputs;
+see [element properties and validation](elements.md#npu-inference-amdnpu).
+
 ## Models, batches and results
 
 Prepared models have SHA256, GPU architecture and `offload_copy=false` manifests.

@@ -8,6 +8,9 @@ class VideoPreprocessor {
     ~VideoPreprocessor();
     std::shared_ptr<Tensor> prepare(GstBuffer *, const GstVideoInfo &, unsigned x = 0,
                                     unsigned y = 0, unsigned width = 0, unsigned height = 0);
+    std::shared_ptr<Tensor> prepare_into(GstBuffer *, const GstVideoInfo &,
+                                         std::shared_ptr<SharedTensor> destination, unsigned x = 0,
+                                         unsigned y = 0, unsigned width = 0, unsigned height = 0);
 
   private:
     struct Impl;

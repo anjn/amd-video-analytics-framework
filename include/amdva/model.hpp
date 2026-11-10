@@ -1,10 +1,10 @@
 #pragma once
 #include "amdva/inference.hpp"
 #include "amdva/preprocess.hpp"
+#include "amdva/shared_tensor.hpp"
 #include <map>
 #include <mutex>
 namespace amdva {
-enum class TensorType { Float32, Float16, Int32, Int64, UInt8 };
 struct DeviceTensor {
     std::string name;
     TensorType type{TensorType::Float32};

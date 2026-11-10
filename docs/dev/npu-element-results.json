@@ -1,0 +1,284 @@
+{
+  "schema": 1,
+  "date": "2026-11-10",
+  "host": "amd-rai370",
+  "hardware": "Ryzen AI 9 HX 370 / Radeon 890M gfx1150 / XDNA2",
+  "kernel": "6.17.0-1033-oem",
+  "rocm": "7.2.0",
+  "onnxruntime": "1.30.0",
+  "ryzen_ai": "1.9 development build",
+  "contract": "GPU-written HIP mapped host input -> appsrc -> amdnpu -> appsink; EP-internal copies excluded",
+  "generic_fixture": {
+    "preparation": "scripts/prepare_npu_fixture.py artifacts/npu-element-fixture artifacts/mobileclip-device/npu-config.json",
+    "model": "Static Conv/Relu/GlobalAveragePool, float32 images[1,3,32,32], features[1,8,32,32] and pooled[1,8,1,1]",
+    "expected_output": ".5 + .75 * input_fill for alternating fills 0 and 1",
+    "result": {
+      "passed": true,
+      "iterations": 100,
+      "outputs": 2,
+      "input_pointer_equal": true,
+      "retained_output_after_stop": true,
+      "metadata_copy": true,
+      "flush_eos": true,
+      "invalid_inputs_rejected": true,
+      "video_preprocessing": true
+    },
+    "nondefault_hip_stream_event": true,
+    "original_va_memory_and_pts_preserved": true,
+    "input_copy_owner_release_verified": true
+  },
+  "mobileclip_gpu_npu_sample": [
+    {
+      "backend": "gpu",
+      "pid": 364326,
+      "device": 133622316400640,
+      "bound": 133622316400640
+    },
+    {
+      "backend": "npu",
+      "pid": 364326,
+      "host": 133626165985280,
+      "device": 133626165985280,
+      "ort_bound": 133626165985280
+    },
+    {
+      "schema": 1,
+      "application_input_copy_verified": true,
+      "ep_internal_copy_verified": false,
+      "iterations": 100,
+      "calls": 200,
+      "input_copies": 0,
+      "violations": 0,
+      "max_pixel_error": 0,
+      "reference_checked": true,
+      "min_embedding_cosine": 1,
+      "min_text_cosine": 1,
+      "buffer_reuses": 50,
+      "invalid_inputs_rejected": 9,
+      "diagnostic_input_readback_bytes": 334233600,
+      "reference_mean_call_ms": 19.285124615,
+      "mean_call_ms": 22.19549357
+    }
+  ],
+  "contracts": {
+    "full_suite": {
+      "passed": 40,
+      "failed": 0,
+      "wall_seconds": 68.69,
+      "includes": [
+        "npu-meta-contract",
+        "npu-element-contract"
+      ]
+    }
+  },
+  "builds": {
+    "npu_enabled": "Full framework, MobileCLIP, NVR and GUI build passed",
+    "npu_disabled": {
+      "gpu_elements_link_onnxruntime": false,
+      "gpu_elements_link_amdnpu": false,
+      "mobileclip_gpu_sample": {
+        "schema": 1,
+        "application_input_copy_verified": true,
+        "ep_internal_copy_verified": false,
+        "iterations": 100,
+        "calls": 100,
+        "input_copies": 0,
+        "violations": 0,
+        "max_pixel_error": 0,
+        "reference_checked": false,
+        "min_embedding_cosine": 1,
+        "min_text_cosine": 1,
+        "buffer_reuses": 50,
+        "invalid_inputs_rejected": 4,
+        "diagnostic_input_readback_bytes": 255590400,
+        "reference_mean_call_ms": 0,
+        "mean_call_ms": 30.2179527
+      },
+      "npu_selection_rejected": "MobileCLIP NPU requires AMDVA_BUILD_NPU and GStreamer plugins",
+      "metadata_contract": true
+    },
+    "installed_sdk": {
+      "standalone_mobileclip_build": true,
+      "installed_validator": {
+        "passed": true,
+        "iterations": 100,
+        "outputs": 2,
+        "input_pointer_equal": true,
+        "retained_output_after_stop": true,
+        "metadata_copy": true,
+        "flush_eos": true,
+        "invalid_inputs_rejected": true,
+        "video_preprocessing": false
+      }
+    }
+  },
+  "nvr": {
+    "gpu": {
+      "headless": {
+        "schema": 1,
+        "passed": true,
+        "pid": 371067,
+        "stored": 8,
+        "english_query": true,
+        "japanese_query": true,
+        "reid_calls": 4,
+        "embedding_calls": 4,
+        "cpu_image_query": true,
+        "budgets_updated": true,
+        "child_processes": false,
+        "input_copies": 0,
+        "audit_errors": 0
+      },
+      "gui": {
+        "passed": true,
+        "checks": [
+          "PASS: checkbox person search; groups=24 best=0.316953",
+          "PASS: person cards contain a single camera/person and tracklet IDs",
+          "PASS: retention-style deletion kept 23 results in place",
+          "PASS: strip image playback frames=36",
+          "PASS: video click paused",
+          "PASS: video click resumed",
+          "PASS: playback looped from 1794296107252 to 1794296096885",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=28",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=28",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=28",
+          "PASS: deletion removed search image; deleted=11",
+          "PASS: deletion pruned results; cards=0 status=The matching recordings were deleted.",
+          "PASS: Exit Application quit the event loop"
+        ],
+        "final_sample": {
+          "stored": 249,
+          "dropped": 0,
+          "pending": 4
+        }
+      }
+    },
+    "npu": {
+      "headless": {
+        "schema": 1,
+        "passed": true,
+        "pid": 371664,
+        "stored": 9,
+        "english_query": true,
+        "japanese_query": true,
+        "reid_calls": 4,
+        "embedding_calls": 10,
+        "cpu_image_query": true,
+        "budgets_updated": true,
+        "child_processes": false,
+        "input_copies": 0,
+        "audit_errors": 0
+      },
+      "gui": {
+        "passed": true,
+        "checks": [
+          "PASS: checkbox person search; groups=23 best=0.282253",
+          "PASS: person cards contain a single camera/person and tracklet IDs",
+          "PASS: retention-style deletion kept 22 results in place",
+          "PASS: strip image playback frames=55",
+          "PASS: video click paused",
+          "PASS: video click resumed",
+          "PASS: playback looped from 1794296152778 to 1794296147911",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=23",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=23",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=23",
+          "PASS: deletion removed search image; deleted=9",
+          "PASS: deletion pruned results; cards=0 status=The matching recordings were deleted.",
+          "PASS: Exit Application quit the event loop"
+        ],
+        "final_sample": {
+          "stored": 200,
+          "dropped": 0,
+          "pending": 4
+        }
+      }
+    },
+    "gpu+npu": {
+      "headless": {
+        "schema": 1,
+        "passed": true,
+        "pid": 372254,
+        "stored": 9,
+        "english_query": true,
+        "japanese_query": true,
+        "reid_calls": 4,
+        "embedding_calls": 7,
+        "cpu_image_query": true,
+        "budgets_updated": true,
+        "child_processes": false,
+        "input_copies": 0,
+        "audit_errors": 0
+      },
+      "gui": {
+        "passed": true,
+        "checks": [
+          "PASS: checkbox person search; groups=25 best=0.31647",
+          "PASS: person cards contain a single camera/person and tracklet IDs",
+          "PASS: retention-style deletion kept 23 results in place",
+          "PASS: strip image playback frames=42",
+          "PASS: video click paused",
+          "PASS: video click resumed",
+          "PASS: playback looped from 1794296198052 to 1794296187685",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=27",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=27",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=27",
+          "PASS: deletion removed search image; deleted=11",
+          "PASS: deletion pruned results; cards=0 status=The matching recordings were deleted.",
+          "PASS: Exit Application quit the event loop"
+        ],
+        "final_sample": {
+          "stored": 247,
+          "dropped": 0,
+          "pending": 6
+        }
+      }
+    }
+  },
+  "demo": {
+    "sources": 17,
+    "selected": 16,
+    "backend": "npu",
+    "headless": {
+      "schema": 1,
+      "passed": true,
+      "pid": 375135,
+      "stored": 7,
+      "english_query": true,
+      "japanese_query": true,
+      "reid_calls": 56,
+      "embedding_calls": 8,
+      "cpu_image_query": true,
+      "budgets_updated": true,
+      "child_processes": false,
+      "input_copies": 0,
+      "audit_errors": 0
+    },
+    "gui": {
+      "passed": true,
+      "checks": [
+        "PASS: checkbox person search; groups=38 best=0.271091",
+        "PASS: person cards contain a single camera/person and tracklet IDs",
+        "PASS: retention-style deletion kept 46 results in place",
+        "PASS: live collection, English/Japanese search, result playback, drag image search; groups=50",
+        "PASS: live collection, English/Japanese search, result playback, drag image search; groups=50",
+        "PASS: live collection, English/Japanese search, result playback, drag image search; groups=50",
+        "PASS: deletion removed search image; deleted=169",
+        "PASS: deletion pruned results; cards=0 status=The matching recordings were deleted.",
+        "PASS: Exit Application quit the event loop"
+      ],
+      "final_sample": {
+        "stored": 87,
+        "dropped": 175,
+        "pending": 91
+      }
+    },
+    "scope": "Functional regression only. Queue drops occurred at demo load; this is not a throughput benchmark."
+  },
+  "application_input_copy_verified": true,
+  "ep_internal_copy_verified": false,
+  "documentation": {
+    "translations_stale": 0,
+    "mkdocs_strict_build": true,
+    "git_diff_check": true
+  }
+}

@@ -41,7 +41,19 @@ VideoPreprocessor::VideoPreprocessor(ModelInfo info, int device)
 VideoPreprocessor::~VideoPreprocessor() = default;
 std::shared_ptr<Tensor> VideoPreprocessor::prepare(GstBuffer *buffer, const GstVideoInfo &video,
                                                    unsigned x, unsigned y, unsigned w, unsigned h) {
+    return prepare_into(buffer, video, nullptr, x, y, w, h);
+}
+std::shared_ptr<Tensor> VideoPreprocessor::prepare_into(GstBuffer *buffer,
+                                                        const GstVideoInfo &video,
+                                                        std::shared_ptr<SharedTensor> destination,
+                                                        unsigned x, unsigned y, unsigned w,
+                                                        unsigned h) {
     auto &s = *impl_;
+    if (destination &&
+        (destination->device() != s.device || destination->descriptor().name != s.info.input_name ||
+         destination->descriptor().type != TensorType::Float32 ||
+         destination->descriptor().shape != std::vector<size_t>{1, 3, s.info.height, s.info.width}))
+        throw std::invalid_argument("Shared preprocessing destination mismatch");
     hip_check(hipSetDevice(s.device), "Preprocessing device");
     if (GST_VIDEO_INFO_FORMAT(&video) != GST_VIDEO_FORMAT_NV12 || video.width % 2 ||
         video.height % 2 || video.interlace_mode != GST_VIDEO_INTERLACE_MODE_PROGRESSIVE ||
@@ -137,8 +149,14 @@ std::shared_ptr<Tensor> VideoPreprocessor::prepare(GstBuffer *buffer, const GstV
     tensor->scaled_height = geometry.scaled_height;
     tensor->pad_x = geometry.pad_x;
     tensor->pad_y = geometry.pad_y;
-    tensor->buffer =
-        std::make_shared<DeviceBuffer>(size_t(3) * s.info.width * s.info.height * sizeof(float));
+    if (destination) {
+        // Keep the allocation alive even when a caller retains only buffer.
+        tensor->buffer = std::shared_ptr<DeviceBuffer>(
+            new DeviceBuffer(destination->device_data(), destination->descriptor().bytes()),
+            [owner = destination](DeviceBuffer *view) { delete view; });
+    } else
+        tensor->buffer = std::make_shared<DeviceBuffer>(size_t(3) * s.info.width * s.info.height *
+                                                        sizeof(float));
     struct Guard {
         ~Guard() { (void)hipDeviceSynchronize(); }
     } guard;
@@ -146,6 +164,8 @@ std::shared_ptr<Tensor> VideoPreprocessor::prepare(GstBuffer *buffer, const GstV
     hip_check(hipEventCreateWithFlags(&tensor->ready, hipEventDisableTiming), "Tensor event");
     hip_check(hipEventRecord(tensor->ready, nullptr), "Record tensor readiness");
     hip_check(hipEventSynchronize(tensor->ready), "Preprocessing completion");
+    if (destination)
+        destination->record_ready();
     return tensor;
 }
 } // namespace amdva

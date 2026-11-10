@@ -35,6 +35,7 @@ Libraries (public headers in `include/amdva/`, exported as `AMDVA::` targets):
 | `amdva_inference` | `src/inference.cpp`, `model.cpp`, `postprocess.cpp`, `batching.cpp` | MIGraphX models with GPU tensor I/O, manifests, task adapters, `SharedBatchExecutor` |
 | `amdva_gst_support` | `src/gst/*` (non-plugin parts) | GstAnalytics interop, tracking, overlay, result publishing |
 | `gstamdanalytics` | `src/gst/plugin.cpp` … | GStreamer elements (`amdpreproc`, `amdmigraphx`, `amdwatermark`, `amdmetapublish`, …) |
+| `amdva_npu`, `gstamdnpu`, `amdva_npu_pipeline` | `src/npu.cpp`, `src/gst/npu*.cpp` | Optional Vitis AI runtime, shared-tensor inference element, persistent appsrc/appsink adapter |
 | `amdva_media` | `src/media` | H.264 VUI, RTSP server wrapper, VA→EGL DMA-BUF import |
 | `amdva_streaming` | `src/streaming` | RTSP ingest, segment recording, SQLite catalog with quota, playback, preview surfaces, transcoding (no Qt) |
 | `amdva_monitor` | `src/resource_monitor.cpp` | CPU/GPU/memory/power and DRM engine utilization |
@@ -51,7 +52,7 @@ Hard rules from `docs/dev/architecture.md` that code changes must respect:
   - `Controller` (`controller.cpp`) owns the camera channels, the shared VA display, 16 GPU slots and the GPU/preview/control threads.
   - `AiRuntime` (`ai.hpp`) schedules GPU work by priority lease and records per-stage wall-time metrics (`record(stage, camera, ms, wait, batch)`; per-camera rows are also aggregated into the `""` camera row).
   - `SearchService` (`search.cpp`) runs person tracking (ReID), image embeddings (EmbeddingGemma or MobileCLIP2) and vector search, with data stored in the recording catalog DB.
-  - MobileCLIP on the NPU runs in a separate worker process (`mobileclip_worker.cpp`) inside the Ryzen AI venv (`search.ryzen_ai_venv`). The framework itself has no NPU backend.
+  - MobileCLIP runs in process through `amdva_mobileclip`. GPU uses MIGraphX device I/O; NPU uses `appsrc → amdnpu → appsink` with HIP-mapped shared tensors. The launch helper configures `search.ryzen_ai_venv` before startup. EP-internal copies are outside the application's no-copy input contract; see `docs/dev/elements.md`.
 - `app/`: Qt desktop `amdva-nvr`. `vms.cpp` builds the tabs; `ai_page.cpp` / `ai_overview.cpp` are the AI Statistics tab; `window.cpp` is the EGL video wall.
 - `headless.cpp`: `amdva-streams`, which is the backend without a display.
 - `tools/`: validation programs (`amdva-ai-validate`, `amdva-nvr-validate`, …) that write JSON records to `docs/dev/nvr/*-results.json`.

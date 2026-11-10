@@ -1,4 +1,4 @@
-<!-- source: examples/mobileclip/README.ja.md c896e78861100f92d383cb3fabcdbef64e27a455 -->
+<!-- source: examples/mobileclip/README.ja.md 28a231caee225020486ebef60123b40576527c3d -->
 # MobileCLIP GPU and NPU in one process
 
 This sample and the NVR share `amdva_mobileclip`. GPU preprocessing writes
@@ -6,6 +6,16 @@ float32 NCHW tensors directly into the inference input. GPU inference uses
 MIGraphX device I/O; NPU inference wraps HIP-mapped host memory in an ONNX Runtime
 CPU tensor and invokes Vitis AI EP. The EP's internal buffer handling is outside
 this application's copy-free contract. No XRT calls are required by the sample.
+
+NPU image inference uses a persistent GStreamer pipeline,
+`appsrc → amdnpu → appsink`. MobileCLIP-specific HIP preprocessing stays in the
+native library and passes a shared tensor to the element. The generic ONNX
+element retains raw named, typed, shaped outputs in metadata. This transport
+change preserves search fingerprints. See [element and generic-model
+validation](../../docs/dev/elements.md#npu-inference-amdnpu).
+
+With `AMDVA_BUILD_NPU=OFF`, MobileCLIP GPU image inference and CPU text inference
+remain available. Selecting NPU in that build reports an initialization error.
 
 ## Build and prepare
 
@@ -18,7 +28,7 @@ Preparation is offline; the applications do not compile models on startup.
 ```bash
 source scripts/env.sh
 source examples/nvr/scripts/mobileclip-env.sh /path/to/ryzen-ai-venv
-cmake -S . -B build -DAMDVA_BUILD_MOBILECLIP=ON -DAMDVA_ORT_ROOT="$AMDVA_ORT_ROOT"
+cmake -S . -B build -DAMDVA_BUILD_MOBILECLIP=ON -DAMDVA_BUILD_NPU=ON -DAMDVA_ORT_ROOT="$AMDVA_ORT_ROOT"
 cmake --build build -j8
 cp -a /path/to/mobileclip2-api artifacts/mobileclip-device
 python scripts/prepare_mobileclip_device.py artifacts/mobileclip-device

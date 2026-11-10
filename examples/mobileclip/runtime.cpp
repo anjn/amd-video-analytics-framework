@@ -4,6 +4,9 @@
 // License: third_party/mobileclip-tokenizer/LICENSE.
 #include <algorithm>
 #include <amdva/mobileclip.hpp>
+#ifdef AMDVA_HAVE_NPU
+#include <amdva/npu_pipeline.hpp>
+#endif
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -148,32 +151,23 @@ extern "C" __global__ void vertical(const unsigned char *tmp,int side,float *dst
 )";
 struct Memory {
     std::shared_ptr<DeviceBuffer> gpu;
+    std::shared_ptr<SharedTensor> shared;
     void *host = nullptr, *device = nullptr;
     size_t bytes;
     int ordinal;
     Memory(bool npu, unsigned batch, int d) : bytes(batch * elements * sizeof(float)), ordinal(d) {
         hip_check(hipSetDevice(d), "MobileCLIP allocation device");
         if (npu) {
-            hip_check(hipHostMalloc(&host, bytes, hipHostMallocMapped),
-                      "MobileCLIP shared input allocation");
-            try {
-                hip_check(hipHostGetDevicePointer(&device, host, 0),
-                          "MobileCLIP shared device pointer");
-            } catch (...) {
-                (void)hipHostFree(host);
-                host = nullptr;
-                throw;
-            }
+            shared = std::make_shared<SharedTensor>(
+                TensorDescriptor{"images", TensorType::Float32, {batch, 3, 256, 256}}, d);
+            host = shared->host_data();
+            device = shared->device_data();
         } else {
             gpu = std::make_shared<DeviceBuffer>(bytes);
             device = gpu->data();
         }
     }
-    ~Memory() {
-        (void)hipSetDevice(ordinal);
-        if (host)
-            (void)hipHostFree(host);
-    }
+    ~Memory() { (void)hipSetDevice(ordinal); }
 };
 } // namespace
 struct PreparedInput::Impl {
@@ -205,7 +199,10 @@ struct Runtime::Impl {
     std::string backend;
     int device;
     Ort::Env env{ORT_LOGGING_LEVEL_WARNING, "amdva-mobileclip"};
-    std::unique_ptr<Ort::Session> image, text_session;
+    std::unique_ptr<Ort::Session> text_session;
+#ifdef AMDVA_HAVE_NPU
+    std::unique_ptr<NpuPipeline> image;
+#endif
     std::unique_ptr<void, decltype(&eg2_tokenizer_free)> tokenizer{nullptr, eg2_tokenizer_free};
     std::map<unsigned, std::unique_ptr<ModelExecutor>> models;
     std::unique_ptr<Kernel> horizontal, vertical;
@@ -242,23 +239,14 @@ struct Runtime::Impl {
                     std::string::npos ||
                 !fs::exists(root / "npu-cache" / key / "context.json"))
                 throw std::runtime_error("Missing or invalid NPU cache");
-            Ort::SessionOptions opts;
-            opts.SetIntraOpNumThreads(4);
-            opts.AddFreeDimensionOverrideByName("batch", 1);
-            opts.AddConfigEntry("session.disable_cpu_ep_fallback", "1");
-            try {
-                opts.AppendExecutionProvider_VitisAI(
-                    {{"config_file", (root / "npu-config.json").string()},
-                     {"cache_dir", (root / "npu-cache").string()},
-                     {"cache_key", key},
-                     {"enable_cache_file_io_in_mem", "0"}});
-                image = std::make_unique<Ort::Session>(env, (root / "image.onnx").c_str(), opts);
-            } catch (const Ort::Exception &e) {
-                throw std::runtime_error(std::string("MobileCLIP NPU initialization failed: ") +
-                    e.what() + ". Launch NVR with examples/nvr/scripts/run.sh CONFIG.json "
-                    "and set search.ryzen_ai_venv (or AMDVA_RYZEN_AI_VENV) to the Ryzen AI venv. "
-                    "ReID cannot start until search initialization succeeds.");
-            }
+#ifdef AMDVA_HAVE_NPU
+            image = std::make_unique<NpuPipeline>(
+                NpuModelConfig{(root / "image.onnx").string(), (root / "npu-config.json").string(),
+                               (root / "npu-cache").string(), key, device});
+#else
+            throw std::runtime_error(
+                "MobileCLIP NPU requires AMDVA_BUILD_NPU and GStreamer plugins");
+#endif
         } else {
             for (unsigned batch : {1u, 4u}) {
                 auto model = std::make_unique<ModelExecutor>(
@@ -319,7 +307,9 @@ PreparedInput Runtime::prepare(const std::vector<Image> &images) {
     unsigned physical = images.size() == 1 ? 1 : 4;
     std::shared_ptr<Memory> memory;
     for (auto &candidate : s.pool)
-        if (candidate.use_count() == 1 && candidate->bytes == physical * elements * sizeof(float)) {
+        if (candidate.use_count() == 1 &&
+            (!candidate->shared || candidate->shared.use_count() == 1) &&
+            candidate->bytes == physical * elements * sizeof(float)) {
             memory = candidate;
             break;
         }
@@ -340,6 +330,8 @@ PreparedInput Runtime::prepare(const std::vector<Image> &images) {
         s.vertical->launch(elements, vertical_args);
         hip_check(hipDeviceSynchronize(), "MobileCLIP GPU preprocessing completion");
     }
+    if (memory->shared)
+        memory->shared->record_ready();
     PreparedInput result;
     result.impl_ = std::make_unique<PreparedInput::Impl>();
     result.impl_->memory = memory;
@@ -365,22 +357,19 @@ std::vector<std::array<float, 512>> Runtime::infer(PreparedInput &input) {
     auto &memory = *input.impl_->memory;
     std::vector<std::array<float, 512>> result(e.physical);
     if (s.backend == "npu") {
-        auto mem = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
-        std::array<int64_t, 4> shape{1, 3, 256, 256};
-        auto value = Ort::Value::CreateTensor<float>(mem, static_cast<float *>(memory.host),
-                                                     elements, shape.data(), shape.size());
-        e.bound = reinterpret_cast<uintptr_t>(value.GetTensorData<float>());
+#ifdef AMDVA_HAVE_NPU
+        auto values = s.image->infer(memory.shared);
+        e.bound = values->input_address;
         if (e.bound != e.host)
-            throw std::runtime_error("ORT input pointer changed");
-        const char *in = "images", *out = "embeddings";
-        // The EP call is deliberately outside the application's input-copy scope.
-        auto values = s.image->Run(Ort::RunOptions{nullptr}, &in, &value, 1, &out, 1);
-        if (values.size() != 1 ||
-            values[0].GetTensorTypeAndShapeInfo().GetShape() != std::vector<int64_t>{1, 512} ||
-            values[0].GetTensorTypeAndShapeInfo().GetElementType() !=
-                ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT)
+            throw std::runtime_error("NPU element changed the shared input pointer");
+        if (values->tensors.size() != 1 || values->tensors[0].descriptor.name != "embeddings" ||
+            values->tensors[0].descriptor.shape != std::vector<size_t>{1, 512} ||
+            values->tensors[0].descriptor.type != TensorType::Float32)
             throw std::runtime_error("Invalid NPU embedding output");
-        std::copy_n(values[0].GetTensorData<float>(), 512, result[0].data());
+        std::copy_n(static_cast<const float *>(values->tensors[0].data), 512, result[0].data());
+#else
+        throw std::runtime_error("MobileCLIP NPU support is disabled");
+#endif
     } else {
         auto &model = *s.models.at(e.physical);
         auto tensor = model.inputs().front();

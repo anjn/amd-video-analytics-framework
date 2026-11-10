@@ -1,4 +1,4 @@
-<!-- source: docs/dev/architecture.md d69c93f2660de5945312214b8cd0cbaffafa73fd -->
+<!-- source: docs/dev/architecture.md e735e8473d9e7b19ee5e2bf866af416559b9b7a5 -->
 # メモリと実行に関する契約
 
 タスク、要素、モデルの準備、バッチ処理、SDK の使い方は[フレームワークのインターフェースとサンプル](framework.ja.md) を参照してください。このドキュメントでは、アプリケーションの UI や結果の送信方法とは切り離して、GPU メモリに関する契約を定めます。
@@ -18,6 +18,12 @@ VPE は NV12 の切り出し、スケーリング、線形 BGRA のモデル用�
 HIP は、インポートして保持している BGRA 画像を読み取り、新たに確保した float32 NCHW の GPU
 メモリに書き込みます。このとき、RGB/BGR の並び、scale/mean/std による正規化、省略可能なレターボックスのパディングを適用します。画像を中継するための memcpy はありません。VA サーフェスとインポートは
 HIP の完了イベントまで保持します。投入した各テンソルは、ROI も含めてそれぞれ独立してメモリを所有するため、後続の前処理がキュー内のバッチ入力を上書きすることはありません。
+
+## NPU用の共有テンソル
+
+任意プラグインの`amdnpu`は、`AmdSharedTensorMeta`内の`SharedTensor`を受け取ります。HIPはmapped host memoryのGPU側ポインターへ直接書き込みます。保持した完了イベントで前処理の終了を待ってからVitis AI EPを呼び出し、ORTは同じホストポインターを入力に使います。アプリケーションで入力をコピーしません。`amdpreproc output-memory=host-mapped`は、元のVA映像バッファーを保持したままこのメタデータを作ります。NVRではMobileCLIPのネイティブ前処理が同じ共有テンソルを作り、常設の`appsrc → amdnpu → appsink`へ渡します。
+
+`AmdNpuResultMeta`は、名前・型・形状とともにORT出力領域を共有所有し、停止後や後続推論の後も保持します。バッファー全体のコピーでは所有権を共有し、部分コピーでは両NPUメタデータを引き継ぎません。下流が入力を参照している間は再書き込みを避けてください。NPU EP内部のコピー、DMA、キャッシュ同期はアプリケーションの契約の対象外です。静的なバッチ1のfloat32 NCHW画像入力と数値テンソル出力に対応します。[プロパティと検証手順](elements.ja.md#npu-inference-amdnpu)を参照してください。
 
 ## モデル、バッチ、結果
 

@@ -1,3 +1,4 @@
+#include "amdva/npu_meta.hpp"
 #include "amdva/tensor_meta.hpp"
 #include "amdva/video_preprocess.hpp"
 #include <algorithm>
@@ -12,6 +13,7 @@ GST_DEBUG_CATEGORY_STATIC(preproc_debug);
 struct PreprocState {
     GstVideoInfo video{};
     std::unique_ptr<amdva::VideoPreprocessor> processor;
+    amdva::ModelInfo info;
 };
 typedef struct {
     GstBaseTransform parent;
@@ -19,13 +21,14 @@ typedef struct {
     guint width, height;
     gboolean strict;
     gchar *model_info;
+    gchar *output_memory;
     PreprocState *state;
 } AmdPreproc;
 typedef struct {
     GstBaseTransformClass parent;
 } AmdPreprocClass;
 G_DEFINE_TYPE(AmdPreproc, amd_preproc, GST_TYPE_BASE_TRANSFORM)
-enum { P_NONE, P_DEVICE, P_WIDTH, P_HEIGHT, P_STRICT, P_INFO };
+enum { P_NONE, P_DEVICE, P_WIDTH, P_HEIGHT, P_STRICT, P_INFO, P_MEMORY };
 static GstStaticPadTemplate sink = GST_STATIC_PAD_TEMPLATE(
     "sink", GST_PAD_SINK, GST_PAD_ALWAYS,
     GST_STATIC_CAPS("video/x-raw(memory:VAMemory),format=NV12,width=[2,32766],height=[2,32766]"));
@@ -55,6 +58,10 @@ static void set_property(GObject *o, guint p, const GValue *v, GParamSpec *spec)
         g_free(self->model_info);
         self->model_info = g_value_dup_string(v);
         break;
+    case P_MEMORY:
+        g_free(self->output_memory);
+        self->output_memory = g_value_dup_string(v);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(o, p, spec);
     }
@@ -77,6 +84,9 @@ static void get_property(GObject *o, guint p, GValue *v, GParamSpec *spec) {
     case P_INFO:
         g_value_set_string(v, self->model_info);
         break;
+    case P_MEMORY:
+        g_value_set_string(v, self->output_memory);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(o, p, spec);
     }
@@ -89,6 +99,9 @@ static gboolean start(GstBaseTransform *t) {
         return FALSE;
     }
     try {
+        if (!self->output_memory || (std::string(self->output_memory) != "device" &&
+                                     std::string(self->output_memory) != "host-mapped"))
+            throw std::invalid_argument("output-memory must be device or host-mapped");
         auto state = std::make_unique<PreprocState>();
         amdva::ModelInfo info;
         info.width = self->width;
@@ -96,6 +109,7 @@ static gboolean start(GstBaseTransform *t) {
         if (self->model_info)
             info = amdva::ModelInfo::load(self->model_info);
         state->processor = std::make_unique<amdva::VideoPreprocessor>(info, self->device);
+        state->info = info;
         delete self->state;
         self->state = state.release();
         return TRUE;
@@ -131,8 +145,19 @@ static gboolean set_caps(GstBaseTransform *t, GstCaps *in, GstCaps *) {
 static GstFlowReturn transform(GstBaseTransform *t, GstBuffer *buffer) {
     auto *self = reinterpret_cast<AmdPreproc *>(t);
     try {
-        if (amdva::get_tensor_meta(buffer))
+        if (amdva::get_tensor_meta(buffer) || amdva::get_shared_tensor_meta(buffer))
             throw std::runtime_error("Input already carries an AMD tensor");
+        if (std::string(self->output_memory) == "host-mapped") {
+            auto &info = self->state->info;
+            auto shared = std::make_shared<amdva::SharedTensor>(
+                amdva::TensorDescriptor{
+                    info.input_name, amdva::TensorType::Float32, {1, 3, info.height, info.width}},
+                self->device);
+            self->state->processor->prepare_into(buffer, self->state->video, shared);
+            if (!amdva::add_shared_tensor_meta(buffer, std::move(shared)))
+                throw std::runtime_error("Cannot attach shared tensor");
+            return GST_FLOW_OK;
+        }
         auto tensor = self->state->processor->prepare(buffer, self->state->video);
         if (!amdva::add_tensor_meta(buffer, std::move(tensor)))
             throw std::runtime_error("Cannot attach tensor metadata");
@@ -146,6 +171,7 @@ static void finalize(GObject *o) {
     auto *self = reinterpret_cast<AmdPreproc *>(o);
     delete self->state;
     g_free(self->model_info);
+    g_free(self->output_memory);
     G_OBJECT_CLASS(amd_preproc_parent_class)->finalize(o);
 }
 static void amd_preproc_class_init(AmdPreprocClass *klass) {
@@ -155,6 +181,10 @@ static void amd_preproc_class_init(AmdPreprocClass *klass) {
     object->finalize = finalize;
     const auto flags = static_cast<GParamFlags>(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS |
                                                 GST_PARAM_MUTABLE_READY);
+    g_object_class_install_property(object, P_MEMORY,
+                                    g_param_spec_string("output-memory", "Output memory",
+                                                        "device or host-mapped (NPU shared input)",
+                                                        "device", flags));
     g_object_class_install_property(
         object, P_DEVICE,
         g_param_spec_int("device", "GPU device", "HIP device index", 0, 16, 0, flags));
@@ -185,6 +215,7 @@ static void amd_preproc_class_init(AmdPreprocClass *klass) {
     GST_DEBUG_CATEGORY_INIT(preproc_debug, "amdpreproc", 0, "AMD VPE/HIP preprocessing");
 }
 static void amd_preproc_init(AmdPreproc *self) {
+    self->output_memory = g_strdup("device");
     self->device = 0;
     self->width = 640;
     self->height = 640;

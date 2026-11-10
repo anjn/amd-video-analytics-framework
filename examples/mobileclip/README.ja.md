@@ -2,6 +2,10 @@
 
 このサンプルとNVRは共通ライブラリの`amdva_mobileclip`を使います。GPU前処理は推論入力のfloat32 NCHWテンソルへ直接書き込みます。GPU推論はMIGraphXのデバイス入出力、NPU推論はHIPで共有したホストメモリを参照するONNX RuntimeのCPUテンソルを使います。NPUはVitis AI EP経由で実行します。EP内部のバッファー操作は今回のコピー禁止の対象外で、サンプルからXRTを直接呼び出す必要はありません。
 
+NPU画像推論には、常設のGStreamerパイプライン`appsrc → amdnpu → appsink`を使います。MobileCLIP固有のHIP前処理はネイティブライブラリに残し、共有テンソルをエレメントへ渡します。`amdnpu`は汎用ONNX推論として実装し、名前・型・形状付きのraw出力をメタデータに保持します。今回の経路変更では検索のフィンガープリントを変更しません。[エレメントと汎用モデルの検証](../../docs/dev/elements.ja.md#npu-inference-amdnpu)も参照してください。
+
+`AMDVA_BUILD_NPU=OFF`でもMobileCLIPのGPU推論とCPUテキスト推論は使えます。そのビルドでNPUを選択すると、初期化時にエラーになります。
+
 ## ビルドとモデルの準備
 
 `image.onnx`、`text.onnx`、`tokenizer.json`とチェックサムを含む既存のMobileCLIP2-S2ネイティブバンドルを使います。NPUには準備済みのBF16用`npu-cache`と`npu.json`も必要です。元のバンドルを保つため、このチェックアウトの`artifacts/`へコピーしてからGPUプロファイルを追加します。モデルは事前に準備し、アプリケーション起動時にはコンパイルしません。
@@ -9,7 +13,7 @@
 ```bash
 source scripts/env.sh
 source examples/nvr/scripts/mobileclip-env.sh /path/to/ryzen-ai-venv
-cmake -S . -B build -DAMDVA_BUILD_MOBILECLIP=ON -DAMDVA_ORT_ROOT="$AMDVA_ORT_ROOT"
+cmake -S . -B build -DAMDVA_BUILD_MOBILECLIP=ON -DAMDVA_BUILD_NPU=ON -DAMDVA_ORT_ROOT="$AMDVA_ORT_ROOT"
 cmake --build build -j8
 cp -a /path/to/mobileclip2-api artifacts/mobileclip-device
 python scripts/prepare_mobileclip_device.py artifacts/mobileclip-device
