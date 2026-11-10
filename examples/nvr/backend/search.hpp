@@ -27,7 +27,7 @@ struct SearchOptions {
 struct SearchImage {
     unsigned width{}, height{};
     std::vector<uint8_t> rgb;
-    // Owns the GPU crop; CPU rgb remains available for thumbnails and ReID.
+    // Owns the GPU crop; CPU rgb remains available for thumbnails. ReID consumes the VA frame.
     std::shared_ptr<DeviceBuffer> gpu_rgb;
     int gpu_device{};
 };

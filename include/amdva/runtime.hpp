@@ -10,6 +10,7 @@
 #include <va/va_drmcommon.h>
 #include <cstdint>
 #include <memory>
+#include <map>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -99,6 +100,9 @@ private:
     bool owned_{true};
 };
 // Aggregate counters per DRM client, avoiding duplicate FD aliases.
+// Counters keyed by DRM driver/device/client. Per-client comparisons remain
+// meaningful when unrelated DRM clients close between observations.
+std::map<std::string,uint64_t> engine_times_ns(const std::string& engine, bool refresh = false);
 uint64_t engine_time_ns(const std::string& engine);
 std::string gpu_arch(int device);
 } // namespace amdva

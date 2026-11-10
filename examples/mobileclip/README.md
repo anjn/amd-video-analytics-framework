@@ -1,4 +1,4 @@
-<!-- source: examples/mobileclip/README.ja.md 28a231caee225020486ebef60123b40576527c3d -->
+<!-- source: examples/mobileclip/README.ja.md c369f5bc45a0c7f6b53eb231312045e43012f4cb -->
 # MobileCLIP GPU and NPU in one process
 
 This sample and the NVR share `amdva_mobileclip`. GPU preprocessing writes
@@ -105,8 +105,9 @@ Python is used for inference. The environment helper runs before startup;
 changing a library path after HIP/ORT initialization is not supported.
 
 NVR retains each GPU crop independently across frames, pending replacements,
-and asynchronous jobs. CPU thumbnail/ReID images remain available but are not
-fed back into MobileCLIP. CPU-origin images supplied through the search API
+and asynchronous jobs. CPU thumbnails remain available but are not
+fed back into MobileCLIP. ReID preprocesses the original VA frame and person ROI
+through `amdpreproc` on the GPU, independently of those CPU images. CPU-origin images supplied through the search API
 are uploaded once at ingestion. NPU preprocessing briefly acquires the GPU gate,
 then releases it before the EP call. GPU batch preferences, independent device
 budgets, text search and per-backend namespaces remain available. The new

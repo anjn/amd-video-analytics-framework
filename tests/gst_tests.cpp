@@ -21,6 +21,12 @@ int main(int argc,char** argv) {
     g_object_set(pre,"require-zero-copy",FALSE,nullptr);
     require(gst_element_set_state(pre,GST_STATE_PAUSED)==GST_STATE_CHANGE_FAILURE,"Non-strict mode accepted");
     gst_element_set_state(pre,GST_STATE_NULL);gst_object_unref(pre);
+    for(const char *bad:{"1,0,1","1,2","1,2,3,4","1,nan,1"}) {
+        auto *invalid=gst_element_factory_make("amdpreproc",nullptr);
+        g_object_set(invalid,"tensor-std",bad,nullptr);
+        require(gst_element_set_state(invalid,GST_STATE_PAUSED)==GST_STATE_CHANGE_FAILURE,"Invalid normalization accepted");
+        gst_element_set_state(invalid,GST_STATE_NULL);gst_object_unref(invalid);
+    }
     auto* infer=gst_element_factory_make("amdmigraphx",nullptr);require(infer,"amdmigraphx unavailable");
     require(gst_element_set_state(infer,GST_STATE_PAUSED)==GST_STATE_CHANGE_FAILURE,"Missing model accepted");
     gst_element_set_state(infer,GST_STATE_NULL);gst_object_unref(infer);

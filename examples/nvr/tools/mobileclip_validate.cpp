@@ -22,16 +22,25 @@ int main(int argc, char **argv) {
         auto *search = controller.search_service();
         if (!search)
             throw std::runtime_error("Search disabled");
+        std::string phase = "collection";
         auto wait = [&](auto done) {
             auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(45);
             while (!done()) {
                 if (!controller.fatal().empty())
                     throw std::runtime_error(controller.fatal());
                 auto state = search->status();
-                if (state.state == "error")
+                if (state.state == "error" || !state.error.empty())
                     throw std::runtime_error(state.error);
-                if (std::chrono::steady_clock::now() > deadline)
-                    throw std::runtime_error("Integration check timeout");
+                if (std::chrono::steady_clock::now() > deadline) {
+                    for (const auto &m : controller.ai_runtime()->snapshot())
+                        if (m.camera.empty())
+                            std::cerr << m.stage << " samples=" << m.samples
+                                      << " mean_ms=" << m.mean_ms << " wait_ms=" << m.wait_ms
+                                      << " pending=" << m.pending << '\n';
+                    throw std::runtime_error("Integration check timeout in " + phase +
+                                             " stored=" + std::to_string(state.stored) +
+                                             " pending=" + std::to_string(state.pending));
+                }
                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
             }
         };
@@ -45,6 +54,7 @@ int main(int argc, char **argv) {
             throw std::runtime_error("Load copy auditor with LD_PRELOAD");
         start();
         auto query = [&](uint64_t id) {
+            phase = "query " + std::to_string(id);
             wait([&] { return search->result().request == id; });
             if (!search->result().error.empty())
                 throw std::runtime_error(search->result().error);

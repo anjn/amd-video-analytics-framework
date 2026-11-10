@@ -3,17 +3,29 @@
 #include <cmath>
 #include <stdexcept>
 namespace amdva::nvr {
+int AiRuntime::next_priority(Clock::time_point now) const {
+    auto eligible = [&](int p) { return waiting_[p] && (p != Embedding || now >= low_due_); };
+    int oldest = -1;
+    for (int p = 0; p < 4; p++)
+        if (eligible(p) && now - waiting_since_[p].front() >= std::chrono::milliseconds(250) &&
+            (oldest < 0 || waiting_since_[p].front() < waiting_since_[oldest].front()))
+            oldest = p;
+    if (oldest >= 0)
+        return oldest;
+    for (int p = 0; p < 4; p++)
+        if (eligible(p))
+            return p;
+    return -1;
+}
+
 AiRuntime::Lease::Lease(AiRuntime *owner, Priority p) : owner_(owner), priority_(p) {
     auto &o = *owner;
     std::unique_lock<std::mutex> lock(o.gate_);
     ++o.waiting_[p];
+    o.waiting_since_[p].push_back(Clock::now());
     const auto ticket = o.next_ticket_[p]++;
     for (;;) {
-        bool earlier = false;
-        for (int i = 0; i < p; ++i)
-            earlier |= o.waiting_[i] != 0;
-        if (!o.busy_ && !earlier && ticket == o.serving_ticket_[p] &&
-            (p != Embedding || Clock::now() >= o.low_due_))
+        if (!o.busy_ && o.next_priority(Clock::now()) == p && ticket == o.serving_ticket_[p])
             break;
         if (p == Embedding && o.low_due_ > Clock::now())
             o.cv_.wait_until(lock, o.low_due_);
@@ -21,6 +33,7 @@ AiRuntime::Lease::Lease(AiRuntime *owner, Priority p) : owner_(owner), priority_
             o.cv_.wait(lock);
     }
     --o.waiting_[p];
+    o.waiting_since_[p].pop_front();
     ++o.serving_ticket_[p];
     o.busy_ = true;
     started_ = Clock::now();

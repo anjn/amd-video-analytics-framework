@@ -68,6 +68,8 @@ class AiRuntime {
     mutable std::mutex gate_;
     std::condition_variable cv_;
     unsigned waiting_[4]{};
+    std::deque<Clock::time_point> waiting_since_[4];
+    int next_priority(Clock::time_point) const;
     uint64_t next_ticket_[4]{}, serving_ticket_[4]{};
     bool busy_{};
     Clock::time_point low_due_{};

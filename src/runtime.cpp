@@ -9,6 +9,8 @@
 #include <set>
 #include <algorithm>
 #include <limits>
+#include <chrono>
+#include <mutex>
 extern "C" void amdva_audit_metadata_begin(const void*,size_t,int) __attribute__((weak));
 extern "C" void amdva_audit_metadata_end() __attribute__((weak));
 
@@ -216,16 +218,73 @@ bool VaSession::has_h264_decode() const {
     if(vaQueryConfigEntrypoints(display_,VAProfileH264High,eps.data(),&n)!=VA_STATUS_SUCCESS) return false;
     return std::find(eps.begin(),eps.begin()+n,VAEntrypointVLD)!=eps.begin()+n;
 }
-uint64_t engine_time_ns(const std::string& engine) {
-    uint64_t total=0; std::set<std::string> clients;
-    for(const auto& file: std::filesystem::directory_iterator("/proc/self/fdinfo")) {
-        std::ifstream in(file.path()); std::string line,id; uint64_t value=0;
-        while(std::getline(in,line)) {
-            if(line.rfind("drm-client-id:",0)==0) id=line.substr(14);
-            if(line.rfind("drm-engine-"+engine+":",0)==0) { std::istringstream s(line.substr(line.find(':')+1)); s>>value; }
+std::map<std::string, uint64_t> engine_times_ns(const std::string &engine, bool refresh) {
+    struct Cache {
+        std::mutex mutex;
+        std::map<std::string, std::filesystem::path> paths;
+        std::chrono::steady_clock::time_point scanned{};
+    };
+    static Cache cache;
+    std::lock_guard<std::mutex> lock(cache.mutex);
+    struct Sample {
+        std::string key;
+        uint64_t value{};
+        bool present{}, engines{};
+    };
+    auto read = [&](const std::filesystem::path &path) {
+        Sample result;
+        std::ifstream in(path);
+        std::string line, id, driver, device;
+        while (std::getline(in, line)) {
+            if (line.rfind("drm-client-id:", 0) == 0)
+                id = line.substr(14);
+            if (line.rfind("drm-driver:", 0) == 0)
+                driver = line.substr(11);
+            if (line.rfind("drm-pdev:", 0) == 0)
+                device = line.substr(9);
+            if (line.rfind("drm-engine-", 0) == 0)
+                result.engines = true;
+            if (line.rfind("drm-engine-" + engine + ":", 0) == 0) {
+                std::istringstream value(line.substr(line.find(':') + 1));
+                result.present = bool(value >> result.value);
+            }
         }
-        if(!id.empty() && clients.insert(id).second) total+=value;
+        if (!id.empty() && result.engines)
+            result.key = driver + "/" + device + "/" + id;
+        return result;
+    };
+    std::map<std::string, uint64_t> result;
+    auto now = std::chrono::steady_clock::now();
+    if (!refresh && now - cache.scanned < std::chrono::milliseconds(100)) {
+        for (const auto &[key, path] : cache.paths) {
+            auto sample = read(path);
+            if (sample.key != key) {
+                refresh = true;
+                break;
+            }
+            if (sample.present)
+                result[key] = sample.value;
+        }
+        if (!refresh)
+            return result;
     }
+    result.clear();
+    cache.paths.clear();
+    for (const auto &file : std::filesystem::directory_iterator("/proc/self/fdinfo")) {
+        auto sample = read(file.path());
+        if (sample.key.empty())
+            continue;
+        cache.paths.emplace(sample.key, file.path());
+        if (sample.present)
+            result[sample.key] = std::max(result[sample.key], sample.value);
+    }
+    cache.scanned = std::chrono::steady_clock::now();
+    return result;
+}
+uint64_t engine_time_ns(const std::string &engine) {
+    uint64_t total = 0;
+    for (const auto &entry : engine_times_ns(engine, true))
+        total += entry.second;
     return total;
 }
 } // namespace amdva

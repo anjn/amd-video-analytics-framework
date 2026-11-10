@@ -22,8 +22,17 @@ separate retained displays. A display change in one stream requires recreating
 its preprocessor; a new upstream stream-start identity triggers that reset.
 
 VPE crops, scales and converts NV12 to a linear BGRA model surface. Every VA
-operation must increment the process's `drm-engine-vpe` counter; shader or CPU
-scaling is not a fallback. NV12 ROI boundaries expand outward to 2x2 chroma
+operation must advance a process DRM client's `drm-engine-vpe` counter; shader
+or CPU scaling is not a fallback. The check compares counters per driver,
+device and client, so an unrelated client closing cannot cancel an increase in
+the VPE client's counter. DRM counters may temporarily
+regress ([kernel specification](https://docs.kernel.org/gpu/drm-usage-stats.html)).
+If an increment cannot be observed, the same VPE operation is retried up to eight
+times within a 20 ms observation budget; no other processing path is selected.
+The stage fails if no counter advances. Counter values are read live from
+cached canonical DRM fd paths; client discovery refreshes every 100 ms, on fd
+reuse/closure and on an unobserved stage. This avoids scanning every recording
+and RTSP socket fd for every person ROI. NV12 ROI boundaries expand outward to 2x2 chroma
 boundaries, and inverse geometry records the expanded rectangle. The shared
 preprocessor explicitly decomposes ratios larger than 4x into VPE stages to
 avoid the validated Mesa driver's failures on offset/asymmetric geometric

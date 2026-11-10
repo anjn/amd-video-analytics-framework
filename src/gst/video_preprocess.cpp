@@ -1,7 +1,9 @@
 #include "amdva/video_preprocess.hpp"
 #include <algorithm>
+#include <chrono>
 #include <gst/va/gstvaallocator.h>
 #include <gst/va/gstvadisplay.h>
+#include <thread>
 namespace amdva {
 struct VideoPreprocessor::Impl {
     ModelInfo info;
@@ -96,12 +98,42 @@ std::shared_ptr<Tensor> VideoPreprocessor::prepare_into(GstBuffer *buffer,
     s.last_geometry = context_geometry;
     auto checked_scale = [&](VaSession &va, VASurfaceID source, VASurfaceID target, unsigned cx,
                              unsigned cy, unsigned cw, unsigned ch, unsigned tw, unsigned th) {
-        auto before = engine_time_ns("vpe");
-        va.crop_scale(source, target, cx, cy, cw, ch, tw, th);
-        if (engine_time_ns("vpe") <= before)
-            throw std::runtime_error("Dedicated VPE execution could not be observed for " +
-                                     std::to_string(cw) + "x" + std::to_string(ch) + " to " +
-                                     std::to_string(tw) + "x" + std::to_string(th));
+        auto before = engine_times_ns("vpe");
+        // DRM fdinfo busy time is permitted to regress temporarily. If a short
+        // job cannot be observed, repeat only the identical VPE operation. A
+        // successful logical stage still requires an observed VPE increment;
+        // unsupported paths cannot succeed through a CPU/shader fallback.
+        bool refreshed=false;
+        auto advanced = [&] {
+            auto changed=[&](const auto &after) {
+                for(const auto &[client,time]:after) {
+                    auto old=before.find(client);
+                    if(time>(old==before.end()?0:old->second))return true;
+                }
+                return false;
+            };
+            if(changed(engine_times_ns("vpe")))return true;
+            // Discover a newly opened DRM client immediately on a miss. Normal
+            // stages read only known DRM fds, not every RTSP/recording/socket fd.
+            if(!refreshed){refreshed=true;return changed(engine_times_ns("vpe",true));}
+            return false;
+        };
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(20);
+        for (unsigned attempt = 0; attempt < 8; attempt++) {
+            va.crop_scale(source, target, cx, cy, cw, ch, tw, th);
+            auto observation_deadline =
+                std::min(deadline, std::chrono::steady_clock::now() + std::chrono::milliseconds(2));
+            do {
+                if (advanced())
+                    return;
+                std::this_thread::sleep_for(std::chrono::microseconds(200));
+            } while (std::chrono::steady_clock::now() < observation_deadline);
+            if (std::chrono::steady_clock::now() >= deadline)
+                break;
+        }
+        throw std::runtime_error("Dedicated VPE execution could not be observed for " +
+                                 std::to_string(cw) + "x" + std::to_string(ch) + " to " +
+                                 std::to_string(tw) + "x" + std::to_string(th));
     };
     // Limit each VPE operation to a 4x ratio. Mesa's automatic geometric
     // downscale rejects some offset NV12 crops and asymmetric intermediate

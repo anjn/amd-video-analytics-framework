@@ -1,0 +1,253 @@
+{
+  "schema": 1,
+  "date": "2026-11-10",
+  "host": "amd-rai370",
+  "hardware": "Ryzen AI 9 HX 370 / Radeon 890M gfx1150 / XDNA2",
+  "kernel": "6.17.0-1033-oem",
+  "rocm": "7.2.0",
+  "onnxruntime": "1.30.0",
+  "validated_implementation": "ReID working tree following bc520ae",
+  "reid_path": "Original NV12 VAMemory + person ROI -> appsrc -> amdpreproc -> appsink -> MIGraphX",
+  "normalization": "RGB ImageNet mean/std, NCHW, stretch to compiled input dimensions, no letterbox",
+  "input_uploads": 0,
+  "batch_assembly": "Direct GPU tensor binding for batch 1; device-to-device assembly and repeat-last padding for larger batches",
+  "cpu_readbacks": "Compact ReID features only; existing thumbnail/semantic RGB readbacks remain independent of ReID input",
+  "search_namespace": "osnet-person-amdpreproc-roi-v2",
+  "old_history_reprocessed": false,
+  "contracts": {
+    "passed": 41,
+    "failed": 0,
+    "wall_seconds": 66.16,
+    "includes": [
+      "preproc-roi-contract",
+      "gst-contract",
+      "ai-runtime-contract",
+      "npu-element-contract",
+      "framework-pipeline-contract"
+    ]
+  },
+  "gpu_roi_contract": {
+    "passed": true,
+    "roi_alignment": true,
+    "va_memory_identity": true,
+    "normalization_max_error": 2.38419e-07,
+    "invalid_roi_rejected": true,
+    "audit_errors": 0
+  },
+  "native_reid": {
+    "batch_1": {
+      "passed": true,
+      "preprocessing": "amdpreproc",
+      "source": "NV12 VAMemory with ROI",
+      "input_uploads": 0,
+      "small_roi_requests": 100,
+      "encode_requests": 100,
+      "batch": 1,
+      "different_roi_cosine": 0.796674,
+      "min_batch_cosine": 1,
+      "audit_errors": 0
+    },
+    "batch_4": {
+      "passed": true,
+      "preprocessing": "amdpreproc",
+      "source": "NV12 VAMemory with ROI",
+      "input_uploads": 0,
+      "small_roi_requests": 100,
+      "encode_requests": 100,
+      "batch": 4,
+      "different_roi_cosine": 0.79649,
+      "min_batch_cosine": 1,
+      "audit_errors": 0
+    }
+  },
+  "execution_gate": {
+    "normal_order": [
+      "Tracking",
+      "Query",
+      "Embedding",
+      "MobileClip"
+    ],
+    "fifo_within_priority": true,
+    "oldest_eligible_after_ms": 250,
+    "active_work_preempted": false,
+    "gemma_cooldown_preserved": true,
+    "mobileclip_device_budgets_preserved": true,
+    "mobileclip_queued_tasks_per_backend": 1,
+    "continuous_tracking_starvation_test_passed": true
+  },
+  "vpe_observation": {
+    "client_key": "driver/device/client",
+    "counter_values_read_live": true,
+    "canonical_drm_fd_cache_discovery_ms": 100,
+    "refresh_on_invalidation_or_missed_increment": true,
+    "same_operation_attempt_limit": 8,
+    "observation_budget_ms": 20,
+    "no_increment": "Bus error; no CPU/shader path selected"
+  },
+  "nvr": {
+    "gpu": {
+      "headless": {
+        "schema": 1,
+        "passed": true,
+        "pid": 401344,
+        "stored": 8,
+        "english_query": true,
+        "japanese_query": true,
+        "reid_calls": 4,
+        "embedding_calls": 3,
+        "cpu_image_query": true,
+        "budgets_updated": true,
+        "child_processes": false,
+        "input_copies": 0,
+        "audit_errors": 0
+      },
+      "gui": {
+        "passed": true,
+        "checks": [
+          "PASS: checkbox person search; groups=25 best=0.321652",
+          "PASS: person cards contain a single camera/person and tracklet IDs",
+          "PASS: retention-style deletion kept 23 results in place",
+          "PASS: strip image playback frames=36",
+          "PASS: video click paused",
+          "PASS: video click resumed",
+          "PASS: playback looped from 1794301348939 to 1794301338606",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=27",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=27",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=27",
+          "PASS: deletion removed search image; deleted=11",
+          "PASS: deletion pruned results; cards=0 status=The matching recordings were deleted.",
+          "PASS: Exit Application quit the event loop"
+        ],
+        "last_status": {
+          "stored": 247,
+          "dropped": 0,
+          "pending": 6
+        }
+      }
+    },
+    "npu": {
+      "headless": {
+        "schema": 1,
+        "passed": true,
+        "pid": 401806,
+        "stored": 8,
+        "english_query": true,
+        "japanese_query": true,
+        "reid_calls": 4,
+        "embedding_calls": 9,
+        "cpu_image_query": true,
+        "budgets_updated": true,
+        "child_processes": false,
+        "input_copies": 0,
+        "audit_errors": 0
+      },
+      "gui": {
+        "passed": true,
+        "checks": [
+          "PASS: checkbox person search; groups=25 best=0.304074",
+          "PASS: person cards contain a single camera/person and tracklet IDs",
+          "PASS: retention-style deletion kept 23 results in place",
+          "PASS: strip image playback frames=38",
+          "PASS: video click paused",
+          "PASS: video click resumed",
+          "PASS: playback looped from 1794301393243 to 1794301388409",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=24",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=24",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=24",
+          "PASS: deletion removed search image; deleted=9",
+          "PASS: deletion pruned results; cards=0 status=The matching recordings were deleted.",
+          "PASS: Exit Application quit the event loop"
+        ],
+        "last_status": {
+          "stored": 198,
+          "dropped": 0,
+          "pending": 4
+        }
+      }
+    },
+    "gpu+npu": {
+      "headless": {
+        "schema": 1,
+        "passed": true,
+        "pid": 402367,
+        "stored": 9,
+        "english_query": true,
+        "japanese_query": true,
+        "reid_calls": 4,
+        "embedding_calls": 7,
+        "cpu_image_query": true,
+        "budgets_updated": true,
+        "child_processes": false,
+        "input_copies": 0,
+        "audit_errors": 0
+      },
+      "gui": {
+        "passed": true,
+        "checks": [
+          "PASS: checkbox person search; groups=23 best=0.31647",
+          "PASS: person cards contain a single camera/person and tracklet IDs",
+          "PASS: retention-style deletion kept 21 results in place",
+          "PASS: strip image playback frames=36",
+          "PASS: video click paused",
+          "PASS: video click resumed",
+          "PASS: playback looped from 1794301439639 to 1794301429273",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=25",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=25",
+          "PASS: live collection, English/Japanese search, result playback, drag image search; groups=25",
+          "PASS: deletion removed search image; deleted=11",
+          "PASS: deletion pruned results; cards=0 status=The matching recordings were deleted.",
+          "PASS: Exit Application quit the event loop"
+        ],
+        "last_status": {
+          "stored": 246,
+          "dropped": 0,
+          "pending": 5
+        }
+      }
+    }
+  },
+  "demo": {
+    "sources": 17,
+    "selected": 16,
+    "backend": "npu",
+    "headless": {
+      "schema": 1,
+      "passed": true,
+      "pid": 398153,
+      "stored": 8,
+      "english_query": true,
+      "japanese_query": true,
+      "reid_calls": 144,
+      "embedding_calls": 9,
+      "cpu_image_query": true,
+      "budgets_updated": true,
+      "child_processes": false,
+      "input_copies": 0,
+      "audit_errors": 0
+    },
+    "gui": {
+      "passed": true,
+      "checks": [
+        "PASS: checkbox person search; groups=47 best=0.261933",
+        "PASS: person cards contain a single camera/person and tracklet IDs",
+        "PASS: retention-style deletion kept 50 results in place",
+        "PASS: strip image playback frames=40",
+        "PASS: video click paused",
+        "PASS: video click resumed",
+        "PASS: playback looped from 1794300919254 to 1794300914354",
+        "PASS: live collection, English/Japanese search, result playback, drag image search; groups=50",
+        "PASS: live collection, English/Japanese search, result playback, drag image search; groups=50",
+        "PASS: live collection, English/Japanese search, result playback, drag image search; groups=50",
+        "PASS: deletion removed search image; deleted=254",
+        "PASS: deletion pruned results; cards=0 status=The matching recordings were deleted.",
+        "PASS: Exit Application quit the event loop"
+      ],
+      "last_status": {
+        "stored": 81,
+        "dropped": 4,
+        "pending": 125
+      }
+    }
+  },
+  "scope": "Functional regression and batch reproducibility. No claim of old CPU pixel parity, labeled tracking IDF1, or sustained throughput; queue drops can occur under demo load."
+}

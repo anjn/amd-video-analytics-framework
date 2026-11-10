@@ -1,4 +1,4 @@
-<!-- source: docs/dev/elements.md 80c69bd8df37f04a26e88c8a50ba054ac210fb19 -->
+<!-- source: docs/dev/elements.md e8ba8a2fae43bf9ddefacd6a59bd7ec1e5897da9 -->
 # 要素リファレンス
 
 同梱のDL Streamer要素と独立した`amdnpu`を除き、すべての要素は `amdanalytics` プラグイン（`libgstamdanalytics.so`）に含まれます。ランクは NONE のため、自動で接続されることはありません。*READY* と記したプロパティは NULL/READY 状態でのみ変更できます。正確な一覧は、お使いのビルドで
@@ -90,6 +90,33 @@ caps: 任意（パススルー）。
 | `topic` | `amdva/analytics` | |
 | `queue-limit` | 256 | 1-65536 レコード |
 | `delivered`、`dropped`、`errors` | 読み取り専用 | uint64 のカウンター |
+
+## GPU前処理: `amdpreproc`
+
+元のNV12 VAMemoryバッファーを保持し、GPUテンソルを添付します。次のREADYプロパティで、検出器以外の画像エンコーダーにも使えます。
+
+| プロパティ | 既定値 | 内容 |
+| --- | --- | --- |
+| `tensor-width`、`tensor-height` | 640、640 | 出力画像の寸法 |
+| `letterbox` | true | 縦横比を維持。falseは出力寸法に合わせて伸縮 |
+| `tensor-scale` | 1/255 | RGB画素へmean/std正規化の前に掛ける値 |
+| `tensor-mean`、`tensor-std` | `0,0,0`、`1,1,1` | 有限なRGBの3値。stdは正の値が必要 |
+| `roi-meta` | false | 範囲内で面積のある`GstVideoRegionOfInterestMeta`が1つ必要。その矩形を前処理 |
+| `output-memory` | `device` | GPUテンソル、またはNPU用の`host-mapped`共有入力 |
+
+`model-info`を指定すると、寸法、余白の処理、正規化はその設定を優先します。正規化は`(pixel * scale - mean[channel]) / std[channel]`です。ROIはNV12のクロマ境界に合わせて外側の2×2単位へ広げ、実際の矩形を`Tensor::geometry`に記録します。ROIがない、複数ある、範囲外の場合はバスエラーになります。caps、映像のGstMemory、PTS、元のROIメタデータは保持し、テンソルの領域は後続の前処理と独立して所有します。
+
+NVRのReIDは常設の`appsrc → amdpreproc → appsink`を使い、`roi-meta=true`、`letterbox=false`、ImageNetのRGB mean/stdを指定します。元のVAフレームと人物のボックスを渡します。バッチ1はGPUテンソルを直接推論へ渡し、大きなバッチはGPU間コピーで組み立てます。端数は最後の有効行で埋め、余分な出力を破棄します。CPUへ戻すのは512次元の特徴量です。サムネイル用のCPU画像は別に保持し、ReIDの入力には使いません。
+
+`preproc-roi-contract`では、ROIの整列、テンソルの所有権、GPU上のImageNet正規化、VAメモリ・caps・PTSの維持、不正ROIの拒否、コピー監査を確認します。NVR用の実機検証では、実映像のROIを交互に切り替え、部分バッチと複数バッチ、入力アップロードがないことを確認します。
+
+```bash
+source scripts/env.sh
+LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+  build/examples/nvr/amdva-reid-validate /path/to/osnet.mxr /path/to/hevc.mp4
+```
+
+[ReIDの検証記録](reid-preproc-results.json)を参照してください。縮小済みRGB画像のCPUリサイズからVPEでのリサイズへ変更したため、検索には`osnet-person-amdpreproc-roi-v2`の名前空間を使います。既存のDB行や録画は残し、古い特徴量は書き換えません。
 
 ## NPU推論: `amdnpu` { #npu-inference-amdnpu }
 

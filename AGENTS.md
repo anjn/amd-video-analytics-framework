@@ -50,8 +50,9 @@ Hard rules from `docs/dev/architecture.md` that code changes must respect:
 `examples/` are built only on the public headers and `AMDVA::` targets. The main one is **`examples/nvr`**, a 16-camera NVR demo:
 - `backend/`: the Qt-free `amdva_nvr_backend` library (`namespace amdva::nvr`).
   - `Controller` (`controller.cpp`) owns the camera channels, the shared VA display, 16 GPU slots and the GPU/preview/control threads.
-  - `AiRuntime` (`ai.hpp`) schedules GPU work by priority lease and records per-stage wall-time metrics (`record(stage, camera, ms, wait, batch)`; per-camera rows are also aggregated into the `""` camera row).
+  - `AiRuntime` (`ai.hpp`) schedules GPU work by priority lease (FIFO within priority, with oldest eligible requests admitted after 250 ms to prevent starvation) and records per-stage wall-time metrics (`record(stage, camera, ms, wait, batch)`; per-camera rows are also aggregated into the `""` camera row).
   - `SearchService` (`search.cpp`) runs person tracking (ReID), image embeddings (EmbeddingGemma or MobileCLIP2) and vector search, with data stored in the recording catalog DB.
+  - ReID preprocesses original VA frames and person ROIs through a persistent `appsrc → amdpreproc → appsink` pipeline, with ImageNet normalization on HIP. Batch assembly stays on the GPU; only compact features return to the CPU. CPU crops are for thumbnails/semantic search, not ReID inputs.
   - MobileCLIP runs in process through `amdva_mobileclip`. GPU uses MIGraphX device I/O; NPU uses `appsrc → amdnpu → appsink` with HIP-mapped shared tensors. The launch helper configures `search.ryzen_ai_venv` before startup. EP-internal copies are outside the application's no-copy input contract; see `docs/dev/elements.md`.
 - `app/`: Qt desktop `amdva-nvr`. `vms.cpp` builds the tabs; `ai_page.cpp` / `ai_overview.cpp` are the AI Statistics tab; `window.cpp` is the EGL video wall.
 - `headless.cpp`: `amdva-streams`, which is the backend without a display.

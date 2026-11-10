@@ -442,7 +442,7 @@ std::string fingerprint(const SearchOptions &o) {
         input += s.str();
     };
     if (!o.reid_model.empty()) {
-        input += "osnet-person-v1/";
+        input += "osnet-person-amdpreproc-roi-v2/";
         append(o.reid_model);
     }
     if (mobileclip) {
@@ -565,7 +565,6 @@ struct SearchService::Impl {
             if (!options.reid_model.empty()) {
                 auto lease = runtime->acquire(AiRuntime::Tracking);
                 reid = std::make_unique<ReIdModel>(options.reid_model, options.device);
-                reid->encode({1, 1, {128, 128, 128}});
             }
             std::map<std::string, std::unique_ptr<PersonTracker>> trackers;
             std::map<std::string, std::string> sessions;
@@ -612,7 +611,7 @@ struct SearchService::Impl {
                 }
                 {
                     auto lease = runtime->acquire(AiRuntime::Tracking);
-                    std::vector<SearchImage> all;
+                    std::vector<ReIdInput> all;
                     for (size_t j = 0; j < batch.size(); ++j) {
                         auto &job = batch[j];
                         try {
@@ -631,7 +630,8 @@ struct SearchService::Impl {
                             for (auto box : job.boxes)
                                 people[j].push_back({box, {}});
                             if (reid)
-                                all.insert(all.end(), crops[j].begin(), crops[j].end());
+                                for (auto box : boxes)
+                                    all.push_back({job.frame.sample, box});
                         } catch (const std::exception &e) {
                             failed[j] = e.what();
                         }
@@ -896,8 +896,8 @@ struct SearchService::Impl {
                 if (std::chrono::duration<double, std::milli>(Clock::now() - last_end[device])
                         .count() < idle_ms)
                     continue;
-                if (!device && !runtime->embedding_ready(true))
-                    continue;
+                // At most one task per backend waits at the execution gate.
+                // Queue it directly so short idle windows cannot starve GPU embedding.
                 std::vector<std::pair<std::string, Pending>> items;
                 {
                     std::lock_guard<std::mutex> lock(mutex);

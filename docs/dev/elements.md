@@ -105,6 +105,50 @@ The original two-element YOLOv8 interface, retained for compatibility
 `confidence-threshold`, `nms-threshold`, `require-zero-copy`). New GPU task pipelines should
 use `amddetect`; do not put `amdpreproc` in front of the task elements.
 
+## GPU preprocessing: `amdpreproc`
+
+The element retains the original NV12 VAMemory buffer and adds a GPU tensor.
+These READY properties are useful for image encoders as well as detectors:
+
+| Property | Default | Meaning |
+| --- | --- | --- |
+| `tensor-width`, `tensor-height` | 640, 640 | Output image dimensions |
+| `letterbox` | true | Preserve aspect ratio; false stretches to the output dimensions |
+| `tensor-scale` | 1/255 | Scale RGB pixels before mean/std normalization |
+| `tensor-mean`, `tensor-std` | `0,0,0`, `1,1,1` | Three finite RGB values; std must be positive |
+| `roi-meta` | false | Require exactly one nonempty in-bounds `GstVideoRegionOfInterestMeta` and preprocess its rectangle |
+| `output-memory` | `device` | GPU tensor or `host-mapped` shared NPU input |
+
+`model-info`, when supplied, overrides dimensions, letterboxing and normalization.
+Normalization is `(pixel * scale - mean[channel]) / std[channel]`. In ROI mode,
+NV12 chroma boundaries expand to the enclosing 2×2 rectangle; `Tensor::geometry`
+records that actual crop. Missing, multiple or out-of-bounds ROIs post bus errors.
+Caps, video GstMemory, PTS and source ROI metadata are preserved. Each output
+tensor owns its allocation independently of later preprocessing.
+
+NVR ReID uses a persistent `appsrc → amdpreproc → appsink` pipeline with
+`roi-meta=true`, `letterbox=false` and ImageNet RGB mean/std. It submits the
+original VA frame and each tight person box. Batch-one inference binds that GPU
+tensor directly; larger batches use GPU-to-GPU assembly, repeat the last valid
+row for padding and discard padded results. Only 512-dimensional features return
+to the CPU. CPU thumbnails are retained separately and never feed ReID.
+
+`preproc-roi-contract` verifies ROI alignment, tensor ownership, ImageNet
+normalization on the GPU, unchanged VA memory/caps/PTS, rejected ROIs and copy
+audit results. The NVR hardware validator checks real video with alternating
+ROIs, partial/multiple batches and no input uploads:
+
+```bash
+source scripts/env.sh
+LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+  build/examples/nvr/amdva-reid-validate /path/to/osnet.mxr /path/to/hevc.mp4
+```
+
+See [ReID validation records](reid-preproc-results.json). VPE resampling replaces
+the previous CPU resize of a reduced RGB crop, so NVR uses the versioned
+`osnet-person-amdpreproc-roi-v2` search namespace. Existing database rows and
+recordings are retained; the application does not rewrite old features.
+
 ## NPU inference: `amdnpu`
 
 The optional `amdnpu` plugin (`libgstamdnpu.so`, `AMDVA_BUILD_NPU=ON`) uses

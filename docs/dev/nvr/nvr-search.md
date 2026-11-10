@@ -65,7 +65,7 @@ there is no automatic fallback.
 
 Both backends use GPU preprocessing with the existing Pillow-compatible
 letterbox/bilinear algorithm. GPU-generated RGB crops are retained on the GPU;
-thumbnail and ReID readbacks are independent of the MobileCLIP input. GPU uses
+thumbnail readbacks are independent of the MobileCLIP input. GPU uses
 FP16 MIGraphX profiles with device I/O. NPU uses HIP-mapped host input written
 by the GPU, wrapped directly in an ORT CPU tensor and passed to Vitis AI EP.
 The copy-free claim ends at the EP boundary; its internal copies/conversions
@@ -298,9 +298,16 @@ tracking worker replaces queued frames with the latest frame for that camera;
 the semantic worker separately keeps the latest crop for each person. A
 confirmed, high-confidence observation is required for semantic collection.
 With ReID enabled, stored and ReID crops use the tight person box rather than
-the legacy ten-percent margin. ReID applies bilinear resizing to its compiled
-input shape, ImageNet RGB normalization and L2-normalized 512-dimensional
-features. These features are separate from the 768-dimensional EmbeddingGemma
+the legacy ten-percent margin. ReID submits the original VA frame and a person
+ROI to a persistent `appsrc → amdpreproc → appsink` pipeline. VPE crops/resizes
+to the compiled shape without letterboxing, and HIP applies ImageNet RGB
+normalization. The resulting GPU tensors feed MIGraphX directly for batch one
+or through GPU-to-GPU batch assembly. There is no CPU pixel preprocessing or
+host-to-device ReID input upload; only L2-normalized 512-dimensional features
+return to the CPU. CPU RGB crops remain for thumbnails and semantic search.
+This resampling change uses the `osnet-person-amdpreproc-roi-v2` namespace;
+old rows remain stored and require the previous implementation to query the old
+ReID space. There is no automatic reprocessing of old recordings. These features are separate from the 768-dimensional EmbeddingGemma
 vectors used for text and region queries. Partial ReID batches repeat the last
 valid image and discard padded outputs.
 
@@ -336,17 +343,19 @@ export PATH="$PWD/build/src/gst:$PATH"
 .deps/model-export/bin/python examples/nvr/scripts/export_reid_model.py \
   --source /path/to/torchreid/models/osnet.py \
   --weights /path/to/osnet-msmt17.pth --output artifacts/reid-model
-build/examples/nvr/amdva-reid-validate \
-  artifacts/reid-model/osnet-x1-msmt17.mxr \
-  artifacts/reid-model/reference.rgb artifacts/reid-model/reference.f32
+LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+  build/examples/nvr/amdva-reid-validate \
+  artifacts/reid-model/osnet-x1-msmt17.mxr /path/to/hevc.mp4
 ```
 
 The export script rejects incompatible non-classifier parameters and records
-hashes and preprocessing. The native validator compares the normalized feature
-against PyTorch's FP32 reference (cosine >= 0.999) and reports latency. On this
-gfx1150 test host, FP16 inference produced cosine 0.99972, median 2.05 ms and
-p95 2.32 ms for a single prepared crop. This excludes video cropping, YOLO and
-EmbeddingGemma. The search contract tests cover detection order, low-score
+hashes and preprocessing. The native validator hardware-decodes HEVC and passes original-frame ROIs through
+`amdpreproc`. It alternates two ROIs for 100 requests, checks ordering and feature
+parity across partial and multiple batches, then processes 100 small ROIs and
+checks for input uploads and copy audit violations. Its cosine >= 0.9999 check
+is batch reproducibility, not parity with the old CPU resize or PyTorch image
+preprocessing. See [recorded runs](../reid-preproc-results.json).
+The search contract tests cover detection order, low-score
 recovery, tentative tracks, short reappearance, ambiguity, stale timestamps,
 expiry, identity grouping and persistence. M01/M02 integration also exercises
 hidden-camera collection, fractional display scaling, playback, region search,

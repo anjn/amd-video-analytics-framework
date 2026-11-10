@@ -15,8 +15,14 @@ interval is also shown because it can be longer than the requested interval.
 ## Execution policy
 
 YOLO and person crop/ReID work share the highest priority, followed by user
-queries, then background image embedding. GPU inference sections, including MobileCLIP GPU worker calls, are serialized
-with FIFO ordering within a priority. MobileCLIP NPU runs independently. An already-running inference is not preempted.
+queries, then background image embedding. GPU inference sections, including MobileCLIP GPU inference, are serialized
+with FIFO ordering within a priority. An eligible request waiting at least
+250 ms gets a turn in oldest-first order after the active lease finishes. This
+prevents continuous YOLO/ReID traffic from starving NPU input preprocessing or
+user queries. EmbeddingGemma cooldowns and per-device MobileCLIP duty limits
+still apply. MobileCLIP queues at most one task per backend at the execution
+gate rather than requiring an idle instant before enqueueing. MobileCLIP NPU
+inference runs independently after GPU preprocessing. Active work is not preempted.
 For EmbeddingGemma 2, after each background embedding batch, the scheduler waits four times that
 batch's execution duration before allowing another. This caps collection's
 scheduled inference duty at approximately 20%; it is not a GPU-utilization cap
@@ -94,7 +100,8 @@ Recommended search settings:
 referenced models and native bundle before launching it.
 
 These fields supplement the library, bundle and model paths in the normal NVR
-configuration. `image_size` bounds the stored crop and ReID source; embedding
+configuration. `image_size` bounds the stored RGB crop; ReID now preprocesses the original
+VA frame ROI through `amdpreproc`, independently of this limit. Embedding
 gets a separate smaller, aspect-preserving input with black padding and no
 upscaling. Both embedding dimensions must be set together. Leaving both zero
 preserves the legacy square preprocessing namespace. Collection
@@ -143,7 +150,8 @@ python3 examples/nvr/scripts/benchmark_embedding.py --library /path/to/libeg2.so
 
 The detector/ReID benchmark measures model execution only with a resident
 input. Native embedding includes preprocessing and output transfer. Full-pipeline
-statistics include crop extraction, CPU preprocessing and queueing separately.
+statistics include crop extraction, preprocessing and queueing separately.
+ReID preprocessing now measures the `amdpreproc` VPE/HIP path rather than CPU resizing.
 `--seconds 3 --repeats 1` is useful for exploratory screening but is not a final
 performance measurement. Compiled artifacts and successful results are cached;
 new outputs are renamed atomically so an interrupted run can resume.

@@ -3,6 +3,7 @@
 #include <future>
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <stdexcept>
 #include <thread>
 using namespace amdva::nvr;
@@ -83,6 +84,33 @@ int main() {
         c.get();
         d.get();
         require(overlap == 0, "GPU stages are serialized");
+        // Keep two tracking callers queued continuously. A lower-priority
+        // request must get a turn without stopping tracking or overlapping it.
+        AiRuntime loaded;
+        auto hold = std::make_unique<AiRuntime::Lease>(&loaded, AiRuntime::Tracking);
+        std::atomic<bool> stop_pressure{false};
+        std::atomic<unsigned> pressure_started{0};
+        auto pressure = [&] {
+            ++pressure_started;
+            while (!stop_pressure) {
+                auto lease = loaded.acquire(AiRuntime::Tracking);
+                std::this_thread::sleep_for(std::chrono::milliseconds(2));
+            }
+        };
+        auto high_a = std::async(std::launch::async, pressure);
+        auto high_b = std::async(std::launch::async, pressure);
+        while (pressure_started < 2)
+            std::this_thread::yield();
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        auto low = std::async(std::launch::async,
+                              [&] { auto lease = loaded.acquire(AiRuntime::MobileClip); });
+        hold.reset();
+        bool serviced = low.wait_for(std::chrono::seconds(2)) == std::future_status::ready;
+        stop_pressure = true;
+        high_a.get();
+        high_b.get();
+        low.get();
+        require(serviced, "Continuous tracking starved a queued MobileCLIP request");
         std::cout << "AI statistics and execution gate passed\n";
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';
