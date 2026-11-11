@@ -1,0 +1,16 @@
+name: Host setup contracts
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  contracts:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        ubuntu: ['24.04', '26.04']
+    container: ubuntu:${{ matrix.ubuntu }}
+    steps:
+      - run: apt-get update && apt-get install -y git python3 ca-certificates
+      - uses: actions/checkout@v7
+      - run: python3 tests/test_setup.py -v
+      - run: python3 examples/nvr/demo/1440p/test_manage.py -v
+      - run: python3 -m compileall -q scripts
+      - run: bash -n scripts/env.sh examples/nvr/scripts/mobileclip-env.sh examples/nvr/scripts/prepare-mobileclip-npu.sh examples/nvr/demo/1440p/run.sh

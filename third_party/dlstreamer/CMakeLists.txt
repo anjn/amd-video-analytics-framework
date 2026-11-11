@@ -1,3 +1,4 @@
+find_package(nlohmann_json 3.11 REQUIRED)
 # Vendored subset of Intel DL Streamer v2026.2.0 (MIT, see LICENSE) with the
 # local patches from patches/ already applied. Element names stay `gva*` so that
 # DL Streamer pipelines keep working. See third_party/dlstreamer/README.AMD.md.

@@ -1,6 +1,7 @@
 #include "amdva/resource_monitor.hpp"
 #include <algorithm>
 #include <amdgpu.h>
+#include <amdgpu_drm.h>
 #include <chrono>
 #include <cmath>
 #include <fcntl.h>
@@ -92,6 +93,7 @@ struct ResourceMonitor::Impl {
     std::string pci, cpu{"CPU"}, gpu{"AMD GPU"};
     uint64_t total{}, idle{};
     bool have_cpu{};
+    uint32_t vcn_enc_capacity{1}, vcn_dec_capacity{1};
     int64_t last_ns{};
     std::map<std::string, uint64_t> previous;
     explicit Impl(ResourceMonitorConfig c) : config(std::move(c)) {
@@ -105,13 +107,20 @@ struct ResourceMonitor::Impl {
         auto info = fields(read(fs::path(config.proc_root) / "cpuinfo"));
         if (info.count("model name"))
             cpu = info["model name"];
-        const int fd = open(config.render_node.c_str(), O_RDWR | O_CLOEXEC);
+        // Offline proc/sys fixtures must never query the real host device.
+        const int fd = config.proc_root == "/proc" && config.sys_root == "/sys"
+                           ? open(config.render_node.c_str(), O_RDWR | O_CLOEXEC) : -1;
         if (fd >= 0) {
             amdgpu_device_handle handle{};
             uint32_t major{}, minor{};
             if (amdgpu_device_initialize(fd, &major, &minor, &handle) == 0) {
                 if (auto *name = amdgpu_get_marketing_name(handle))
                     gpu = name;
+                uint32_t capacity{};
+                if (amdgpu_query_hw_ip_count(handle, AMDGPU_HW_IP_VCN_ENC, &capacity) == 0 && capacity)
+                    vcn_enc_capacity = capacity;
+                if (amdgpu_query_hw_ip_count(handle, AMDGPU_HW_IP_VCN_DEC, &capacity) == 0 && capacity)
+                    vcn_dec_capacity = capacity;
                 amdgpu_device_deinitialize(handle);
             }
             close(fd);
@@ -166,8 +175,15 @@ struct ResourceMonitor::Impl {
                         continue;
                     const auto key = engine + ":" + pci + ":" + data["drm-client-id"];
                     current[key] = std::max(current[key], ns);
-                    capacities[engine] = std::max<uint64_t>(
-                        {capacities[engine], 1, count(data["drm-engine-capacity-" + engine])});
+                    const auto published = count(data["drm-engine-capacity-" + engine]);
+                    // Some Strix Halo kernels aggregate both unified VCN instances
+                    // under enc but omit drm-engine-capacity-enc. Use the queried
+                    // hardware count only when instances aren't separate classes.
+                    uint64_t fallback = 1;
+                    if (engine == "enc" && !data.count("drm-engine-enc_1"))
+                        fallback = vcn_enc_capacity;
+                    if (engine == "dec") fallback = vcn_dec_capacity;
+                    capacities[engine] = std::max<uint64_t>(capacities[engine], published ? published : fallback);
                 }
             }
         }

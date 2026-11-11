@@ -5,15 +5,19 @@ profile="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd -- "$profile/../../../.." && pwd)"
 mode=fullscreen
 case "${1:-}" in
+    --soak-seconds) mode=soak; seconds="${2:?Missing duration}"; shift 2 ;;
     --check) mode=check; shift ;;
     --windowed) mode=windowed; shift ;;
 esac
 if [[ $# != 1 ]]; then
-    echo 'Usage: run.sh [--check|--windowed] RUNTIME_DIRECTORY' >&2
+    echo 'Usage: run.sh [--check|--windowed|--soak-seconds N] RUNTIME_DIRECTORY' >&2
     exit 2
 fi
 runtime="$(realpath -- "$1")"
 source "$repo/scripts/env.sh"
+if [[ "${AMDVA_COPY_AUDIT:-0}" == 1 || "$mode" == soak ]]; then
+    export LD_PRELOAD="$repo/build/src/gst/libamdva_copy_audit.so"
+fi
 python3 "$profile/manage.py" check --runtime "$runtime"
 for binary in "$repo/build/examples/rtsp-files/amdva-rtsp-files" "$repo/build/examples/resource-dashboard/amdva-dashboard" "$repo/build/examples/nvr/amdva-nvr"; do
     [[ -x "$binary" ]] || { echo "Build required executable: $binary" >&2; exit 1; }
@@ -48,6 +52,10 @@ for port in map(int, sys.argv[1:]):
         sys.exit(f"Demo port {port} is unavailable: {error}")
     sockets.append(sock)
 PY
+# Preserve complete logs from earlier runs, after port checks rule out an active demo.
+if [[ -d "$runtime/logs" ]]; then
+    mv -- "$runtime/logs" "$runtime/logs.$(date -u +%Y%m%dT%H%M%S%N)"
+fi
 mkdir -p "$runtime/logs"
 pids=()
 cleanup() {
@@ -67,6 +75,7 @@ sleep 2
 for pid in "${pids[@]}"; do kill -0 "$pid" || { echo "Server startup failed; see $runtime/logs" >&2; exit 1; }; done
 nvr_args=()
 if [[ "$mode" == fullscreen ]]; then nvr_args+=(--fullscreen); fi
+if [[ "$mode" == soak ]]; then nvr_args+=(--soak "$seconds"); fi
 # run.sh loads the configured Ryzen AI environment before HIP/ORT initialization.
 "$repo/examples/nvr/scripts/run.sh" "${nvr_args[@]}" "$runtime/config.json" > "$runtime/logs/nvr.log" 2>&1 &
 nvr_pid=$!

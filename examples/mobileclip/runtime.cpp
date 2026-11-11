@@ -235,6 +235,22 @@ struct Runtime::Impl {
         if (backend == "npu") {
             if (json_text(meta.get(), "onnxruntime") != Ort::GetVersionString())
                 throw std::runtime_error("NPU cache ORT version mismatch");
+            auto read_identity = [](const fs::path &path) {
+                std::ifstream f(path); std::string value;
+                if (!std::getline(f, value))
+                    throw std::runtime_error("Cannot read NPU identity: " + path.string());
+                return value;
+            };
+            std::vector<std::string> npu_devices;
+            for (const auto &pci : fs::directory_iterator("/sys/bus/pci/devices")) {
+                if (read_identity(pci.path() / "vendor") == "0x1022" &&
+                    read_identity(pci.path() / "device") == "0x17f0")
+                    npu_devices.push_back("0x1022:0x17f0:" + read_identity(pci.path() / "revision"));
+            }
+            if (npu_devices.size() != 1 ||
+                json_text(meta.get(), "npu_device") != npu_devices[0] ||
+                json_text(meta.get(), "npu_driver") != read_identity("/sys/module/amdxdna/version"))
+                throw std::runtime_error("NPU cache hardware/driver mismatch; regenerate on this host");
             auto key = json_text(meta.get(), "cache_key");
             if (key.empty() ||
                 key.find_first_not_of(

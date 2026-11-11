@@ -35,7 +35,7 @@ class DemoPortability(unittest.TestCase):
             path = self.source / name
             path.write_bytes(name.encode())
             save(Path(str(path) + ".manifest.json"),
-                 {"sha256": sha(path), "batch": batch, "offload_copy": False, "gpu": "gfx1150"})
+                 {"schema":3,"rocm":"10.1.0","migraphx":"2.18.0","sha256": sha(path), "batch": batch, "offload_copy": False, "gpu": "gfx1150"})
             if key == "reid":
                 config["search"]["reid_model"] = name
             else:

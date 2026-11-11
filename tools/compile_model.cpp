@@ -87,11 +87,21 @@ int main(int argc, char **argv) {
         gchar *hash = g_compute_checksum_for_data(G_CHECKSUM_SHA256,
                                                   reinterpret_cast<const guchar *>(data), size);
         g_free(data);
+        gchar *source_data{}; gsize source_size{};
+        if (!g_file_get_contents(argv[1], &source_data, &source_size, nullptr))
+            throw std::runtime_error("Cannot hash source ONNX");
+        gchar *source_hash = g_compute_checksum_for_data(G_CHECKSUM_SHA256,
+            reinterpret_cast<const guchar *>(source_data), source_size);
+        g_free(source_data);
         std::ofstream manifest(std::string(argv[2]) + ".manifest.json");
-        manifest << "{\"schema\":2,\"gpu\":\"" << arch
+        manifest << "{\"schema\":3,\"gpu\":\"" << arch
+                 << "\",\"rocm\":\"" << AMDVA_ROCM_VERSION
+                 << "\",\"migraphx\":\"" << AMDVA_MIGRAPHX_VERSION
+                 << "\",\"source_sha256\":\"" << source_hash
                  << "\",\"offload_copy\":false,\"precision\":\"" << precision
                  << "\",\"batch\":" << batch << ",\"sha256\":\"" << hash << "\"}\n";
         g_free(hash);
+        g_free(source_hash);
         if (!manifest)
             throw std::runtime_error("Cannot write model manifest");
         program.print();

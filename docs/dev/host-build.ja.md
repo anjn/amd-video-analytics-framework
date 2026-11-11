@@ -1,29 +1,19 @@
-<!-- source: docs/dev/host-build.md c13a10ae80b50c719bbdea28bb80f07dc03a7c14 -->
-# ホストでのビルドと基準パイプラインの実行
+<!-- source: docs/dev/host-build.md 9472a651202aa7568312af2aa2aa7e7d8e4d20cc -->
+# ホストでのビルドと参照パイプライン
 
-短い手順はユーザーガイド（[インストール](../guide/install.ja.md)、[クイックスタート](../guide/quickstart.ja.md)）にあります。このページには、ホストに関する詳細、依存関係のロック、コピー監査付きの基準実行ツールの使い方を残しています。
+短い手順は[導入](../guide/install.ja.md)と[クイックスタート](../guide/quickstart.ja.md)にあります。
 
-## ホストでのビルド
+## ホストでビルドする
 
-検証済みのハードウェアは Ryzen AI 9 HX 370 / Radeon 890M（**gfx1150**）、VPE 6.1.0 です。元のログイン環境では gfx1151 が強制されていましたが、`scripts/env.sh` がこの設定を解除します。ソフトウェアの基準環境は Ubuntu 24.04、カーネル 6.17.0-1032-oem、Mesa
-25.2.8 です。`/dev/dri/renderD128` と `/dev/kfd` を通じた GPU デバイスへのアクセスが必要です。
+Ubuntu 24.04／26.04上にROCm **10.1.0**とMIGraphX **2.18.0**を事前導入します。SDKルートは別々に指定できます。GStreamerとパッチはframework側、Mesa／libva／libdrm、QtとOSの開発パッケージはホスト側で管理します。旧 `.deps/rocm72` と、他のOSから取得した `.deps/sysroot` は使いません。
 
-ホストの前提条件は、Python 3.12+、`uv`、C/C++ コンパイラー、CMake 3.22+、pkg-config、git、dpkg-deb、apt-get、m4、GLib の開発ファイル（`glib-2.0 >= 2.64`）です。テスト用素材の作成には libx264 付きの FFmpeg を使います。ブートストラップは sudo を使わず、システムのライブラリも置き換えずに `.deps/` へインストールします。数 GB の ROCm
-パッケージをダウンロードし、展開後のライブラリにはさらに多くのディスク容量が必要です。
+[導入手順](../guide/install.ja.md)に従い `python3 scripts/host.py --write`、`python3 scripts/bootstrap.py --jobs 8` を実行します。NPUでは準備済みの `--ryzen-ai-venv` を指定します。bootstrapはsudoやホストSDKの導入を実行しません。`scripts/env.sh` は記録したホストSDKとframeworkのprefixを参照します。
 
-```bash
-python3 scripts/bootstrap.py --jobs 8
-source scripts/env.sh
-ctest --test-dir build --output-on-failure
-build/amdva-probe
-build/src/gst/amdva-validate-preproc
-```
+検証済みと未検証の構成は[対応表](support-matrix.ja.md)を参照してください。モデルmanifestはschema 3で、GPU、ROCm、MIGraphX、元ONNXのハッシュ、精度、バッチと生成物のハッシュを記録します。旧schema 1／2は再生成が必要です。SDK間でMIGraphXのシリアライズ済みモデルの互換性を仮定しません。
 
-依存関係は [dependencies.lock.json](../../dependencies.lock.json) で SHA256 ハッシュとともに固定しています。内訳は、DL Streamer の analytics 拡張パッチ（`patches/`）を当てた GStreamer 1.28.2、ROCm 7.2.0 / MIGraphX 2.15.0、Paho MQTT、librdkafka、組み込み CPython です。最後の 3 つは省略可能です（`AMDVA_WITH_MQTT`、`AMDVA_WITH_KAFKA`、`AMDVA_WITH_PYTHON`。[SDK ガイド](sdk-guide.ja.md#build-and-install) を参照）。DL Streamer v2026.2.0 のソースは `third_party/dlstreamer`（MIT）に同梱しているため、クローンも OpenVINO も不要です。推論には MIGraphX を使います。`python3 scripts/bootstrap.py --check` で、キャッシュ済みの依存関係のダウンロードを検証できます。パイプラインの実行中に、読み込まれているライブラリを再インストールしたり再ビルドしたりしないでください。
+## モデルを準備して実行する
 
-## モデルの準備と実行
-
-入力が `[1,3,640,640]` の RGB、出力が `[1,84,8400]` の固定形状の YOLOv8 COCO ONNX を使います。モデルのメタデータは付属の[サンプル](../../examples/yolov8n.json) に従います。80 行のラベルファイルはその JSON と同じ場所にあります。背景となった既存プロジェクトのモデルとラベルファイルは、そのまま使えます。
+RGB入力 `[1,3,640,640]` と出力 `[1,84,8400]` の静的YOLOv8 COCO ONNXを用意します。モデル情報は[例](../../examples/yolov8n.json)に従い、80行のラベルをJSONの隣に置きます。
 
 ```bash
 source scripts/env.sh
@@ -35,16 +25,15 @@ LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
   /path/yolov8n.json --events=artifacts/events.jsonl
 ```
 
-モデルの準備では、内部演算に FP16 を使い、`offload_copy=false` を指定します。MXR と同じ場所に SHA256 と GPU 識別情報のマニフェストを書き出し、実行時にはマニフェストがない場合、一致しない場合、互換性がない場合にモデルを拒否します。既存の MXR ファイルは再コンパイルが必要です。モデルのコンパイルは、実行時のパイプライン制御とは分かれています。
+準備は内部FP16演算、`offload_copy=false`を使用し、SHA-256とGPUのmanifestを出力します。欠損・不一致・非互換は読み込み時に拒否します。モデルコンパイルは実行パイプラインとは分離します。
 
-`amdva-run` は、フレーム数、検出数、処理遅延の P95/P99、元のメモリと PTS の確認結果、コピー監査の結果を出力します。`--amd-only` を指定すると、診断のために DL Streamer を使わずに実行します。コピー監査ライブラリを使わない場合、レポートのゼロコピー検証は明示的に false のままになります。`--duration=SECONDS` は 30fps の H.264 エレメンタリストリームのテスト用素材を実時間のペースで繰り返し再生します。SIGINT/SIGTERM を受けると EOS を要求し、パイプラインに残ったデータを処理してから終了します。
+`amdva-run`はフレーム数、検出数、P95／P99処理時間、元メモリ／PTSとコピー監査を報告します。`--amd-only`は診断用にDL Streamerを省きます。監査ライブラリがなければゼロコピー検証はfalseです。`--duration=SECONDS`は30fpsのH.264入力を実時間で繰り返し、SIGINT／SIGTERMはEOSで排出します。
 
 ```bash
 python3 tools/soak.py /path/input.h264 artifacts/yolov8n.mxr /path/yolov8n.json \
   --seconds=3600 --output=artifacts/soak
 ```
 
-長時間試験では、RSS、FD、確保済み GPU メモリを定期的に記録し、ウォームアップ後の増加が上限内に収まるかを確認します。DL Streamer との連携とコピー監査の成功も合格条件です。合格基準と再現手順は[検証](validation.ja.md) を参照してください。
+soakはRSS、FD、GPUメモリを記録し、ウォームアップ後の増加を検査します。DL Streamerとコピー監査の成功が必要です。[検証](validation.ja.md)を参照してください。
 
-映像の録画では、圧縮された RTSP パケットをそのまま保存します。このフレームワークは
-NPU の推論バックエンドを提供しません。[リソースダッシュボードのサンプル](resource-dashboard/README.ja.md) は、GPU で描画した監視グラフィックスをハードウェア H.264 エンコードで配信します。
+録画は圧縮RTSPパケットを保持します。リソースダッシュボードはGPU描画した監視画面をハードウェアH.264で配信します。現在のNPU要素については[要素の説明](elements.ja.md)も参照してください。

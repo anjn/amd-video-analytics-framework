@@ -1,9 +1,9 @@
-<!-- source: README.ja.md cd098d2f6b02cd1ed6a8c6ce2f97f95b03598fc1 -->
+<!-- source: README.ja.md 22c15820f0c86f331d9567709d6d5be583d63c87 -->
 # AMD Video Analytics Framework
 
 [日本語](README.ja.md)
 
-A GStreamer-based video analytics framework for AMD APUs. Decoding of camera feeds and video files, inference such as object detection, drawing of detection results, and encoding all run on the GPU; only metadata such as detection results returns to the CPU. Validated on Ryzen AI 9 HX 370 / Radeon 890M.
+A GStreamer-based video analytics framework for AMD APUs. Decoding of camera feeds and video files, inference such as object detection, drawing of detection results, and encoding all run on the GPU; only metadata such as detection results returns to the CPU. Targets Strix Point and Strix Halo; see the current validation matrix for tested configurations.
 
 ## Demo
 
@@ -22,11 +22,8 @@ For details and launch instructions of the NVR demo, which records multiple came
 
 ## Requirements
 
-| Item | Validated environment |
-| --- | --- |
-| Hardware | Ryzen AI 9 HX 370 / Radeon 890M (gfx1150) |
-| OS | Ubuntu 24.04, kernel 6.17.0-1032-oem or later, Mesa 25.2.8 |
-| Dependencies | GStreamer 1.28.2, ROCm 7.2.0 / MIGraphX 2.15.0 (the bootstrap installs them inside the repository) |
+Ubuntu 24.04 or 26.04, Strix Point/Halo, host ROCm 10.1.0 and MIGraphX 2.18.0.
+See [installation](docs/guide/install.md) and the [validation matrix](docs/dev/support-matrix.md); not every target combination has completed hardware acceptance.
 
 ## Documentation
 
@@ -40,3 +37,7 @@ The documentation is available at <https://anjn.github.io/amd-video-analytics-fr
 ## License
 
 The code in this repository is under the [MIT License](LICENSE). Bundled third-party sources (parts of DL Streamer, sqlite-vec, etc.) are subject to their respective licenses; see [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md) for the list. Model weights and sample images are not included. If you use them, check their respective terms of use.
+
+## Reproducible host-SDK setup
+
+The current prerequisites are Ubuntu 24.04/26.04, ROCm 10.1.0 and MIGraphX 2.18.0. The former bundled ROCm 7.2 workflow is retired. See [installation](docs/guide/install.md) and [validation status](docs/dev/support-matrix.md). Models are generated from a fresh checkout; users supply the 1440p videos.

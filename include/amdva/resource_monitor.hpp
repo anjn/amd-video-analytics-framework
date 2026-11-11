@@ -7,7 +7,8 @@
 namespace amdva {
 // CPU/GPU percentages are system-wide. VPE and preferred VCN readings cover
 // readable DRM clients only. VCN is the busiest encode/decode engine class,
-// normalized by reported capacity; sysfs VCN is used if DRM deltas are absent.
+// normalized by reported capacity or queried VCN instance count when capacity
+// is omitted; sysfs VCN is used if DRM deltas are absent.
 // Memory is binary GiB, bandwidth decimal GB/s, power W. Missing means unknown.
 struct ResourceSample {
     int64_t monotonic_ns{}, wall_ms{};

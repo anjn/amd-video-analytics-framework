@@ -83,6 +83,8 @@ def model_files(root):
         model = root / name
         sidecar = root / (name + ".manifest.json")
         meta = read(sidecar)
+        if meta.get("schema") != 3 or meta.get("rocm") != "10.1.0" or meta.get("migraphx") != "2.18.0":
+            raise ValueError(f"Recompile model for ROCm 10.1.0 / MIGraphX 2.18.0: {model}")
         if meta["sha256"] != digest(model) or meta["batch"] != batch or meta["offload_copy"]:
             raise ValueError(f"Invalid GPU model or sidecar: {model}")
         files[name] = model

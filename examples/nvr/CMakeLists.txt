@@ -99,6 +99,8 @@ target_link_libraries(amdva_nvr_ui PUBLIC amdva_nvr_backend AMDVA::amdva_media Q
 add_executable(amdva-nvr app/main.cpp)
 target_link_libraries(amdva-nvr PRIVATE amdva_nvr_ui)
 install(TARGETS amdva-nvr RUNTIME DESTINATION bin)
+add_executable(amdva-demo-soak tools/demo_soak.cpp)
+target_link_libraries(amdva-demo-soak PRIVATE amdva_nvr_ui ${CMAKE_DL_LIBS})
 
 if(BUILD_TESTING)
   add_executable(nvr-config-tests tests/nvr_config_tests.cpp)

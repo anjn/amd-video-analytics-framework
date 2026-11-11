@@ -1,5 +1,5 @@
 {
-  "schema": 1,
+  "schema": 2,
   "gstreamer": [
     {
       "name": "gstreamer",
@@ -44,541 +44,11 @@
     "license": "MIT",
     "local_changes": "patches formerly in patches/dlstreamer-*.patch are applied in-tree"
   },
-  "rocm": {
-    "version": "7.2.0",
-    "repository": "https://repo.radeon.com/rocm/apt/7.2/",
-    "packages": [
-      {
-        "Package": "migraphx",
-        "Version": "2.15.0.70200-43~24.04",
-        "Filename": "pool/main/m/migraphx/migraphx_2.15.0.70200-43~24.04_amd64.deb",
-        "Size": "68106238",
-        "SHA256": "b06d48c3097bfb9063eb0da6fc47d79309f2cb0b5ebd7170c7d375aef4f4f9a0"
-      },
-      {
-        "Package": "migraphx-dev",
-        "Version": "2.15.0.70200-43~24.04",
-        "Filename": "pool/main/m/migraphx-dev/migraphx-dev_2.15.0.70200-43~24.04_amd64.deb",
-        "Size": "186218",
-        "SHA256": "d99155727eae05a41f631c179dc1092724c1be256172b31aa5c487247c192072"
-      },
-      {
-        "Package": "hip-runtime-amd",
-        "Version": "7.2.26015.70200-43~24.04",
-        "Filename": "pool/main/h/hip-runtime-amd/hip-runtime-amd_7.2.26015.70200-43~24.04_amd64.deb",
-        "Size": "13364448",
-        "SHA256": "6c84126532d302ecc40ab837cc3042e9dd5f72b319f08772127bed7ca6275037"
-      },
-      {
-        "Package": "hip-dev",
-        "Version": "7.2.26015.70200-43~24.04",
-        "Filename": "pool/main/h/hip-dev/hip-dev_7.2.26015.70200-43~24.04_amd64.deb",
-        "Size": "372784",
-        "SHA256": "a85545d7b05b2d70837ce8a2bc7ea942a45300daed122ff7b2e317b1c8e8e14f"
-      },
-      {
-        "Package": "hsa-rocr",
-        "Version": "1.18.0.70200-43~24.04",
-        "Filename": "pool/main/h/hsa-rocr/hsa-rocr_1.18.0.70200-43~24.04_amd64.deb",
-        "Size": "1660276",
-        "SHA256": "4741b1d34698a426ad9736a675bf9c8456e7239bce5cc03d6a33dbe9dc50776b"
-      },
-      {
-        "Package": "hsa-rocr-dev",
-        "Version": "1.18.0.70200-43~24.04",
-        "Filename": "pool/main/h/hsa-rocr-dev/hsa-rocr-dev_1.18.0.70200-43~24.04_amd64.deb",
-        "Size": "139464",
-        "SHA256": "f48f974a5df1930591e6bcc153c4e6430509f8363dff56829e48b64ac97aab98"
-      },
-      {
-        "Package": "comgr",
-        "Version": "3.0.0.70200-43~24.04",
-        "Filename": "pool/main/c/comgr/comgr_3.0.0.70200-43~24.04_amd64.deb",
-        "Size": "58019192",
-        "SHA256": "fbb1719379fff8b5a8013b3b88a179fe0598d75ff75cf33daa237c78711df3a9"
-      },
-      {
-        "Package": "rocm-core",
-        "Version": "7.2.0.70200-43~24.04",
-        "Filename": "pool/main/r/rocm-core/rocm-core_7.2.0.70200-43~24.04_amd64.deb",
-        "Size": "32690",
-        "SHA256": "2e00e742653cc2ae271113793e0a1106e6a23d229a2a6f596dc90f5820ac4f46"
-      },
-      {
-        "Package": "rocprofiler-register",
-        "Version": "0.6.0.70200-43~24.04",
-        "Filename": "pool/main/r/rocprofiler-register/rocprofiler-register_0.6.0.70200-43~24.04_amd64.deb",
-        "Size": "242886",
-        "SHA256": "3f2bb2f8af06d06f730f8acaea746b05433e9b1c3bc5f0d6dba085b9c469bd1b"
-      },
-      {
-        "Package": "rocminfo",
-        "Version": "1.0.0.70200-43~24.04",
-        "Filename": "pool/main/r/rocminfo/rocminfo_1.0.0.70200-43~24.04_amd64.deb",
-        "Size": "28536",
-        "SHA256": "3ae0dea128f27545e423a0c86101282e487d9e94f7dbb09d7220dd844713de05"
-      },
-      {
-        "Package": "half",
-        "Version": "1.12.0.70200-43~24.04",
-        "Filename": "pool/main/h/half/half_1.12.0.70200-43~24.04_amd64.deb",
-        "Size": "19464",
-        "SHA256": "a2d832972f2ef5ef0841e193c4c9286401498c001c3a4096b4047faedde3684c"
-      },
-      {
-        "Package": "miopen-hip",
-        "Version": "3.5.1.70200-43~24.04",
-        "Filename": "pool/main/m/miopen-hip/miopen-hip_3.5.1.70200-43~24.04_amd64.deb",
-        "Size": "307930150",
-        "SHA256": "6c3105d785a7c339783920663dc51a240ff29a711d99e54ccf0d3848b9c83fd4"
-      },
-      {
-        "Package": "rocblas",
-        "Version": "5.2.0.70200-43~24.04",
-        "Filename": "pool/main/r/rocblas/rocblas_5.2.0.70200-43~24.04_amd64.deb",
-        "Size": "166770168",
-        "SHA256": "737275bf8630063d02981ed17cbc155b9b1b6c296379757a39d78ee0e5fcbc13"
-      },
-      {
-        "Package": "hipblaslt",
-        "Version": "1.2.1.70200-43~24.04",
-        "Filename": "pool/main/h/hipblaslt/hipblaslt_1.2.1.70200-43~24.04_amd64.deb",
-        "Size": "1611419932",
-        "SHA256": "b34184c1dc0a590b6f2b149f423891fd416730deacfd4e4991cc328aa95d60f4"
-      },
-      {
-        "Package": "rocm-device-libs",
-        "Version": "1.0.0.70200-43~24.04",
-        "Filename": "pool/main/r/rocm-device-libs/rocm-device-libs_1.0.0.70200-43~24.04_amd64.deb",
-        "Size": "728288",
-        "SHA256": "cfcb24438de2d181f16ce568d0dfac877164c2dab3784007d5a159fbac708e29"
-      },
-      {
-        "Package": "rocm-llvm",
-        "Version": "22.0.0.26014.70200-43~24.04",
-        "Filename": "pool/main/r/rocm-llvm/rocm-llvm_22.0.0.26014.70200-43~24.04_amd64.deb",
-        "Size": "544602228",
-        "SHA256": "c36ef1ad37e626c09e4a491782ae0f959f33d181dec9445d1a75556f52b39c02"
-      }
-    ]
-  },
-  "ubuntu": {
-    "suite": "noble",
-    "packages": [
-      {
-        "name": "bison",
-        "version": "2:3.8.2+dfsg-1ubuntu0.24.04.1",
-        "filename": "bison_2%3a3.8.2+dfsg-1ubuntu0.24.04.1_amd64.deb",
-        "sha256": "9d75084d1293f68f3c1a2ee677dea5baa4e010bac2d4c455d8e23177e97aa353"
-      },
-      {
-        "name": "flex",
-        "version": "2.6.4-8.2build1",
-        "filename": "flex_2.6.4-8.2build1_amd64.deb",
-        "sha256": "c5604f55827b50e3f568b4731b7799f86b147454c867be02bc141d9d8ce561ff"
-      },
-      {
-        "name": "libfl2",
-        "version": "2.6.4-8.2build1",
-        "filename": "libfl2_2.6.4-8.2build1_amd64.deb",
-        "sha256": "098db71e672ded6e8194eec7132a2ca31dee49022848c7b0f77ce912d99cb445"
-      },
-      {
-        "name": "libjson-glib-1.0-0",
-        "version": "1.8.0-2build2",
-        "filename": "libjson-glib-1.0-0_1.8.0-2build2_amd64.deb",
-        "sha256": "4310fbbd91785adf38d3e0f0d6a94527430c077af8773eb83ec02a1fcbcba089"
-      },
-      {
-        "name": "libjson-glib-dev",
-        "version": "1.8.0-2build2",
-        "filename": "libjson-glib-dev_1.8.0-2build2_amd64.deb",
-        "sha256": "e28dfc12339565a48b5ed115f3933b3b0f7b860364a527a4ac2a333ca9426bff"
-      },
-      {
-        "name": "libopencv-core-dev",
-        "version": "4.6.0+dfsg-13.1ubuntu1",
-        "filename": "libopencv-core-dev_4.6.0+dfsg-13.1ubuntu1_amd64.deb",
-        "sha256": "7d75d19f2f88016f8272aca044f593d0c7932f9e8485be08dbe0973edc7797e9"
-      },
-      {
-        "name": "libopencv-core406t64",
-        "version": "4.6.0+dfsg-13.1ubuntu1",
-        "filename": "libopencv-core406t64_4.6.0+dfsg-13.1ubuntu1_amd64.deb",
-        "sha256": "22c2c50541f11f02ffedde3cb3047a2476b8afae7662c559204e9b02efb7b17c"
-      },
-      {
-        "name": "libopencv-imgproc-dev",
-        "version": "4.6.0+dfsg-13.1ubuntu1",
-        "filename": "libopencv-imgproc-dev_4.6.0+dfsg-13.1ubuntu1_amd64.deb",
-        "sha256": "fca9c2836aa990ff4ad7cd9b0fcbd260d0f8b300e81dc61b99e320d854be6ea9"
-      },
-      {
-        "name": "libopencv-imgproc406t64",
-        "version": "4.6.0+dfsg-13.1ubuntu1",
-        "filename": "libopencv-imgproc406t64_4.6.0+dfsg-13.1ubuntu1_amd64.deb",
-        "sha256": "406b188e044ae15d98746cd1baae4e9085344f40ccb89dc141dfcb6819f6a71d"
-      },
-      {
-        "name": "libtbb-dev",
-        "version": "2021.11.0-2ubuntu2",
-        "filename": "libtbb-dev_2021.11.0-2ubuntu2_amd64.deb",
-        "sha256": "c57e2ffc96ced3f918f7695fa75ff827e0e83d1a306d3de9cb930414013b55b8"
-      },
-      {
-        "name": "libtbb12",
-        "version": "2021.11.0-2ubuntu2",
-        "filename": "libtbb12_2021.11.0-2ubuntu2_amd64.deb",
-        "sha256": "78e2c79f5749fc5c55b32f9745e07d5c3480be574fd4d64bb0325cbec4206b06"
-      },
-      {
-        "name": "libtbbmalloc2",
-        "version": "2021.11.0-2ubuntu2",
-        "filename": "libtbbmalloc2_2021.11.0-2ubuntu2_amd64.deb",
-        "sha256": "3de9b639d4abe5d8f0e0adbb7e26e32bf9de9473b19155d76a3a24c88b62cfea"
-      },
-      {
-        "name": "libva-dev",
-        "version": "2.20.0-2ubuntu0.2",
-        "filename": "libva-dev_2.20.0-2ubuntu0.2_amd64.deb",
-        "sha256": "eb5db2ea52d6da9e28821ca260235dc1ef7520e05276b6856a9145ba0267474c"
-      },
-      {
-        "name": "libva-drm2",
-        "version": "2.20.0-2ubuntu0.2",
-        "filename": "libva-drm2_2.20.0-2ubuntu0.2_amd64.deb",
-        "sha256": "7919c889e0bc8221dcfb595bc0707959354a5404cc1d9b818f85fc43914ca0d4"
-      },
-      {
-        "name": "libva2",
-        "version": "2.20.0-2ubuntu0.2",
-        "filename": "libva2_2.20.0-2ubuntu0.2_amd64.deb",
-        "sha256": "a8ff8d3d16dba715cd24d67c0f8787016194fcee0dee20344a92d057577c0b40"
-      },
-      {
-        "name": "nlohmann-json3-dev",
-        "version": "3.11.3-1",
-        "filename": "nlohmann-json3-dev_3.11.3-1_all.deb",
-        "sha256": "85e4e95dc4bdc6034d593e1933ee88e085319fee36cae83c178e8ddc1a66e8fd"
-      },
-      {
-        "name": "libb2-1",
-        "version": "0.98.1-1.1build1",
-        "filename": "libb2-1_0.98.1-1.1build1_amd64.deb",
-        "sha256": "c23173e035b257118540266098bd4f1928c67d918ad981b1e13e6e0d9847d69c"
-      },
-      {
-        "name": "libqt6core6t64",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "libqt6core6t64_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "1f6e26589271c1d7aa549cb86d0156ff589b764d37edf356712fecebfe5f30f8"
-      },
-      {
-        "name": "libqt6concurrent6t64",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "libqt6concurrent6t64_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "458bcc5f69954fed963354f248ab5ab78b9a06f5823f9e2a4b88a6e32fa940c6"
-      },
-      {
-        "name": "libqt6dbus6t64",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "libqt6dbus6t64_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "20891a752f6569b8b0772b0c81b7251eb3394fdef57bf52870f4825cb0e9c0de"
-      },
-      {
-        "name": "libts0t64",
-        "version": "1.22-1.1build1",
-        "filename": "libts0t64_1.22-1.1build1_amd64.deb",
-        "sha256": "892524fd6a070e9e6a6b084d3a4099b81d6fbbd82a1c7bd4b67a8e6e998ac5a3"
-      },
-      {
-        "name": "libqt6gui6t64",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "libqt6gui6t64_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "f8774151f151a932d389817a371a3241004b1c3031cf53afd91feed73c8dd68e"
-      },
-      {
-        "name": "libqt6network6t64",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "libqt6network6t64_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "743f289d5f7b1a4cafa021de62bcd705122bad06ba5d3a2c971fd7d34b87752f"
-      },
-      {
-        "name": "libqt6opengl6t64",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "libqt6opengl6t64_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "dc7b43aa74d5694ab10e02bee7751c1bea0905ed6f0aaf527bff1952c582403f"
-      },
-      {
-        "name": "libqt6widgets6t64",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "libqt6widgets6t64_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "9d5aba1eeb471c1230a94eb1865a95df0595ed8311971acf50fff2652452562d"
-      },
-      {
-        "name": "libqt6openglwidgets6t64",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "libqt6openglwidgets6t64_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "68a328430e1d354532d718969c74f2df4579777375d3a47d5e2bc999819cdc9d"
-      },
-      {
-        "name": "libqt6printsupport6t64",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "libqt6printsupport6t64_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "5e068edcc290d740bcbf34d2bcc7be8efb738f47bb2460849742ba221cbb7b15"
-      },
-      {
-        "name": "libqt6qml6",
-        "version": "6.4.2+dfsg-4build3",
-        "filename": "libqt6qml6_6.4.2+dfsg-4build3_amd64.deb",
-        "sha256": "e490f2df6ddba340f50b061d7a48dbdd0fa8bc418cfa3713d2641e794ad2aff4"
-      },
-      {
-        "name": "libqt6qmlmodels6",
-        "version": "6.4.2+dfsg-4build3",
-        "filename": "libqt6qmlmodels6_6.4.2+dfsg-4build3_amd64.deb",
-        "sha256": "859d0fc930633cda2bf07a0e0725b98e2a9f268b1c169c0575c49c7accd821db"
-      },
-      {
-        "name": "libqt6quick6",
-        "version": "6.4.2+dfsg-4build3",
-        "filename": "libqt6quick6_6.4.2+dfsg-4build3_amd64.deb",
-        "sha256": "85e7c9973b88b102202164a2f7f0766f3a717196dc92e5bb7ef05e57af50b2be"
-      },
-      {
-        "name": "libqt6sql6t64",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "libqt6sql6t64_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "35155bb0ef40d8769004f75a2a000029f86adfdd3cd76a14eeab2e68951f407e"
-      },
-      {
-        "name": "libqt6test6t64",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "libqt6test6t64_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "7d0f27c84fab37ec9f574d8cb47f117d411bceffba2eada10436928bccb22537"
-      },
-      {
-        "name": "libqt6waylandclient6",
-        "version": "6.4.2-5build3",
-        "filename": "libqt6waylandclient6_6.4.2-5build3_amd64.deb",
-        "sha256": "e6c669a21e019e67393dcecdbc22a396b66ebcee7cfc261f9ba673070af99946"
-      },
-      {
-        "name": "libqt6waylandcompositor6",
-        "version": "6.4.2-5build3",
-        "filename": "libqt6waylandcompositor6_6.4.2-5build3_amd64.deb",
-        "sha256": "2a64210011c85071675e7e00730ae56b823a0fb603449d6b32c3ea1d4471d5ec"
-      },
-      {
-        "name": "libqt6waylandeglclienthwintegration6",
-        "version": "6.4.2-5build3",
-        "filename": "libqt6waylandeglclienthwintegration6_6.4.2-5build3_amd64.deb",
-        "sha256": "d0caf28f9ccc3e9b3ff495fe1dedef2b4301a5e3b2c15f0a6d8948736c8fd962"
-      },
-      {
-        "name": "libqt6waylandeglcompositorhwintegration6",
-        "version": "6.4.2-5build3",
-        "filename": "libqt6waylandeglcompositorhwintegration6_6.4.2-5build3_amd64.deb",
-        "sha256": "3258b0f5522e156607ed2cb4a5e2aee3e2ea622a38279821bc1327851f21c33c"
-      },
-      {
-        "name": "libqt6wlshellintegration6",
-        "version": "6.4.2-5build3",
-        "filename": "libqt6wlshellintegration6_6.4.2-5build3_amd64.deb",
-        "sha256": "75255f4a95ee3873259f71cab65570a3733d729df5a0c861b1b61c95f6345064"
-      },
-      {
-        "name": "libqt6xml6t64",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "libqt6xml6t64_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "7999c22f56a9b8d23e4d5e7cd7d0e679df581c8e72015baaa4e2b870746245ad"
-      },
-      {
-        "name": "libsqlite3-dev",
-        "version": "3.45.1-1ubuntu2.8",
-        "filename": "libsqlite3-dev_3.45.1-1ubuntu2.8_amd64.deb",
-        "sha256": "61e688e7ced1c6f7c0b66721e46fd996f891489654dbf382daa98e17ee3ae192"
-      },
-      {
-        "name": "qmake6-bin",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "qmake6-bin_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "85005a23941c2ac634d02758ffcb7dd9ddaebe88aa15b3bcf4914ca3ee3774e7"
-      },
-      {
-        "name": "qmake6",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "qmake6_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "2226948252b282854a26311054930964895863fdcab65151591ea11a1a1731e6"
-      },
-      {
-        "name": "qt6-base-dev-tools",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "qt6-base-dev-tools_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "6d24069f67e2ffdde4b7295780ebc89673d7ee66a1ecf9cc383405d0d651fb23"
-      },
-      {
-        "name": "qt6-qpa-plugins",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "qt6-qpa-plugins_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "10999ac52ea568d6d4ea896b16ccf931b1eb2fd9e96e058a743f00e2e7f099d2"
-      },
-      {
-        "name": "qt6-base-dev",
-        "version": "6.4.2+dfsg-21.1build5",
-        "filename": "qt6-base-dev_6.4.2+dfsg-21.1build5_amd64.deb",
-        "sha256": "f81ea0070597621c2a1027d753c343c8204a2fce601b1a92d6e264d909a32bfb"
-      },
-      {
-        "name": "qt6-wayland",
-        "version": "6.4.2-5build3",
-        "filename": "qt6-wayland_6.4.2-5build3_amd64.deb",
-        "sha256": "61ea3237974e71188c699e3554f08b8b2dc29e6854d727ff60627ec0570de6cd"
-      },
-      {
-        "name": "libpaho-mqtt-dev",
-        "version": "1.3.13-1build2",
-        "filename": "libpaho-mqtt-dev_1.3.13-1build2_amd64.deb",
-        "sha256": "3b2171a187a17656230ef5e839c93ddb3941e54a1a3a39ab9a0ec7bc032ce022"
-      },
-      {
-        "name": "libpaho-mqtt1.3",
-        "version": "1.3.13-1build2",
-        "filename": "libpaho-mqtt1.3_1.3.13-1build2_amd64.deb",
-        "sha256": "435f7e12d2a7466d39e405013d3d1ae2ac449b6020d0dced9d75a3fbdaa89638"
-      },
-      {
-        "name": "librdkafka-dev",
-        "version": "2.3.0-1build2",
-        "filename": "librdkafka-dev_2.3.0-1build2_amd64.deb",
-        "sha256": "ed1e3d3a689b83b9bc6aeedb4b83b01dfff77c464897a87d2d082a0c9069c49f"
-      },
-      {
-        "name": "librdkafka1",
-        "version": "2.3.0-1build2",
-        "filename": "librdkafka1_2.3.0-1build2_amd64.deb",
-        "sha256": "0294972c1eb7229644ba09c97772b69d0587686b1e082d75ea8d77d615385a2b"
-      },
-      {
-        "name": "librdkafka++1",
-        "version": "2.3.0-1build2",
-        "filename": "librdkafka++1_2.3.0-1build2_amd64.deb",
-        "sha256": "d5b1ce37ec720345057017d4d3a33469cbc50a6f4bc730e9d13586f3b5e5c823"
-      },
-      {
-        "name": "python-gi-dev",
-        "version": "3.48.2-1",
-        "filename": "python-gi-dev_3.48.2-1_amd64.deb",
-        "sha256": "406b1f6c8e827984e334c2e657011c2ac93f385a036a5db13cb7bf8ffb6cdc95"
-      },
-      {
-        "name": "fontconfig-config",
-        "version": "2.15.0-1.1ubuntu2",
-        "filename": "fontconfig-config_2.15.0-1.1ubuntu2_amd64.deb",
-        "sha256": "9df0579cd298a1f2b7a40efd519c849745aecd193a09733cf4d1032284a62bbf"
-      },
-      {
-        "name": "fonts-dejavu-core",
-        "version": "2.37-8",
-        "filename": "fonts-dejavu-core_2.37-8_all.deb",
-        "sha256": "40049660c194f3b8a2541fc7369efebb10e9f94bdac836a2f38fafedd10fa73a"
-      },
-      {
-        "name": "libbrotli-dev",
-        "version": "1.1.0-2build2",
-        "filename": "libbrotli-dev_1.1.0-2build2_amd64.deb",
-        "sha256": "2d56213247be7aca429c55c6136e371b670e2275c8d455ef3fe6a737f5b7da7b"
-      },
-      {
-        "name": "libbrotli1",
-        "version": "1.1.0-2build2",
-        "filename": "libbrotli1_1.1.0-2build2_amd64.deb",
-        "sha256": "74492419b8fda803774b8c9acef6afc5d2f9ff31782635aae212906adae7b277"
-      },
-      {
-        "name": "libdrm-amdgpu1",
-        "version": "2.4.125-1ubuntu0.1~24.04.2",
-        "filename": "libdrm-amdgpu1_2.4.125-1ubuntu0.1~24.04.2_amd64.deb",
-        "sha256": "aa29b7898bae596bf07e55ba178cf8d5ea698fe83688e1b34520d86010251a7a"
-      },
-      {
-        "name": "libdrm-dev",
-        "version": "2.4.125-1ubuntu0.1~24.04.2",
-        "filename": "libdrm-dev_2.4.125-1ubuntu0.1~24.04.2_amd64.deb",
-        "sha256": "ffc5f987e5361a1acd7337b9b4e32e3993901453e179f275ce9a338c8004f1a8"
-      },
-      {
-        "name": "libdrm2",
-        "version": "2.4.125-1ubuntu0.1~24.04.2",
-        "filename": "libdrm2_2.4.125-1ubuntu0.1~24.04.2_amd64.deb",
-        "sha256": "4d3e858dd57be617c49d87c5ddcdb35df744a4f0a559981256ae2ba174718584"
-      },
-      {
-        "name": "libexpat1-dev",
-        "version": "2.6.1-2ubuntu0.6",
-        "filename": "libexpat1-dev_2.6.1-2ubuntu0.6_amd64.deb",
-        "sha256": "87281ce46d74f261caff4ac404fe5af7b07f185d305246fef81797ddc20fa9f8"
-      },
-      {
-        "name": "libexpat1",
-        "version": "2.6.1-2ubuntu0.6",
-        "filename": "libexpat1_2.6.1-2ubuntu0.6_amd64.deb",
-        "sha256": "494b8e672f722130c6bca6a7bc4cc31a43ca891a31d60d868bfdd699a3c20b13"
-      },
-      {
-        "name": "libfontconfig-dev",
-        "version": "2.15.0-1.1ubuntu2",
-        "filename": "libfontconfig-dev_2.15.0-1.1ubuntu2_amd64.deb",
-        "sha256": "7948f3037b39d8bc751dc6104ff490c2d2f1b145d2969227ba591ceb917f9f05"
-      },
-      {
-        "name": "libfontconfig1",
-        "version": "2.15.0-1.1ubuntu2",
-        "filename": "libfontconfig1_2.15.0-1.1ubuntu2_amd64.deb",
-        "sha256": "a2bc05cfef021fdb84285036f98eda5ebec3c4b7a378f5aa2bdba5c4d3d8d586"
-      },
-      {
-        "name": "libfreetype-dev",
-        "version": "2.13.2+dfsg-1ubuntu0.2",
-        "filename": "libfreetype-dev_2.13.2+dfsg-1ubuntu0.2_amd64.deb",
-        "sha256": "dd512109d33b182387be40cfe2b68b912b14f0753ba2a0769ca1950de0713a28"
-      },
-      {
-        "name": "libfreetype6",
-        "version": "2.13.2+dfsg-1ubuntu0.2",
-        "filename": "libfreetype6_2.13.2+dfsg-1ubuntu0.2_amd64.deb",
-        "sha256": "8c6d3bac5a6197fa2f48b2d56f04f3ffecaa7082eeab91b0939f97a40adc88a6"
-      },
-      {
-        "name": "libpng-dev",
-        "version": "1.6.43-5ubuntu0.7",
-        "filename": "libpng-dev_1.6.43-5ubuntu0.7_amd64.deb",
-        "sha256": "db0d4bc0054ae0061524d009f75bd4409b10f596274f3a9aa07d5e3212812263"
-      },
-      {
-        "name": "libpng16-16t64",
-        "version": "1.6.43-5ubuntu0.7",
-        "filename": "libpng16-16t64_1.6.43-5ubuntu0.7_amd64.deb",
-        "sha256": "863d6abb089b2820ceba98e6b18f06eaacc55f9b05827001e7b4021a9a7b246c"
-      },
-      {
-        "name": "zlib1g-dev",
-        "version": "1:1.3.dfsg-3.1ubuntu2.2",
-        "filename": "zlib1g-dev_1%3a1.3.dfsg-3.1ubuntu2.2_amd64.deb",
-        "sha256": "e9152a08af21ab22bc99e8bfa98f1eb83955b2cc3653bcefecab394ecf9d1b63"
-      },
-      {
-        "name": "zlib1g",
-        "version": "1:1.3.dfsg-3.1ubuntu2.2",
-        "filename": "zlib1g_1%3a1.3.dfsg-3.1ubuntu2.2_amd64.deb",
-        "sha256": "84b9cf5752b29c9f92c27cd4c4ba9bbcc70b5ccf9b1b515421a28ae23212e273"
-      }
-    ]
-  },
   "python": {
     "meson": "1.12.1",
     "ninja": "1.13.2",
-    "numpy": "2.4.6"
+    "numpy": "2.4.6",
+    "uv": "0.9.9"
   },
   "model_export": {
     "torch": {
@@ -590,7 +60,16 @@
       "onnx": "1.18.0",
       "onnxslim": "0.1.71",
       "onnxruntime": "1.24.4",
-      "transformers": "4.57.1"
+      "transformers": "4.57.1",
+      "open_clip_torch": "3.3.0",
+      "timm": "1.0.30",
+      "tokenizers": "0.22.1",
+      "ftfy": "6.3.1",
+      "safetensors": "0.6.2",
+      "huggingface-hub": "0.36.0",
+      "filelock": "4.2.4",
+      "markupsafe": "3.0.3",
+      "setuptools": "78.1.0"
     }
   },
   "sqlite_vec": {
@@ -623,5 +102,93 @@
     "path": "third_party/mobileclip-tokenizer",
     "source_path": "tokenizer",
     "license": "MIT"
+  },
+  "host": {
+    "ubuntu": [
+      "24.04",
+      "26.04"
+    ],
+    "gpu": [
+      "gfx1150",
+      "gfx1151"
+    ],
+    "rocm": "10.1.0",
+    "migraphx": "2.18.0",
+    "ryzen_ai": "1.9",
+    "xrt": "2.26.89",
+    "packages": [
+      "build-essential",
+      "cmake",
+      "ninja-build",
+      "pkg-config",
+      "git",
+      "curl",
+      "m4",
+      "bison",
+      "flex",
+      "python3-venv",
+      "python3-dev",
+      "python-gi-dev",
+      "libglib2.0-dev",
+      "libva-dev",
+      "libdrm-dev",
+      "libegl-dev",
+      "libgles-dev",
+      "libjson-glib-dev",
+      "libsqlite3-dev",
+      "libopencv-core-dev",
+      "libopencv-imgproc-dev",
+      "qt6-base-dev",
+      "qt6-wayland",
+      "libpaho-mqtt-dev",
+      "librdkafka-dev",
+      "libfontconfig-dev",
+      "libfreetype-dev",
+      "libpng-dev",
+      "libbrotli-dev",
+      "libexpat1-dev",
+      "libssl-dev",
+      "ffmpeg",
+      "nlohmann-json3-dev"
+    ],
+    "reference_packages": {
+      "amdrocm-core10.1-gfx1151": "10.1.0-3",
+      "amdrocm10-migraphx": "2.18.0-1"
+    },
+    "repositories": {
+      "24.04": {
+        "core": "https://stable.repo.amd.com/rocm/core/packages/ubuntu2404/",
+        "migraphx": "https://stable.repo.amd.com/rocm/migraphx/packages/ubuntu2404/"
+      },
+      "26.04": {
+        "core": "https://stable.repo.amd.com/rocm/core/packages/ubuntu2604/",
+        "migraphx": "https://stable.repo.amd.com/rocm/migraphx/packages/ubuntu2604/"
+      },
+      "key_url": "https://stable.repo.amd.com/rocm/gpg/packages.gpg",
+      "key_fingerprint": "D0F004A0025A1145C7807FCD0701EAC4D5E02107"
+    },
+    "rust_minimum": "1.85.0"
+  },
+  "demo_models": {
+    "yolo": {
+      "url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt",
+      "sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1"
+    },
+    "reid_source": {
+      "url": "https://raw.githubusercontent.com/KaiyangZhou/deep-person-reid/f8cd150fdf77e8d9e1ed143b7f308c2c609ded50/torchreid/models/osnet.py",
+      "sha256": "c7c1c29187d6330f859c91da229271531920464c7011aec13842a086b2263cae"
+    },
+    "reid_weights": {
+      "url": "https://huggingface.co/kaiyangzhou/osnet/resolve/a5c5cc037c24235cda3b21085b93ad77c9616224/osnet_x0_25_msmt17_combineall_256x128_amsgrad_ep150_stp60_lr0.0015_b64_fb10_softmax_labelsmooth_flip_jitter.pth",
+      "sha256": "cf55163d78fc44c62c82f85ab62d39f10438679b5abe8c698ae08cfa84aa6e18"
+    },
+    "mobileclip_prepare": {
+      "url": "https://raw.githubusercontent.com/anjn/embeddinggemma2-rocm/102a9df65cd312529668daabb3e88e0a17cfc363/python/embeddinggemma2_rocm/mobileclip2_prepare.py",
+      "sha256": "dc5abb99a75f72b08ceb0e828d5f0f86bbb7302c81bcdcaf0c997defcec2caaa"
+    },
+    "mobileclip_weights": {
+      "url": "https://huggingface.co/timm/MobileCLIP2-S2-OpenCLIP/resolve/ac6b37c8fc40b62b623d09ed228a6f0c9bc29fe6/open_clip_model.safetensors",
+      "sha256": "92f6bdcf3665a31eb05b83e41e3de665055a9dfe2f8ed8274fcf7ee08c692d68"
+    }
   }
 }

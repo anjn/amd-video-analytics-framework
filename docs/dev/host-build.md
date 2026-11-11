@@ -4,34 +4,20 @@ The user guide has the short version ([install](../guide/install.md), [quickstar
 
 ## Build on the host
 
-The validated hardware is Ryzen AI 9 HX 370 / Radeon 890M, **gfx1150**, VPE 6.1.0.
-The original login environment forced gfx1151; `scripts/env.sh` removes that
-override. The software baseline is Ubuntu 24.04, kernel 6.17.0-1032-oem and Mesa
-25.2.8. GPU device access through `/dev/dri/renderD128` and `/dev/kfd` is required.
+Use host-installed ROCm **10.1.0** and MIGraphX **2.18.0** on Ubuntu 24.04 or 26.04.
+The two SDK roots may differ. The framework owns GStreamer and its patches; the
+host owns Mesa/libva/libdrm, Qt and native development packages. Do not reuse the
+old `.deps/rocm72` or cross-distribution `.deps/sysroot`.
 
-Host prerequisites: Python 3.12+, `uv`, C/C++ compilers, CMake 3.22+, pkg-config,
-git, dpkg-deb, apt-get, m4, and GLib development files (`glib-2.0 >= 2.64`).
-FFmpeg with libx264 is used for test fixtures. The bootstrap installs to `.deps/`
-without sudo or system library replacement. It downloads several GB of ROCm
-packages; extracted libraries require substantially more disk space.
+Follow [installation](../guide/install.md), then run `python3 scripts/host.py --write`
+and `python3 scripts/bootstrap.py --jobs 8`. With NPU, pass the host-prepared
+`--ryzen-ai-venv` to both checks/build. No SDK installation or sudo is performed
+by bootstrap. `scripts/env.sh` exposes only the recorded host SDK and framework prefix.
 
-```bash
-python3 scripts/bootstrap.py --jobs 8
-source scripts/env.sh
-ctest --test-dir build --output-on-failure
-build/amdva-probe
-build/src/gst/amdva-validate-preproc
-```
-
-Dependencies are pinned with SHA256 hashes in [dependencies.lock.json](../../dependencies.lock.json):
-GStreamer 1.28.2 with DL Streamer's analytics extension patch (`patches/`),
-ROCm 7.2.0 / MIGraphX 2.15.0, with Paho MQTT, librdkafka and embedded CPython.
-The last three are optional (`AMDVA_WITH_MQTT`, `AMDVA_WITH_KAFKA`,
-`AMDVA_WITH_PYTHON`; see the [SDK guide](sdk-guide.md#build-and-install)).
-DL Streamer v2026.2.0 sources are vendored in `third_party/dlstreamer` (MIT) and
-need neither a clone nor OpenVINO; inference uses MIGraphX.
-`python3 scripts/bootstrap.py --check` verifies cached dependency downloads.
-Do not reinstall or rebuild loaded libraries during a running pipeline.
+See the [support matrix](support-matrix.md) for measured vs pending configurations.
+Model manifests use schema 3 and record the GPU, ROCm, MIGraphX, input ONNX hash,
+precision, batch and generated artifact hash. Legacy schema 1/2 models require
+regeneration. No serialized MIGraphX artifact is assumed compatible across SDKs.
 
 ## Prepare a model and run
 

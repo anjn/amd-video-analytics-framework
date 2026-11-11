@@ -1,3 +1,34 @@
+<!-- source: examples/nvr/demo/1440p/README.ja.md 00ecfe16113b3cdeefaaaeaa1c942f54421edc5a -->
+# Prepare the 1440p demo from Git
+
+The standard workflow generates models on the target from locked public checkpoints, without copying prepared assets from another PC. The legacy migration section below is an auxiliary export tool, not a requirement for a fresh build.
+
+1. Follow [installation](../../../../docs/guide/install.md) for the host SDK/framework and prepare a Ryzen AI SW 1.9 environment.
+2. Supply 16 user-owned videos, one path per line. Relative paths resolve from the list file. Every video must be **2560x1440, 30fps, HEVC**. No automatic transcoding or replacement video generation is performed.
+3. Prepare a new output directory:
+
+```bash
+source scripts/env.sh
+python3 scripts/prepare_demo.py --videos-list /path/to/videos.txt \
+  --ryzen-ai-venv /path/to/rai19-venv --backend npu \
+  --output artifacts/1440p-demo
+artifacts/1440p-demo/run-demo.sh
+```
+
+Add `--check-videos` to validate inputs only. CPU-only, hash-locked Python dependencies export YOLO11n, OSNet x0.25 and MobileCLIP2-S2. Source URLs and SHA-256 hashes are in `dependencies.lock.json`. GPU compilation uses host MIGraphX 2.18.0; NPU compilation happens at the final output location. Observe each model publisher's license terms.
+
+Videos are linked rather than copied. Do not move inputs or the prepared output afterwards. Existing `config.json` is never overwritten; choose a new output for regeneration. Keep artifacts, logs, recordings and checkpoints outside Git.
+
+GPU sidecars record GPU/SDK versions and source/generated hashes; legacy schemas require regeneration. NPU metadata records ORT, NPU identity and the loaded driver and rejects mismatches. There is no silent CPU fallback.
+
+Desktop launch needs `XDG_RUNTIME_DIR`/`WAYLAND_DISPLAY` or `DISPLAY`. RTSP, dashboard and NVR logs are saved in the output's `logs/`; cleanup stops only owned children. There are 16 video inputs; the default wall shows 15 cameras plus the resource dashboard.
+
+See the [support matrix](../../../../docs/dev/support-matrix.md) for reproducibility and validation status.
+
+---
+
+## Legacy asset export (not required for fresh construction)
+
 <!-- source: examples/nvr/demo/1440p/README.ja.md 94b0d9fb3ab85bb2ab997d9e829dc9813cb8829b -->
 # Move the 1440p, 17-input demo to another environment
 
@@ -124,3 +155,13 @@ python3 examples/nvr/demo/1440p/test_manage.py -v
 ```
 
 Small fake files test relocation, paths containing spaces, video order, tamper detection, overwrite protection, layout preservation and inventory refresh after recompilation. No GPU/NPU or running demo is used. CMake registers this as `demo-portability-contract`.
+
+## Thirty-minute hardware acceptance
+
+```bash
+artifacts/1440p-demo/run-demo.sh --soak-seconds 1800
+```
+
+Runs the same GUI/backend and logs channel, recording, search, RSS, FD and copy-audit metrics every five seconds to `logs/soak.jsonl`. Owned children are stopped on exit. Failure includes post-warm-up median RSS growth above the larger of 512 MiB or 25%, FD growth above 64, channel errors, audit violations, or search not exercised. Videos without people cannot establish search acceptance. Keep the desktop available; locking it or closing the app affects validation.
+
+Before a new launch, previous `logs/` are preserved under `logs.<UTC timestamp>/`. `--check` does not rotate logs or start processes.

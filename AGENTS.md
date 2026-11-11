@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A GStreamer-based video analytics framework for AMD APUs (validated on Ryzen AI 9 HX 370 / Radeon 890M, gfx1150, Ubuntu 24.04). Decode, preprocessing (VPE), inference (MIGraphX via HIP), drawing and encoding stay on the GPU; only compact metadata returns to the CPU. C++17, CMake.
+A GStreamer-based video analytics framework for AMD APUs (targeting Strix Point/gfx1150 and Strix Halo/gfx1151 on Ubuntu 24.04/26.04; see docs/dev/support-matrix.md for actual validation). Decode, preprocessing (VPE), inference (MIGraphX via HIP), drawing and encoding stay on the GPU; only compact metadata returns to the CPU. C++17, CMake.
 
 ## Build and test
 
-All dependencies (GStreamer 1.28.2 with patches, ROCm 7.2.0 / MIGraphX 2.15.0, Qt 6, etc.) are installed rootless under `.deps/` by the bootstrap, pinned in `dependencies.lock.json`. **Always `source scripts/env.sh` first**; without it CMake configure fails (e.g. "gstreamer-1.0>=1.28.2 not found") and binaries cannot find their libraries or GStreamer plugins.
+ROCm 10.1.0 / MIGraphX 2.18.0 and OS-native Mesa/libva/libdrm/Qt/development packages are host prerequisites. Bootstrap builds pinned GStreamer 1.28.2 with patches under `.deps/`; it never installs an alternate GPU SDK or extracts Ubuntu 24.04 libraries onto 26.04. `scripts/host.py --write` validates and records the host before bootstrap. Target OS/GPU matrix and validation status are in `docs/dev/support-matrix.md`. **Always `source scripts/env.sh` first**; without it CMake configure fails (e.g. "gstreamer-1.0>=1.28.2 not found") and binaries cannot find their libraries or GStreamer plugins.
 
 ```bash
 python3 scripts/bootstrap.py --jobs 8        # first time: deps + configure + build into build/

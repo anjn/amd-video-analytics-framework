@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-AMD の APU で動く、GStreamer ベースの映像解析フレームワークです。カメラ映像や動画ファイルのデコード、物体検出などの推論、検出結果の描画、エンコードまでを GPU 上で処理し、CPU には検出結果などのメタデータだけを戻します。Ryzen AI 9 HX 370 / Radeon 890M で検証しています。
+AMD の APU で動く、GStreamer ベースの映像解析フレームワークです。カメラ映像や動画ファイルのデコード、物体検出などの推論、検出結果の描画、エンコードまでを GPU 上で処理し、CPU には検出結果などのメタデータだけを戻します。Strix Point／Strix Haloを対象とし、構成ごとの検証結果を記録しています。
 
 ## デモ
 
@@ -21,11 +21,7 @@ AMD の APU で動く、GStreamer ベースの映像解析フレームワーク�
 
 ## 動作環境
 
-| 項目 | 検証済みの環境 |
-| --- | --- |
-| ハードウェア | Ryzen AI 9 HX 370 / Radeon 890M（gfx1150） |
-| OS | Ubuntu 24.04、カーネル 6.17.0-1032-oem 以降、Mesa 25.2.8 |
-| 依存関係 | GStreamer 1.28.2、ROCm 7.2.0 / MIGraphX 2.15.0（ブートストラップがリポジトリ内にインストールします） |
+Ubuntu 24.04／26.04、Strix Point／Strix Halo、ホストROCm 10.1.0／MIGraphX 2.18.0が前提です。[導入手順](docs/guide/install.ja.md)と[検証表](docs/dev/support-matrix.md)を参照してください。対応対象と実機受入済みは区別しています。
 
 ## ドキュメント
 
@@ -39,3 +35,7 @@ AMD の APU で動く、GStreamer ベースの映像解析フレームワーク�
 ## ライセンス
 
 このリポジトリのコードは [MIT ライセンス](LICENSE) です。同梱した外部のソース（DL Streamer の一部、sqlite-vec など）はそれぞれのライセンスに従います。一覧は [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md) にあります。モデルの重みとサンプル画像は含めていません。利用する場合は、それぞれの利用条件を確認してください。
+
+## 再現可能な環境構築（ホストSDK方式）
+
+現在の前提はUbuntu 24.04／26.04、ROCm 10.1.0、MIGraphX 2.18.0です。以前のROCm 7.2を同梱する手順は使いません。[導入手順](docs/guide/install.ja.md)と[検証状態](docs/dev/support-matrix.md)を確認してください。新規checkoutからモデルを生成でき、1440p動画はユーザーが用意します。

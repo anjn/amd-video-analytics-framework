@@ -11,3 +11,5 @@ core.*
 runs/
 .site-src/
 site/
+
+.deps.from-reference/

@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
-"""Create a CPU-only model export environment; never install Torch at runtime."""
-import json
+"""Create the checksum-locked CPU export environment; never load Torch in the app."""
 from pathlib import Path
 import subprocess
-root = Path(__file__).resolve().parents[1]
-lock = json.loads((root / 'dependencies.lock.json').read_text())['model_export']
-venv = root / '.deps/model-export'
-if not (venv / 'bin/python').exists():
-    subprocess.run(['uv', 'venv', str(venv)], check=True)
-python = venv / 'bin/python'
-subprocess.run(['uv', 'pip', 'install', '--python', str(python), '--index-url',
-                'https://download.pytorch.org/whl/cpu',
-                *(f'{name}=={version}' for name, version in lock['torch'].items())], check=True)
-subprocess.run(['uv', 'pip', 'install', '--python', str(python),
-                *(f'{name}=={version}' for name, version in lock['python'].items())], check=True)
+root=Path(__file__).resolve().parents[1]
+venv=root / ".deps/model-export"
+uv=root / ".deps/tools/bin/uv"
+if not (venv/"bin/python").exists():
+    subprocess.run([str(uv),"venv","--python","3.12",str(venv)],check=True)
+subprocess.run([str(uv),"pip","sync","--python",str(venv/"bin/python"),"--require-hashes",
+    "--index-url","https://pypi.org/simple","--extra-index-url","https://download.pytorch.org/whl/cpu",
+    "--index-strategy","unsafe-best-match",str(root/"scripts/model-export.lock")],check=True)

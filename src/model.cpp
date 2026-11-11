@@ -181,11 +181,13 @@ ModelExecutor::ModelExecutor(const std::string &path, int device) {
     hip_check(hipSetDevice(device), "Model device");
     Parser manifest(path + ".manifest.json");
     auto *m = manifest.object();
-    const auto schema = integer(m, "schema", 0, 2);
-    if ((schema != 1 && schema != 2) || !json_object_has_member(m, "offload_copy") ||
+    const auto schema = integer(m, "schema", 0, 3);
+    if ((schema != 3) || !json_object_has_member(m, "offload_copy") ||
         boolean(m, "offload_copy", true) || text(m, "gpu", "") != gpu_arch(device) ||
+        text(m, "rocm", "") != AMDVA_ROCM_VERSION ||
+        text(m, "migraphx", "") != AMDVA_MIGRAPHX_VERSION ||
         text(m, "sha256", "") != sha256_file(path.c_str()))
-        throw std::runtime_error("Incompatible model manifest: GPU, hash or device I/O");
+        throw std::runtime_error("Incompatible model manifest: recompile for this GPU and ROCm/MIGraphX; hash or device I/O mismatch");
     auto state = std::make_unique<Impl>();
     state->device = device;
     state->stream = std::make_shared<HipStream>(device);

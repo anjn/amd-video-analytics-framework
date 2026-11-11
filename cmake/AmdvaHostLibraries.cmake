@@ -1,6 +1,5 @@
-# Link fix-ups for the rootless development sysroot (.deps/sysroot). The sysroot
-# provides headers and static archives of some host libraries, but the process
-# must use the host's shared runtime: one GObject type system and one SQLite.
+# Host-library linkage rules: one GObject type system and one SQLite runtime.
+# OS libraries are native host packages, never another distribution's sysroot.
 # Installed with the SDK so that examples built against it use the same rules.
 include_guard(GLOBAL)
 
@@ -23,4 +22,18 @@ function(amdva_use_host_sqlite target)
   find_library(AMDVA_HOST_SQLITE NAMES sqlite3 libsqlite3.so.0
     PATHS /usr/lib/x86_64-linux-gnu /lib/x86_64-linux-gnu NO_DEFAULT_PATH REQUIRED)
   set_target_properties(${target} PROPERTIES INTERFACE_LINK_LIBRARIES "${AMDVA_HOST_SQLITE}")
+endfunction()
+
+# find_library/find_path retain old cache values when an SDK root changes.
+# Fail rather than linking an old .deps SDK behind a newly validated version.
+function(amdva_require_sdk_path variable root)
+  if(NOT EXISTS "${${variable}}")
+    message(FATAL_ERROR "${variable} is missing; configure a fresh build directory")
+  endif()
+  file(REAL_PATH "${${variable}}" selected)
+  file(REAL_PATH "${root}" sdk)
+  string(FIND "${selected}/" "${sdk}/" position)
+  if(NOT position EQUAL 0)
+    message(FATAL_ERROR "${variable} resolves outside the selected SDK: ${selected}. Configure a fresh build directory.")
+  endif()
 endfunction()
