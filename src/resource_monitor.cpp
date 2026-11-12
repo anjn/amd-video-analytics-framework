@@ -1,4 +1,5 @@
 #include "amdva/resource_monitor.hpp"
+#include "wave_sample.hpp"
 #include <algorithm>
 #include <amdgpu.h>
 #include <amdgpu_drm.h>
@@ -91,6 +92,7 @@ struct ResourceMonitor::Impl {
     ResourceMonitorConfig config;
     fs::path device;
     std::string pci, cpu{"CPU"}, gpu{"AMD GPU"};
+    std::string boot_id;
     uint64_t total{}, idle{};
     bool have_cpu{};
     uint32_t vcn_enc_capacity{1}, vcn_dec_capacity{1};
@@ -104,6 +106,8 @@ struct ResourceMonitor::Impl {
         if (error)
             throw std::runtime_error("Cannot identify DRM device for " + config.render_node);
         pci = device.filename().string();
+        std::istringstream boot(read(fs::path(config.proc_root) / "sys/kernel/random/boot_id"));
+        boot >> boot_id;
         auto info = fields(read(fs::path(config.proc_root) / "cpuinfo"));
         if (info.count("model name"))
             cpu = info["model name"];
@@ -246,6 +250,18 @@ struct ResourceMonitor::Impl {
             }
         }
         s.gpu_pct = percent(device / "gpu_busy_percent");
+        if (!config.wave_sample_path.empty()) {
+            // Read at most the protocol limit, including when the producer failed.
+            std::ifstream input(config.wave_sample_path, std::ios::binary);
+            std::string text(32769, '\0');
+            input.read(text.data(), text.size());
+            text.resize(input.gcount());
+            if (auto wave = detail::read_wave_sample(text, pci, boot_id, s.monotonic_ns,
+                                                      s.gpu_status)) {
+                s.gpu_pct = wave;
+                s.gpu_source = "wave";
+            }
+        }
         s.vcn_pct = percent(device / "vcn_busy_percent");
         s.vram_reserved_gib = number(device / "mem_info_vram_total", gib);
         s.vram_gib = number(device / "mem_info_vram_used", gib);

@@ -1,6 +1,7 @@
 #include "amdva/rtsp_server.hpp"
 #include "amdva/vui.hpp"
 #include "renderer.hpp"
+#include "wave_collector.hpp"
 #include <algorithm>
 #include <atomic>
 #include <chrono>
@@ -121,6 +122,7 @@ struct Media {
 };
 struct App {
     Options options;
+    WaveCollector wave_collector;
     ResourceMonitor monitor;
     Renderer renderer;
     std::mutex mutex, render_mutex;
@@ -134,7 +136,8 @@ struct App {
     std::mutex media_mutex;
     std::vector<std::weak_ptr<Media>> media;
     App(Options o)
-        : options(o), monitor(ResourceMonitorConfig{o.node}),
+        : options(o), wave_collector(o.node),
+          monitor(ResourceMonitorConfig{o.node, "/proc", "/sys", wave_collector.sample_path()}),
           renderer(o.node, o.font, o.fps, o.power) {
         history.push_back(monitor.sample());
         sampler = std::thread([this] {
@@ -391,6 +394,7 @@ int main(int argc, char **argv) {
             5,
             [](gpointer p) -> gboolean {
                 auto &a = *static_cast<App *>(p);
+                a.wave_collector.poll();
                 ResourceSample s;
                 {
                     std::lock_guard<std::mutex> lock(a.mutex);
@@ -402,6 +406,8 @@ int main(int argc, char **argv) {
                 std::cout << "{\"frames\":" << a.frames << ",\"encoder_inputs\":" << a.accepted
                           << ",\"skipped\":" << a.skipped << ",\"cpu_pct\":" << value(s.cpu_pct)
                           << ",\"gpu_pct\":" << value(s.gpu_pct)
+                          << ",\"gpu_source\":\"" << s.gpu_source << "\""
+                          << ",\"gpu_status\":\"" << s.gpu_status << "\""
                           << ",\"vcn_pct\":" << value(s.vcn_pct)
                           << ",\"vpe_pct\":" << value(s.vpe_pct)
                           << ",\"socket_w\":" << value(s.socket_w) << "}\n"

@@ -146,7 +146,7 @@ calendar time uses the host's local timezone.
 | Reading | Source and interpretation |
 | --- | --- |
 | CPU | `/proc/stat` deltas, 0–100% for the whole system; first sample is absent |
-| GPU | `gpu_busy_percent` for the selected AMD device |
+| GPU | Optional device-counter wave presence; `gpu_busy_percent` when no valid wave sample is available |
 | VCN | Preferred: busiest encode/decode engine class (`enc`, `dec`, `enc_1`) from readable DRM client busy-time deltas; `vcn_busy_percent` fallback when no paired DRM counters are available |
 | Host memory | `/proc/meminfo` total and total minus available |
 | VRAM reservation / used | `mem_info_vram_total` / `mem_info_vram_used` |
@@ -186,6 +186,36 @@ validation PC has `mem=16G`; the displayed detected capacity is approximately
 16.3 GiB including its 2 GiB reservation, not the HTML fixture's 32 GiB. The boot
 setting is not modified. See [the prototype definitions](PROTOTYPE.md)
 for the shared accounting rationale and original reference repository.
+
+### Optional wave-presence collection
+
+`AMDVA_GPU_WAVE_MODE=continuous` requests the separate `amdva-wave-sampler`
+process; `window` collects for 500 ms and pauses for 500 ms. `sysfs` disables it.
+The default remains `sysfs`: the clock-normalized candidate did not reproduce
+wall-time duty under varying clocks (see the acceptance results below). For example, run `AMDVA_GPU_WAVE_MODE=window build/examples/resource-dashboard/amdva-dashboard`
+after sourcing `scripts/env.sh`. The helper
+is built when the host ROCprofiler-SDK headers and library are available
+(`AMDVA_BUILD_WAVE_SAMPLER=OFF` omits it). Only Ubuntu 26.04 / gfx1151 is admitted;
+other configurations continue using sysfs without changing the GPU label.
+
+The candidate is `100 * mean(SQ_BUSY_CYCLES) / GRBM_COUNT` over one collection
+window. Region count comes from the SDK, not a fixed GPU-specific constant.
+It counts cycles with resident waves, including memory stalls; it is neither
+ALU issue utilization nor a measure of remaining processing capacity. Clock
+normalization and power gating are part of the hardware acceptance check.
+
+`ResourceMonitorConfig::wave_sample_path` optionally selects an atomic sample
+file. The monitor itself starts no thread or process. Files carry PCI identity,
+boot identity, monotonic completion time and raw counters. Samples older than
+three seconds, mismatched identities, zero denominators, incomplete data and
+out-of-range counters use sysfs immediately. The original `gpu_pct` field and
+screen label are retained. `ResourceSample::gpu_source` and `gpu_status`, also
+included in dashboard status logs, expose diagnostics without changing the UI.
+
+The dashboard manages its helper in `/run/user/UID/amdva-wave`, with a per-GPU
+lock and a private directory. SDK initialization failure, missing binaries and
+helper termination leave rendering operational with the conventional reading.
+The helper never injects profiling into the NVR or changes hardware queue limits.
 
 ## Validation
 
@@ -227,6 +257,45 @@ helper for a single selected dashboard source. It verifies live decoding,
 rendering and AI, catalog recording and hardware playback. Use a separate config
 and recording root with five-second segments. The installed production server
 does not depend on this helper or Qt.
+
+### Wave-counter acceptance on Ubuntu 26.04 / gfx1151
+
+The [2026-11-12 record](wave-validation-results.json) contains 24 micro trials,
+four external-sampler GUI trials and eight integrated GUI trials (continuous
+and window cohorts). Each GUI trial ran at least 60 seconds; aggregates exclude
+the first 20 seconds. The saved selection displays 15 videos plus the dashboard
+and records all 16 videos plus the dashboard; cam15 is not decoded or analyzed.
+The following changes compare each cohort with its own off baseline.
+
+| Metric | External continuous | Integrated continuous | Integrated window |
+| --- | ---: | ---: | ---: |
+| Display FPS | +0.09% | -0.24% | +0.18% |
+| Effective AI Hz | +0.12% | -1.32% | -1.30% |
+| YOLO inference P95 | +0.53% | +6.71% | -2.31% |
+| ReID inference + transfer P95 | -3.02% | +10.30% | -0.15% |
+
+The external sampler passed the observed performance thresholds. The integrated
+continuous sampler exceeded the 5% P95 allowance for YOLO inference and ReID
+inference plus transfer. The window cohort met the observed performance thresholds (maximum stage
+P95 increase 3.30%; effective AI frequency decreased 1.30%). These small cohorts include baseline variation; differences
+are observations, not a causal estimate or proof of zero profiler overhead.
+P95 entries summarize rolling application snapshots, not a pooled percentile.
+
+Automatic adoption remains disabled. A timed pulsed workload had 25.41% active
+wall time while the candidate averaged 23.13% over matched sample intervals.
+Launch/synchronization time is included in the timed workload, so this does not
+directly measure WGP wall-time occupancy; it leaves the normalization unverified.
+With one stream and idle gaps, GRBM_COUNT was zero despite intermittent work.
+The candidate is therefore exposed for explicit diagnostic use as a cycle-based
+wave-presence ratio, with sysfs fallback, rather than enabled by default.
+
+Empty streams measured zero wave presence, FMA approximately 98.7%, and a
+dependent-memory-load workload approximately 96.7%. Helper duplication,
+termination, missing binary and SDK initialization failure were exercised.
+Recording catalogs and codec metadata were checked for all 17 sources in every
+GUI trial; copy-audit violations were zero. All 30 contract tests passed.
+Raw logs, scripts and recordings remain under
+`/home/amd/work/rai/logs/gpu-counter-overhead-20261112`.
 
 ### Recorded results
 

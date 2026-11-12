@@ -1,4 +1,5 @@
 #include "amdva/resource_monitor.hpp"
+#include "../src/wave_sample.hpp"
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -19,6 +20,33 @@ int main() {
     const auto root =
         fs::temp_directory_path() / ("amdva-monitor-test-" + std::to_string(getpid()));
     try {
+        require(detail::wave_presence(100., {0., 100.}) == 50., "Wave mean over returned regions");
+        require(detail::wave_presence(100., {25., 25., 25.}) == 25., "Wave region count is dynamic");
+        require(detail::wave_presence(100., {0.}) == 0., "Valid idle wave value");
+        require(!detail::wave_presence(0., {0.}) && !detail::wave_presence(1., {}) &&
+                    !detail::wave_presence(100., {101.}) && !detail::wave_presence(100., {-1.}) &&
+                    !detail::wave_presence(4294967295., {0.}) &&
+                    !detail::wave_presence(INFINITY, {1.}) && !detail::wave_presence(100., {NAN}),
+                "Reject gated, missing, saturated and invalid counters");
+        std::string wave_status;
+        auto wave_text = [](const std::string &stamp, const std::string &values = "100 2 0 100") {
+            return "AMDVA_WAVE_V1 0000:65:00.0 test-boot " + stamp + " " + values + "\n";
+        };
+        require(detail::read_wave_sample(wave_text("1000000000"), "0000:65:00.0", "test-boot",
+                    2000000000, wave_status) == 50., "Fresh wave sample");
+        for (const auto &text : {wave_text("0"), wave_text("9999999999"),
+                                wave_text("1000000000", "100 2 0"),
+                                wave_text("1000000000", "100 1025"),
+                                wave_text("1000000000", "100 2 0 100 trailing")}) {
+            require(!detail::read_wave_sample(text, "0000:65:00.0", "test-boot", 2000000000LL,
+                         wave_status), "Future, missing, excessive or malformed wave sample");
+        }
+        require(!detail::read_wave_sample(wave_text("1000000000"), "0000:65:00.0", "test-boot",
+                    5000000000LL, wave_status), "Stale wave sample");
+        require(!detail::read_wave_sample(wave_text("1000000000"), "0000:66:00.0", "test-boot",
+                    2000000000, wave_status) &&
+                !detail::read_wave_sample(wave_text("1000000000"), "0000:65:00.0", "previous-boot",
+                    2000000000, wave_status), "Reject mismatched device or boot");
         std::vector<uint8_t> bytes(264);
         bytes[0] = 8;
         bytes[1] = 1;
@@ -78,6 +106,21 @@ int main() {
                 "Memory units and separate capacities");
         require(monitor.cpu_name() == "Test CPU" && first.gpu_pct == 40 && first.vcn_pct == 12,
                 "Names and independent metrics");
+        write(proc / "sys/kernel/random/boot_id", "test-boot\n");
+        const auto wave_path = root / "wave.sample";
+        ResourceMonitor wave_monitor({"/no/renderD128", proc.string(), sys.string(), wave_path.string()});
+        require(wave_monitor.sample().gpu_pct == 40, "Missing wave data uses sysfs");
+        auto stamp = std::chrono::duration_cast<std::chrono::nanoseconds>(
+            std::chrono::steady_clock::now().time_since_epoch()).count();
+        write(wave_path, wave_text(std::to_string(stamp)));
+        auto wave_sample = wave_monitor.sample();
+        require(wave_sample.gpu_pct == 50 && wave_sample.gpu_source == "wave", "Wave overrides sysfs");
+        write(wave_path, wave_text(std::to_string(stamp), "0 2 0 0"));
+        auto gated_sample = wave_monitor.sample();
+        require(gated_sample.gpu_pct == 40 && gated_sample.gpu_source == "sysfs" &&
+                    !gated_sample.gpu_status.empty(), "Gated counters fall back with diagnostics");
+        write(wave_path, wave_text("1"));
+        require(wave_monitor.sample().gpu_pct == 40, "Expired wave data uses sysfs");
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
         write(proc / "stat", "cpu 150 0 100 850 0 0 0 0\n");
         write(proc / "10/fdinfo/1", client(2000000));

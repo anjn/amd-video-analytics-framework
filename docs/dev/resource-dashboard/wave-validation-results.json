@@ -1,0 +1,2480 @@
+{
+  "schema": 1,
+  "date_utc": "2026-11-12T05:09:32.708171+00:00",
+  "host": {
+    "os": "Ubuntu 26.04",
+    "gpu": "gfx1151",
+    "rocm": "10.1.0",
+    "migraphx": "2.18.0",
+    "rocprofiler_sdk": "1.4.1",
+    "kernel": "7.0.0-43-generic",
+    "boot_id": "f3d25185-3255-4fc6-8d0d-d7ff8d6c49e6"
+  },
+  "source_head": "d9d69dae12a82ba988fc56533e0e773362a73d82",
+  "source_hashes": {
+    "CMakeLists.txt": "b25dcffdd8f60217b848ed5d162d4ed6f1c270053ef56fecab5362ff1a48fa60",
+    "include/amdva/resource_monitor.hpp": "2f9a7a455a64a82bafb5f49a7eb59664d398afa463ce854be392f9e25201953e",
+    "src/resource_monitor.cpp": "a4dcc51ae79d5faade7c1f68764dc74bea520ddd3e7fa86b749da5e04e15aa07",
+    "src/wave_sample.hpp": "bb70a3f0d699695baa07c37ba1e6e631e88c9e74bb6cace3219ff05b0a6aeea0",
+    "tools/wave_sampler.cpp": "2ee36d55cb5299b1d20a8120deb27e1440c5442e593ce39c0b5d30ba2f1544ba",
+    "examples/resource-dashboard/main.cpp": "184a285864699a074a81a4127b0c09b2968c9c9c5653c6c507c20d168ea1c1dd",
+    "examples/resource-dashboard/CMakeLists.txt": "69c25ac1c5eca6260f9af7041490ba90b8171fe4a313c52bfdeb1a26049ce081",
+    "examples/resource-dashboard/wave_collector.hpp": "48cc75d12479e858a8a448e4a57077e2682b809e3f6419a3dbc218de030039c5",
+    "tests/resource_monitor_tests.cpp": "924c93d1a7f82e84d5494ed64532572339b16c435ab027138e7662448e1328d2"
+  },
+  "binary_hashes": {
+    "build/amdva-wave-sampler": "052e0dd64e1eecf2d4441509cddb6b9f567bc1b55d3d3bc7875e73911e378baf",
+    "build/libamdva_monitor.so": "b500854e9d3200e129efd97411a08a0e710a999969880b2d8979f2f782f68355",
+    "build/examples/resource-dashboard/amdva-dashboard": "65288c86da173e48c62127b5a1639a6c850dcb67395fd9ea9bc4e967f00fb018",
+    "build/examples/nvr/amdva-demo-soak": "4d1c9c0f2295bea8bc062a8b9fd693355e9af7cdacb1b6337491477751304c9c"
+  },
+  "scope": {
+    "displayed_videos": 15,
+    "recorded_videos": 16,
+    "resource_dashboard_displayed_and_recorded": true,
+    "cam15_selected": false,
+    "gui_order": "off/on/on/off in each cohort",
+    "gui_duration_seconds": 60,
+    "warmup_excluded_seconds": 20
+  },
+  "adoption": {
+    "automatic": false,
+    "default": "sysfs",
+    "reason": "Wall-time wave-presence normalization is unverified under power gating and varying clocks. Integrated continuous collection exceeded P95 thresholds; window met observed performance thresholds, but normalization remains a prerequisite."
+  },
+  "thresholds": {
+    "fps_and_ai_hz_min_delta_pct": -2,
+    "stage_p95_max_delta_pct": 5
+  },
+  "micro": {
+    "large": {
+      "off": {
+        "count": 3,
+        "calls_per_second": 390.130595265,
+        "p95_ms": 2.613288,
+        "helper_cpu_cores": 0,
+        "throughput_delta_pct": 0.0
+      },
+      "dummy": {
+        "count": 3,
+        "calls_per_second": 393.691657357,
+        "p95_ms": 2.610993,
+        "helper_cpu_cores": 0.0,
+        "throughput_delta_pct": 0.9127871885005856
+      },
+      "window": {
+        "count": 3,
+        "calls_per_second": 394.393952051,
+        "p95_ms": 2.608478,
+        "helper_cpu_cores": 0.0009917949607244957,
+        "throughput_delta_pct": 1.0928024712094198
+      },
+      "continuous": {
+        "count": 3,
+        "calls_per_second": 393.176658202,
+        "p95_ms": 2.612576,
+        "helper_cpu_cores": 0.0009870310398876238,
+        "throughput_delta_pct": 0.7807803268879532
+      }
+    },
+    "small": {
+      "off": {
+        "count": 3,
+        "calls_per_second": 119920.971968473,
+        "p95_ms": 0.008747,
+        "helper_cpu_cores": 0,
+        "throughput_delta_pct": 0.0
+      },
+      "dummy": {
+        "count": 3,
+        "calls_per_second": 119573.07410671,
+        "p95_ms": 0.008786,
+        "helper_cpu_cores": 0.0,
+        "throughput_delta_pct": -0.2901059389799232
+      },
+      "window": {
+        "count": 3,
+        "calls_per_second": 119703.012284651,
+        "p95_ms": 0.008766,
+        "helper_cpu_cores": 0.0009869693228492476,
+        "throughput_delta_pct": -0.181752766212806
+      },
+      "continuous": {
+        "count": 3,
+        "calls_per_second": 119911.55471684,
+        "p95_ms": 0.008746,
+        "helper_cpu_cores": 0.0009870894093774625,
+        "throughput_delta_pct": -0.00785288134211859
+      }
+    }
+  },
+  "cohorts": {
+    "external_continuous": {
+      "comparison": {
+        "display_fps_mean": {
+          "off": 29.951554303853072,
+          "on": 29.9783568424519,
+          "delta_pct": 0.08948630287068937
+        },
+        "ai_updates_per_video_second": {
+          "off": 7.562263300747272,
+          "on": 7.571705367994973,
+          "delta_pct": 0.12485768971794986
+        },
+        "presented_per_second": {
+          "off": 442.4239624111123,
+          "on": 442.52726250816255,
+          "delta_pct": 0.02334866685052006
+        },
+        "gfx_mW": {
+          "off": 18468.0,
+          "on": 18539.5,
+          "delta_pct": 0.3871561620099717
+        },
+        "socket_mW": {
+          "off": 87736.5,
+          "on": 88447.5,
+          "delta_pct": 0.8103810842693848
+        },
+        "stage_p95_ms": {
+          "YOLO executor total": {
+            "off": 28.299328000000003,
+            "on": 28.831393,
+            "delta_pct": 1.880132984076499
+          },
+          "Image embedding NPU": {
+            "off": 24.2685985,
+            "on": 24.2702345,
+            "delta_pct": 0.006741221583106416
+          },
+          "YOLO postprocess": {
+            "off": 26.1468555,
+            "on": 26.648273,
+            "delta_pct": 1.9176971395279185
+          },
+          "Decoded frame wait": {
+            "off": 0.1551975,
+            "on": 0.098771,
+            "delta_pct": -36.35786658934583
+          },
+          "YOLO inference": {
+            "off": 2.1449525,
+            "on": 2.156243,
+            "delta_pct": 0.5263752926929488
+          },
+          "Embedding update interval": {
+            "off": 2126.1490075,
+            "on": 2125.5096125,
+            "delta_pct": -0.030072915762002772
+          },
+          "PNG + DB save": {
+            "off": 2.3940055,
+            "on": 2.3337775,
+            "delta_pct": -2.515783693897111
+          },
+          "ReID inference + transfer": {
+            "off": 2.4993074576923076,
+            "on": 2.423827785714286,
+            "delta_pct": -3.0200234767320144
+          },
+          "Image embedding NPU total": {
+            "off": 24.6668115,
+            "on": 24.616715499999998,
+            "delta_pct": -0.2030906994201609
+          },
+          "Tracking association": {
+            "off": 0.0304425,
+            "on": 0.0319655,
+            "delta_pct": 5.002874271166946
+          },
+          "Image embedding NPU preprocess": {
+            "off": 0.4473275,
+            "on": 0.38218050000000003,
+            "delta_pct": -14.563602729543778
+          },
+          "Tracking eligible": {
+            "off": 0.0,
+            "on": 0.0,
+            "delta_pct": null
+          },
+          "Vector search": {
+            "off": 2.958209,
+            "on": 2.058053,
+            "delta_pct": -30.429087329529448
+          },
+          "Analysis DB save": {
+            "off": 1.9570729999999998,
+            "on": 2.5772665,
+            "delta_pct": 31.68985009756917
+          },
+          "ReID preprocess": {
+            "off": 8.012599089285715,
+            "on": 8.048780176767677,
+            "delta_pct": 0.45155244982046927
+          },
+          "YOLO preprocess": {
+            "off": 11.82945,
+            "on": 11.798702500000001,
+            "delta_pct": -0.25992332695095044
+          },
+          "Detection update": {
+            "off": 9.14203925,
+            "on": 9.25328825,
+            "delta_pct": 1.2168947972959199
+          },
+          "Embedding freshness": {
+            "off": 215.2502685,
+            "on": 209.5832935,
+            "delta_pct": -2.632737714796396
+          },
+          "Person crop": {
+            "off": 4.251462,
+            "on": 4.0297585,
+            "delta_pct": -5.2147590640584385
+          },
+          "Image embedding": {
+            "off": 24.6757395,
+            "on": 24.6222385,
+            "delta_pct": -0.2168161971396909
+          },
+          "Embedding first result": {
+            "off": 1181.3577915,
+            "on": 1230.461915,
+            "delta_pct": 4.156583539153802
+          },
+          "Text query": {
+            "off": 11.235031,
+            "on": 12.383205,
+            "delta_pct": 10.219589069224643
+          }
+        }
+      },
+      "acceptance": {
+        "observed_thresholds_pass": true,
+        "failures": [],
+        "required_stages": [
+          "YOLO preprocess",
+          "YOLO inference",
+          "YOLO executor total",
+          "ReID preprocess",
+          "ReID inference + transfer"
+        ]
+      },
+      "trials": [
+        {
+          "mode": "off",
+          "index": 0,
+          "display_fps_mean": 29.83668544555827,
+          "ai_updates_per_video_second": 7.475114588274058,
+          "audit_errors": 0,
+          "audit_active": true,
+          "recording_healthy": true,
+          "inference_healthy": true,
+          "cpu_cores_by_process": {
+            "amdva-demo-soak": 1.689843694173134,
+            "amdva-dashboard": 0.2629524103699177,
+            "amdva-rtsp-file": 0.08695736355587468
+          },
+          "stage_p95_ms": {
+            "YOLO executor total": 28.39441,
+            "Image embedding NPU": 24.276173,
+            "YOLO postprocess": 26.114367,
+            "Decoded frame wait": 0.158599,
+            "YOLO inference": 2.256746,
+            "Embedding update interval": 2127.991726,
+            "PNG + DB save": 2.345301,
+            "ReID inference + transfer": 2.6425741153846154,
+            "Image embedding NPU total": 24.717174,
+            "Tracking association": 0.032381,
+            "Image embedding NPU preprocess": 0.463994,
+            "Tracking eligible": 0,
+            "Vector search": 2.239243,
+            "Analysis DB save": 1.919991,
+            "ReID preprocess": 7.73289775,
+            "YOLO preprocess": 11.863978,
+            "Detection update": 9.17294575,
+            "Embedding freshness": 217.758383,
+            "Person crop": 4.001486,
+            "Image embedding": 24.721121,
+            "Embedding first result": 1279.524107,
+            "Text query": 12.627915
+          },
+          "gfx_mW": 18347,
+          "socket_mW": 87550
+        },
+        {
+          "mode": "off",
+          "index": 3,
+          "display_fps_mean": 30.066423162147878,
+          "ai_updates_per_video_second": 7.649412013220486,
+          "audit_errors": 0,
+          "audit_active": true,
+          "recording_healthy": true,
+          "inference_healthy": true,
+          "cpu_cores_by_process": {
+            "amdva-dashboard": 0.2709448008671518,
+            "amdva-demo-soak": 1.6530009561675794,
+            "amdva-rtsp-file": 0.08389781991763559
+          },
+          "stage_p95_ms": {
+            "YOLO executor total": 28.204246,
+            "Image embedding NPU": 24.261024,
+            "YOLO postprocess": 26.179344,
+            "Decoded frame wait": 0.151796,
+            "YOLO inference": 2.033159,
+            "Embedding update interval": 2124.306289,
+            "PNG + DB save": 2.44271,
+            "ReID inference + transfer": 2.3560407999999997,
+            "Image embedding NPU total": 24.616449,
+            "Tracking association": 0.028504,
+            "Image embedding NPU preprocess": 0.430661,
+            "Tracking eligible": 0,
+            "Vector search": 3.677175,
+            "Analysis DB save": 1.994155,
+            "ReID preprocess": 8.29230042857143,
+            "YOLO preprocess": 11.794922,
+            "Detection update": 9.11113275,
+            "Embedding freshness": 212.742154,
+            "Person crop": 4.501438,
+            "Image embedding": 24.630358,
+            "Embedding first result": 1083.191476,
+            "Text query": 9.842147
+          },
+          "gfx_mW": 18589,
+          "socket_mW": 87923
+        },
+        {
+          "mode": "continuous",
+          "index": 1,
+          "display_fps_mean": 30.01743563689002,
+          "ai_updates_per_video_second": 7.588351358134025,
+          "audit_errors": 0,
+          "audit_active": true,
+          "recording_healthy": true,
+          "inference_healthy": true,
+          "cpu_cores_by_process": {
+            "amdva-rtsp-file": 0.08513925268960244,
+            "amdva-dashboard": 0.27070460643202776,
+            "python3": 0.001273904030268366,
+            "amdva-demo-soak": 1.6896213788126093
+          },
+          "stage_p95_ms": {
+            "YOLO executor total": 28.954916,
+            "Image embedding NPU": 24.264965,
+            "YOLO postprocess": 26.739309,
+            "Decoded frame wait": 0.087384,
+            "YOLO inference": 2.164169,
+            "Embedding update interval": 2127.355464,
+            "PNG + DB save": 2.271922,
+            "ReID inference + transfer": 2.4113165714285714,
+            "Image embedding NPU total": 24.538377,
+            "Tracking association": 0.032582,
+            "Image embedding NPU preprocess": 0.297491,
+            "Tracking eligible": 0,
+            "Vector search": 2.023363,
+            "Analysis DB save": 3.075697,
+            "ReID preprocess": 8.042140444444446,
+            "YOLO preprocess": 11.952607,
+            "Detection update": 9.296412,
+            "Embedding freshness": 212.469123,
+            "Person crop": 4.059111,
+            "Image embedding": 24.544121,
+            "Embedding first result": 1235.764006,
+            "Text query": 13.353348
+          },
+          "gfx_mW": 18499.5,
+          "socket_mW": 88537.5
+        },
+        {
+          "mode": "continuous",
+          "index": 2,
+          "display_fps_mean": 29.939278048013776,
+          "ai_updates_per_video_second": 7.555059377855921,
+          "audit_errors": 0,
+          "audit_active": true,
+          "recording_healthy": true,
+          "inference_healthy": true,
+          "cpu_cores_by_process": {
+            "amdva-demo-soak": 1.6871965318571875,
+            "amdva-rtsp-file": 0.0856240023093372,
+            "python3": 0.0012747990418263602,
+            "amdva-dashboard": 0.27195712892295687
+          },
+          "stage_p95_ms": {
+            "YOLO executor total": 28.70787,
+            "Image embedding NPU": 24.275504,
+            "YOLO postprocess": 26.557237,
+            "Decoded frame wait": 0.110158,
+            "YOLO inference": 2.148317,
+            "Embedding update interval": 2123.663761,
+            "PNG + DB save": 2.395633,
+            "ReID inference + transfer": 2.436339,
+            "Image embedding NPU total": 24.695054,
+            "Tracking association": 0.031349,
+            "Image embedding NPU preprocess": 0.46687,
+            "Tracking eligible": 0,
+            "Vector search": 2.092743,
+            "Analysis DB save": 2.078836,
+            "ReID preprocess": 8.055419909090908,
+            "YOLO preprocess": 11.644798,
+            "Detection update": 9.2101645,
+            "Embedding freshness": 206.697464,
+            "Person crop": 4.000406,
+            "Image embedding": 24.700356,
+            "Embedding first result": 1225.159824,
+            "Text query": 11.413062
+          },
+          "gfx_mW": 18579.5,
+          "socket_mW": 88357.5
+        }
+      ]
+    },
+    "integrated_continuous": {
+      "comparison": {
+        "display_fps_mean": {
+          "off": 30.08205116235252,
+          "on": 30.010104024868923,
+          "delta_pct": -0.23916965334345175
+        },
+        "ai_updates_per_video_second": {
+          "off": 7.57371667758601,
+          "on": 7.473498784377638,
+          "delta_pct": -1.323232667323837
+        },
+        "presented_per_second": {
+          "off": 441.4474121951712,
+          "on": 440.5594099744391,
+          "delta_pct": -0.20115696597162724
+        },
+        "gfx_mW": {
+          "off": 18439.75,
+          "on": 18561.5,
+          "delta_pct": 0.6602584091432995
+        },
+        "socket_mW": {
+          "off": 87409.75,
+          "on": 88120.0,
+          "delta_pct": 0.8125523754501041
+        },
+        "stage_p95_ms": {
+          "Tracking association": {
+            "off": 0.0304625,
+            "on": 0.0304625,
+            "delta_pct": 0.0
+          },
+          "Image embedding NPU total": {
+            "off": 24.5231055,
+            "on": 24.659383,
+            "delta_pct": 0.5557106134049805
+          },
+          "Detection update": {
+            "off": 9.083423625,
+            "on": 9.21046125,
+            "delta_pct": 1.3985654555443094
+          },
+          "ReID inference + transfer": {
+            "off": 2.421247431818182,
+            "on": 2.670644227272727,
+            "delta_pct": 10.300343210576646
+          },
+          "Text query": {
+            "off": 11.638041999999999,
+            "on": 12.0598685,
+            "delta_pct": 3.624548699858643
+          },
+          "ReID preprocess": {
+            "off": 7.968181933333332,
+            "on": 8.224946808823528,
+            "delta_pct": 3.222377170080293
+          },
+          "Person crop": {
+            "off": 4.14326,
+            "on": 4.1282365,
+            "delta_pct": -0.362600947080316
+          },
+          "Image embedding NPU": {
+            "off": 24.269211,
+            "on": 24.2731455,
+            "delta_pct": 0.016211899101281624
+          },
+          "Image embedding": {
+            "off": 24.531267,
+            "on": 24.6635795,
+            "delta_pct": 0.5393626835499488
+          },
+          "YOLO preprocess": {
+            "off": 11.7545895,
+            "on": 12.058188999999999,
+            "delta_pct": 2.582816694704637
+          },
+          "Image embedding NPU preprocess": {
+            "off": 0.288578,
+            "on": 0.448799,
+            "delta_pct": 55.520864376355796
+          },
+          "YOLO postprocess": {
+            "off": 26.056793499999998,
+            "on": 26.3945605,
+            "delta_pct": 1.2962723137825982
+          },
+          "Embedding first result": {
+            "off": 1188.989947,
+            "on": 1230.0905965,
+            "delta_pct": 3.4567701437428378
+          },
+          "YOLO executor total": {
+            "off": 28.266723,
+            "on": 28.4774335,
+            "delta_pct": 0.7454366040237526
+          },
+          "Analysis DB save": {
+            "off": 1.6378715000000001,
+            "on": 1.760522,
+            "delta_pct": 7.48840797339716
+          },
+          "PNG + DB save": {
+            "off": 2.38671,
+            "on": 2.3950555,
+            "delta_pct": 0.3496654390353182
+          },
+          "Tracking eligible": {
+            "off": 0.0,
+            "on": 0.0,
+            "delta_pct": null
+          },
+          "Embedding freshness": {
+            "off": 213.93013150000002,
+            "on": 210.9925405,
+            "delta_pct": -1.3731543936343682
+          },
+          "Decoded frame wait": {
+            "off": 0.14163150000000002,
+            "on": 0.1292935,
+            "delta_pct": -8.711338932370282
+          },
+          "Vector search": {
+            "off": 2.3428630000000004,
+            "on": 2.233352,
+            "delta_pct": -4.674238314404233
+          },
+          "Embedding update interval": {
+            "off": 2134.6541294999997,
+            "on": 2131.674597,
+            "delta_pct": -0.1395791692351378
+          },
+          "YOLO inference": {
+            "off": 2.1309639999999996,
+            "on": 2.2739975,
+            "delta_pct": 6.712149994087202
+          }
+        }
+      },
+      "acceptance": {
+        "observed_thresholds_pass": false,
+        "failures": [
+          "ReID inference + transfer P95 increased >5%",
+          "YOLO inference P95 increased >5%"
+        ],
+        "required_stages": [
+          "YOLO preprocess",
+          "YOLO inference",
+          "YOLO executor total",
+          "ReID preprocess",
+          "ReID inference + transfer"
+        ]
+      },
+      "trials": [
+        {
+          "mode": "off",
+          "index": 0,
+          "display_fps_mean": 30.080897124204526,
+          "ai_updates_per_video_second": 7.539168643250809,
+          "audit_errors": 0,
+          "audit_active": true,
+          "recording_healthy": true,
+          "inference_healthy": true,
+          "cpu_cores_by_process": {
+            "amdva-demo-soak": 1.6436424200339015,
+            "amdva-dashboard": 0.2636711793255005,
+            "amdva-rtsp-file": 0.08456174808344012
+          },
+          "stage_p95_ms": {
+            "Image embedding NPU total": 24.511585,
+            "Tracking association": 0.030868,
+            "Detection update": 9.0812625,
+            "ReID inference + transfer": 2.3595148636363636,
+            "Text query": 13.265554,
+            "ReID preprocess": 8.0586492,
+            "Person crop": 4.124742,
+            "Image embedding NPU": 24.257182,
+            "Image embedding": 24.517057,
+            "YOLO preprocess": 11.964044,
+            "Image embedding NPU preprocess": 0.295977,
+            "YOLO postprocess": 25.914728,
+            "Embedding first result": 1150.574815,
+            "YOLO executor total": 28.232435,
+            "Analysis DB save": 1.640748,
+            "Tracking eligible": 0,
+            "Embedding freshness": 214.145701,
+            "PNG + DB save": 2.421597,
+            "Decoded frame wait": 0.153208,
+            "Vector search": 2.246478,
+            "Embedding update interval": 2133.341016,
+            "YOLO inference": 2.153993
+          },
+          "gfx_mW": 18304.5,
+          "socket_mW": 87292.5
+        },
+        {
+          "mode": "off",
+          "index": 3,
+          "display_fps_mean": 30.083205200500515,
+          "ai_updates_per_video_second": 7.608264711921209,
+          "audit_errors": 0,
+          "audit_active": true,
+          "recording_healthy": true,
+          "inference_healthy": true,
+          "cpu_cores_by_process": {
+            "amdva-dashboard": 0.2736696653018384,
+            "amdva-demo-soak": 1.6684101141815812,
+            "amdva-rtsp-file": 0.08512053881673166
+          },
+          "stage_p95_ms": {
+            "Image embedding NPU total": 24.534626,
+            "Tracking association": 0.030057,
+            "Detection update": 9.08558475,
+            "ReID inference + transfer": 2.48298,
+            "Text query": 10.01053,
+            "ReID preprocess": 7.877714666666665,
+            "Person crop": 4.161778,
+            "Image embedding NPU": 24.28124,
+            "Image embedding": 24.545477,
+            "YOLO preprocess": 11.545135,
+            "Image embedding NPU preprocess": 0.281179,
+            "YOLO postprocess": 26.198859,
+            "Embedding first result": 1227.405079,
+            "YOLO executor total": 28.301011,
+            "Analysis DB save": 1.634995,
+            "Tracking eligible": 0,
+            "Embedding freshness": 213.714562,
+            "PNG + DB save": 2.351823,
+            "Decoded frame wait": 0.130055,
+            "Vector search": 2.439248,
+            "Embedding update interval": 2135.967243,
+            "YOLO inference": 2.107935
+          },
+          "gfx_mW": 18575,
+          "socket_mW": 87527
+        },
+        {
+          "mode": "continuous",
+          "index": 1,
+          "display_fps_mean": 30.033845331108147,
+          "ai_updates_per_video_second": 7.390282050756553,
+          "audit_errors": 0,
+          "audit_active": true,
+          "recording_healthy": true,
+          "inference_healthy": true,
+          "cpu_cores_by_process": {
+            "amdva-rtsp-file": 0.086733604265492,
+            "amdva-demo-soak": 1.6726516176021868,
+            "amdva-dashboard": 0.2763594020842937,
+            "amdva-wave-samp": 0.0011881315652807123
+          },
+          "stage_p95_ms": {
+            "Image embedding NPU total": 24.693591,
+            "Tracking association": 0.030397,
+            "Detection update": 9.24742575,
+            "ReID inference + transfer": 2.688137454545455,
+            "Text query": 12.986113,
+            "ReID preprocess": 8.2315685,
+            "Person crop": 4.092209,
+            "Image embedding NPU": 24.278548,
+            "Image embedding": 24.698758,
+            "YOLO preprocess": 12.189492,
+            "Image embedding NPU preprocess": 0.460747,
+            "YOLO postprocess": 26.516006,
+            "Embedding first result": 1165.642578,
+            "YOLO executor total": 28.562397,
+            "Analysis DB save": 1.821347,
+            "Tracking eligible": 0,
+            "Embedding freshness": 211.693179,
+            "PNG + DB save": 2.416296,
+            "Decoded frame wait": 0.145674,
+            "Vector search": 2.167899,
+            "Embedding update interval": 2130.179985,
+            "YOLO inference": 2.24843
+          },
+          "gfx_mW": 18419,
+          "socket_mW": 87937
+        },
+        {
+          "mode": "continuous",
+          "index": 2,
+          "display_fps_mean": 29.986362718629696,
+          "ai_updates_per_video_second": 7.556715517998722,
+          "audit_errors": 0,
+          "audit_active": true,
+          "recording_healthy": true,
+          "inference_healthy": true,
+          "cpu_cores_by_process": {
+            "amdva-dashboard": 0.26978127568310434,
+            "amdva-wave-samp": 0.0009507710156232753,
+            "amdva-demo-soak": 1.6640869700946377,
+            "amdva-rtsp-file": 0.08319246386703659
+          },
+          "stage_p95_ms": {
+            "Image embedding NPU total": 24.625175,
+            "Tracking association": 0.030528,
+            "Detection update": 9.17349675,
+            "ReID inference + transfer": 2.653151,
+            "Text query": 11.133624,
+            "ReID preprocess": 8.218325117647058,
+            "Person crop": 4.164264,
+            "Image embedding NPU": 24.267743,
+            "Image embedding": 24.628401,
+            "YOLO preprocess": 11.926886,
+            "Image embedding NPU preprocess": 0.436851,
+            "YOLO postprocess": 26.273115,
+            "Embedding first result": 1294.538615,
+            "YOLO executor total": 28.39247,
+            "Analysis DB save": 1.699697,
+            "Tracking eligible": 0,
+            "Embedding freshness": 210.291902,
+            "PNG + DB save": 2.373815,
+            "Decoded frame wait": 0.112913,
+            "Vector search": 2.298805,
+            "Embedding update interval": 2133.169209,
+            "YOLO inference": 2.299565
+          },
+          "gfx_mW": 18704,
+          "socket_mW": 88303
+        }
+      ]
+    },
+    "integrated_window": {
+      "comparison": {
+        "display_fps_mean": {
+          "off": 29.992612427126836,
+          "on": 30.0463255065032,
+          "delta_pct": 0.17908769870205177
+        },
+        "ai_updates_per_video_second": {
+          "off": 7.6557065798625645,
+          "on": 7.555971730412837,
+          "delta_pct": -1.3027517239501796
+        },
+        "presented_per_second": {
+          "off": 441.80517933901615,
+          "on": 441.4220373850418,
+          "delta_pct": -0.08672192447982674
+        },
+        "gfx_mW": {
+          "off": 18706.5,
+          "on": 18729.5,
+          "delta_pct": 0.1229519151097147
+        },
+        "socket_mW": {
+          "off": 87967.75,
+          "on": 88162.0,
+          "delta_pct": 0.22081956171438044
+        },
+        "stage_p95_ms": {
+          "YOLO executor total": {
+            "off": 28.3047285,
+            "on": 28.1242595,
+            "delta_pct": -0.6375931145214842
+          },
+          "Image embedding NPU preprocess": {
+            "off": 0.35601950000000004,
+            "on": 0.4671285,
+            "delta_pct": 31.208683794005655
+          },
+          "Vector search": {
+            "off": 2.3271365,
+            "on": 2.416358,
+            "delta_pct": 3.8339607496165273
+          },
+          "YOLO postprocess": {
+            "off": 26.031163,
+            "on": 25.902375,
+            "delta_pct": -0.49474547103408595
+          },
+          "YOLO inference": {
+            "off": 2.203288,
+            "on": 2.1523725,
+            "delta_pct": -2.3108871831553746
+          },
+          "Image embedding NPU total": {
+            "off": 24.5698045,
+            "on": 24.697348499999997,
+            "delta_pct": 0.5191087295790098
+          },
+          "ReID inference + transfer": {
+            "off": 2.4802849162679426,
+            "on": 2.4766779999999997,
+            "delta_pct": -0.1454234650336117
+          },
+          "Tracking eligible": {
+            "off": 0.0,
+            "on": 0.0,
+            "delta_pct": null
+          },
+          "Person crop": {
+            "off": 4.079601,
+            "on": 4.196686,
+            "delta_pct": 2.870011062356337
+          },
+          "Analysis DB save": {
+            "off": 1.8585245000000001,
+            "on": 1.7078965,
+            "delta_pct": -8.104708869858868
+          },
+          "PNG + DB save": {
+            "off": 2.409271,
+            "on": 2.400609,
+            "delta_pct": -0.35952784057915466
+          },
+          "Image embedding NPU": {
+            "off": 24.260865,
+            "on": 24.265922500000002,
+            "delta_pct": 0.020846330087587184
+          },
+          "Embedding first result": {
+            "off": 1237.7821979999999,
+            "on": 1199.9022675,
+            "delta_pct": -3.060306616237163
+          },
+          "Detection update": {
+            "off": 9.049852000000001,
+            "on": 9.108050124999998,
+            "delta_pct": 0.6430837211481188
+          },
+          "Image embedding": {
+            "off": 24.5758965,
+            "on": 24.7024885,
+            "delta_pct": 0.5151063359987829
+          },
+          "YOLO preprocess": {
+            "off": 11.63377,
+            "on": 11.905441,
+            "delta_pct": 2.3351931489104416
+          },
+          "Decoded frame wait": {
+            "off": 0.1086545,
+            "on": 0.13945200000000002,
+            "delta_pct": 28.344431201652952
+          },
+          "Tracking association": {
+            "off": 0.030468000000000002,
+            "on": 0.029475,
+            "delta_pct": -3.25915714848366
+          },
+          "Embedding freshness": {
+            "off": 211.9261645,
+            "on": 210.688991,
+            "delta_pct": -0.5837757234548602
+          },
+          "Text query": {
+            "off": 11.866392999999999,
+            "on": 12.623772500000001,
+            "delta_pct": 6.382558710132069
+          },
+          "ReID preprocess": {
+            "off": 7.669460166666667,
+            "on": 7.922172472850679,
+            "delta_pct": 3.295046857174655
+          },
+          "Embedding update interval": {
+            "off": 2128.4103670000004,
+            "on": 2122.4571905000003,
+            "delta_pct": -0.2797005968539379
+          }
+        }
+      },
+      "acceptance": {
+        "observed_thresholds_pass": true,
+        "failures": [],
+        "required_stages": [
+          "YOLO preprocess",
+          "YOLO inference",
+          "YOLO executor total",
+          "ReID preprocess",
+          "ReID inference + transfer"
+        ]
+      },
+      "trials": [
+        {
+          "mode": "off",
+          "index": 0,
+          "display_fps_mean": 30.00470452151633,
+          "ai_updates_per_video_second": 7.679913961347897,
+          "audit_errors": 0,
+          "audit_active": true,
+          "recording_healthy": true,
+          "inference_healthy": true,
+          "cpu_cores_by_process": {
+            "amdva-demo-soak": 1.6913072281374026,
+            "amdva-dashboard": 0.2729487169328373,
+            "amdva-rtsp-file": 0.08541252366605792
+          },
+          "stage_p95_ms": {
+            "YOLO executor total": 28.200333,
+            "Image embedding NPU preprocess": 0.424949,
+            "Vector search": 2.340332,
+            "YOLO postprocess": 25.849953,
+            "YOLO inference": 2.240864,
+            "Image embedding NPU total": 24.626753,
+            "ReID inference + transfer": 2.6088101052631574,
+            "Tracking eligible": 0,
+            "Person crop": 4.146137,
+            "Analysis DB save": 1.883662,
+            "PNG + DB save": 2.432896,
+            "Image embedding NPU": 24.269823,
+            "Embedding first result": 1245.789783,
+            "Detection update": 9.0166695,
+            "Image embedding": 24.632435,
+            "YOLO preprocess": 11.679433,
+            "Decoded frame wait": 0.115437,
+            "Tracking association": 0.029867,
+            "Embedding freshness": 213.194372,
+            "Text query": 10.529993,
+            "ReID preprocess": 7.540157333333333,
+            "Embedding update interval": 2128.709768
+          },
+          "gfx_mW": 18622.5,
+          "socket_mW": 87947.5
+        },
+        {
+          "mode": "off",
+          "index": 3,
+          "display_fps_mean": 29.980520332737346,
+          "ai_updates_per_video_second": 7.631499198377232,
+          "audit_errors": 0,
+          "audit_active": true,
+          "recording_healthy": true,
+          "inference_healthy": true,
+          "cpu_cores_by_process": {
+            "amdva-demo-soak": 1.680392894139697,
+            "amdva-dashboard": 0.26848901759481447,
+            "amdva-rtsp-file": 0.08454005459077227
+          },
+          "stage_p95_ms": {
+            "YOLO executor total": 28.409124,
+            "Image embedding NPU preprocess": 0.28709,
+            "Vector search": 2.313941,
+            "YOLO postprocess": 26.212373,
+            "YOLO inference": 2.165712,
+            "Image embedding NPU total": 24.512856,
+            "ReID inference + transfer": 2.3517597272727273,
+            "Tracking eligible": 0,
+            "Person crop": 4.013065,
+            "Analysis DB save": 1.833387,
+            "PNG + DB save": 2.385646,
+            "Image embedding NPU": 24.251907,
+            "Embedding first result": 1229.774613,
+            "Detection update": 9.0830345,
+            "Image embedding": 24.519358,
+            "YOLO preprocess": 11.588107,
+            "Decoded frame wait": 0.101872,
+            "Tracking association": 0.031069,
+            "Embedding freshness": 210.657957,
+            "Text query": 13.202793,
+            "ReID preprocess": 7.798763,
+            "Embedding update interval": 2128.110966
+          },
+          "gfx_mW": 18790.5,
+          "socket_mW": 87988.0
+        },
+        {
+          "mode": "window",
+          "index": 1,
+          "display_fps_mean": 30.131493262147185,
+          "ai_updates_per_video_second": 7.525171812277137,
+          "audit_errors": 0,
+          "audit_active": true,
+          "recording_healthy": true,
+          "inference_healthy": true,
+          "cpu_cores_by_process": {
+            "amdva-wave-samp": 0.001425958957955351,
+            "amdva-rtsp-file": 0.08270561956141037,
+            "amdva-demo-soak": 1.6695602799393903,
+            "amdva-dashboard": 0.2771113574959899
+          },
+          "stage_p95_ms": {
+            "YOLO executor total": 28.043315,
+            "Image embedding NPU preprocess": 0.468932,
+            "Vector search": 2.179538,
+            "YOLO postprocess": 25.902066,
+            "YOLO inference": 2.05813,
+            "Image embedding NPU total": 24.683555,
+            "ReID inference + transfer": 2.4304509999999997,
+            "Tracking eligible": 0,
+            "Person crop": 4.086324,
+            "Analysis DB save": 1.741545,
+            "PNG + DB save": 2.380036,
+            "Image embedding NPU": 24.255901,
+            "Embedding first result": 1213.215111,
+            "Detection update": 9.08592025,
+            "Image embedding": 24.687242,
+            "YOLO preprocess": 12.106165,
+            "Decoded frame wait": 0.114485,
+            "Tracking association": 0.029685,
+            "Embedding freshness": 201.215861,
+            "Text query": 12.932389,
+            "ReID preprocess": 7.881769176470589,
+            "Embedding update interval": 2117.638387
+          },
+          "gfx_mW": 18693,
+          "socket_mW": 88297
+        },
+        {
+          "mode": "window",
+          "index": 2,
+          "display_fps_mean": 29.961157750859215,
+          "ai_updates_per_video_second": 7.586771648548536,
+          "audit_errors": 0,
+          "audit_active": true,
+          "recording_healthy": true,
+          "inference_healthy": true,
+          "cpu_cores_by_process": {
+            "amdva-dashboard": 0.26893494527747597,
+            "amdva-demo-soak": 1.6834567334242003,
+            "amdva-wave-samp": 0.0011878751999888516,
+            "amdva-rtsp-file": 0.08505186431920177
+          },
+          "stage_p95_ms": {
+            "YOLO executor total": 28.205204,
+            "Image embedding NPU preprocess": 0.465325,
+            "Vector search": 2.653178,
+            "YOLO postprocess": 25.902684,
+            "YOLO inference": 2.246615,
+            "Image embedding NPU total": 24.711142,
+            "ReID inference + transfer": 2.522905,
+            "Tracking eligible": 0,
+            "Person crop": 4.307048,
+            "Analysis DB save": 1.674248,
+            "PNG + DB save": 2.421182,
+            "Image embedding NPU": 24.275944,
+            "Embedding first result": 1186.589424,
+            "Detection update": 9.13018,
+            "Image embedding": 24.717735,
+            "YOLO preprocess": 11.704717,
+            "Decoded frame wait": 0.164419,
+            "Tracking association": 0.029265,
+            "Embedding freshness": 220.162121,
+            "Text query": 12.315156,
+            "ReID preprocess": 7.96257576923077,
+            "Embedding update interval": 2127.275994
+          },
+          "gfx_mW": 18766,
+          "socket_mW": 88027
+        }
+      ]
+    }
+  },
+  "normalization": {
+    "samples": 27,
+    "wall_active_pct": 25.413153944665172,
+    "wave_pct": 23.130160806857564,
+    "difference_pp": -2.2829931378076083
+  },
+  "pulse_one_stream_grbm_zero": true,
+  "lifecycle": {
+    "duplicate_owner_preserved": true,
+    "collector_termination_falls_back": true,
+    "missing_helper_falls_back": true,
+    "sdk_initialization_failure_falls_back": true,
+    "passed": true
+  },
+  "recording_checks": [
+    {
+      "trial": "gui-0-off",
+      "segments": 221,
+      "channels": 17,
+      "states": [
+        "finalized"
+      ],
+      "probes": [
+        {
+          "channel": "cam0",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam1",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam10",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam11",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam12",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam13",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam14",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam15",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam2",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam3",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam4",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam5",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam6",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam7",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam8",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam9",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "resource-monitor",
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "passed": true
+    },
+    {
+      "trial": "gui-1-continuous",
+      "segments": 221,
+      "channels": 17,
+      "states": [
+        "finalized"
+      ],
+      "probes": [
+        {
+          "channel": "cam0",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam1",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam10",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam11",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam12",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam13",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam14",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam15",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam2",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam3",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam4",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam5",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam6",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam7",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam8",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam9",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "resource-monitor",
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "passed": true
+    },
+    {
+      "trial": "gui-2-continuous",
+      "segments": 221,
+      "channels": 17,
+      "states": [
+        "finalized"
+      ],
+      "probes": [
+        {
+          "channel": "cam0",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam1",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam10",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam11",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam12",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam13",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam14",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam15",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam2",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam3",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam4",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam5",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam6",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam7",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam8",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam9",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "resource-monitor",
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "passed": true
+    },
+    {
+      "trial": "gui-3-off",
+      "segments": 213,
+      "channels": 17,
+      "states": [
+        "finalized"
+      ],
+      "probes": [
+        {
+          "channel": "cam0",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam1",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam10",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam11",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam12",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam13",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam14",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam15",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam2",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam3",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam4",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam5",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam6",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam7",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam8",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam9",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "resource-monitor",
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "passed": true
+    },
+    {
+      "trial": "integrated/gui-0-off",
+      "segments": 221,
+      "channels": 17,
+      "states": [
+        "finalized"
+      ],
+      "probes": [
+        {
+          "channel": "cam0",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam1",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam10",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam11",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam12",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam13",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam14",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam15",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam2",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam3",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam4",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam5",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam6",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam7",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam8",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam9",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "resource-monitor",
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "passed": true
+    },
+    {
+      "trial": "integrated/gui-1-continuous",
+      "segments": 218,
+      "channels": 17,
+      "states": [
+        "finalized"
+      ],
+      "probes": [
+        {
+          "channel": "cam0",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam1",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam10",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam11",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam12",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam13",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam14",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam15",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam2",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam3",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam4",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam5",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam6",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam7",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam8",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam9",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "resource-monitor",
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "passed": true
+    },
+    {
+      "trial": "integrated/gui-2-continuous",
+      "segments": 219,
+      "channels": 17,
+      "states": [
+        "finalized"
+      ],
+      "probes": [
+        {
+          "channel": "cam0",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam1",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam10",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam11",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam12",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam13",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam14",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam15",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam2",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam3",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam4",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam5",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam6",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam7",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam8",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam9",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "resource-monitor",
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "passed": true
+    },
+    {
+      "trial": "integrated/gui-3-off",
+      "segments": 221,
+      "channels": 17,
+      "states": [
+        "finalized"
+      ],
+      "probes": [
+        {
+          "channel": "cam0",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam1",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam10",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam11",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam12",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam13",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam14",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam15",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam2",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam3",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam4",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam5",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam6",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam7",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam8",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam9",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "resource-monitor",
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "passed": true
+    },
+    {
+      "trial": "integrated-window/gui-0-off",
+      "segments": 220,
+      "channels": 17,
+      "states": [
+        "finalized"
+      ],
+      "probes": [
+        {
+          "channel": "cam0",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam1",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam10",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam11",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam12",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam13",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam14",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam15",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam2",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam3",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam4",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam5",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam6",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam7",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam8",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam9",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "resource-monitor",
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "passed": true
+    },
+    {
+      "trial": "integrated-window/gui-1-window",
+      "segments": 215,
+      "channels": 17,
+      "states": [
+        "finalized"
+      ],
+      "probes": [
+        {
+          "channel": "cam0",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam1",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam10",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam11",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam12",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam13",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam14",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam15",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam2",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam3",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam4",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam5",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam6",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam7",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam8",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam9",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "resource-monitor",
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "passed": true
+    },
+    {
+      "trial": "integrated-window/gui-2-window",
+      "segments": 219,
+      "channels": 17,
+      "states": [
+        "finalized"
+      ],
+      "probes": [
+        {
+          "channel": "cam0",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam1",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam10",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam11",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam12",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam13",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam14",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam15",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam2",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam3",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam4",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam5",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam6",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam7",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam8",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam9",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "resource-monitor",
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "passed": true
+    },
+    {
+      "trial": "integrated-window/gui-3-off",
+      "segments": 221,
+      "channels": 17,
+      "states": [
+        "finalized"
+      ],
+      "probes": [
+        {
+          "channel": "cam0",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam1",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam10",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam11",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam12",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam13",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam14",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam15",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam2",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam3",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam4",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam5",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam6",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam7",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam8",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "cam9",
+          "codec_name": "hevc",
+          "width": 2560,
+          "height": 1440
+        },
+        {
+          "channel": "resource-monitor",
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "contract_tests": {
+    "passed": 30,
+    "failed": 0,
+    "log": "/home/amd/work/rai/logs/gpu-counter-overhead-20261112/ctest-final.log"
+  },
+  "raw_evidence": "/home/amd/work/rai/logs/gpu-counter-overhead-20261112",
+  "reproduction_runner": "/home/amd/work/rai/logs/gpu-counter-overhead/run-resume.py",
+  "limitations": [
+    "Stage P95 values are medians of reported rolling P95 snapshots after warmup, not pooled percentiles.",
+    "Timed active workload intervals include kernel launch/synchronization overhead and are a proxy, not direct wall-time WGP occupancy.",
+    "Small cohorts and changing baseline timings do not establish causality or prove zero profiling overhead.",
+    "Older-boot results are retained separately; one build-overlapped micro trial was excluded and rerun.",
+    "First external off run was recovered from successful raw logs after an aggregation-only cam15 selection error."
+  ],
+  "cleanup": {
+    "normal_config_unchanged": true,
+    "normal_demo_original_count": 0,
+    "normal_demo_final_count": 0,
+    "trial_processes_remaining": {
+      "amdva-nvr": [],
+      "amdva-demo-soak": [],
+      "amdva-dashboard": [],
+      "amdva-wave-samp": [],
+      "amdva-rtsp-file": []
+    }
+  },
+  "documentation_checks": {
+    "translations_stale": 0,
+    "strict_build_passed": true,
+    "log": "/home/amd/work/rai/logs/gpu-counter-overhead-20261112/docs-build.log",
+    "isolated_venv": "/tmp/amdva-wave-docs-venv"
+  }
+}

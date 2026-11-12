@@ -12,6 +12,8 @@ namespace amdva {
 // Memory is binary GiB, bandwidth decimal GB/s, power W. Missing means unknown.
 struct ResourceSample {
     int64_t monotonic_ns{}, wall_ms{};
+    // Diagnostic metadata; the dashboard keeps its existing GPU label.
+    std::string gpu_source{"sysfs"}, gpu_status;
     std::optional<double> cpu_pct, gpu_pct, dram_read_gbs, dram_write_gbs;
     std::optional<double> host_used_gib, host_total_gib, vram_reserved_gib, vram_gib;
     std::optional<double> gtt_gib, gtt_total_gib, socket_w, vcn_pct, vpe_pct;
@@ -19,6 +21,8 @@ struct ResourceSample {
 struct ResourceMonitorConfig {
     std::string render_node{"/dev/dri/renderD128"};
     std::string proc_root{"/proc"}, sys_root{"/sys"};
+    // Empty keeps sysfs. Invalid/stale helper data also uses sysfs.
+    std::string wave_sample_path;
 };
 // Single caller; does not spawn threads or change system configuration.
 class ResourceMonitor {
