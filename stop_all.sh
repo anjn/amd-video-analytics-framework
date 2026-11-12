@@ -10,7 +10,7 @@ alive() {
     [[ -f "$1" ]] || return 1
     read -r pid start expected < "$1" || return 1
     [[ "$pid" =~ ^[0-9]+$ && -r "/proc/$pid/stat" ]] || return 1
-    current=$(awk '{print $22}' "/proc/$pid/stat")
+    current=$(awk '{print $22}' "/proc/$pid/stat" 2>/dev/null) || return 1
     exe=$(readlink -f "/proc/$pid/exe" 2>/dev/null) || return 1
     [[ "$start" == "$current" && "$exe" == "$expected" ]]
 }

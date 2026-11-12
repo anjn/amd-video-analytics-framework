@@ -15,7 +15,7 @@ alive() {
     [[ -f "$1" ]] || return 1
     read -r pid start expected < "$1" || return 1
     [[ "$pid" =~ ^[0-9]+$ && -r "/proc/$pid/stat" ]] || return 1
-    current=$(awk '{print $22}' "/proc/$pid/stat")
+    current=$(awk '{print $22}' "/proc/$pid/stat" 2>/dev/null) || return 1
     exe=$(readlink -f "/proc/$pid/exe" 2>/dev/null) || return 1
     [[ "$start" == "$current" && "$exe" == "$expected" ]]
 }
@@ -69,6 +69,24 @@ if [[ "$ready" != true ]]; then
     echo "RTSP サーバーの準備がタイムアウトしました。ログ: $RUN/server.log" >&2
     if alive "$RUN/server.pid"; then read -r pid _ < "$RUN/server.pid"; kill -TERM "$pid"; fi
     exit 1
+fi
+mapfile -t npu_env < <(python3 -c 'import json,sys; s=json.load(open(sys.argv[1])).get("search", {}); print("yes" if s.get("enabled") and s.get("embedding_model")=="mobileclip2-s2" and s.get("mobileclip_backend") in ("npu", "gpu+npu") else "no"); print(s.get("ryzen_ai_venv", ""))' "$RUN/config.json")
+if [[ "${npu_env[0]}" == yes ]]; then
+    ryzen_venv="${npu_env[1]}"
+    if [[ -z "$ryzen_venv" ]] || ! source "$ROOT/examples/nvr/scripts/mobileclip-env.sh" "$ryzen_venv" >/dev/null; then
+        echo 'Ryzen AI の実行環境を準備できません。' >&2
+        if alive "$RUN/server.pid"; then read -r pid _ < "$RUN/server.pid"; kill -TERM "$pid"; fi
+        exit 1
+    fi
+    python_library=$(python -c 'import os,sysconfig; print(os.path.join(sysconfig.get_config_var("LIBDIR"), sysconfig.get_config_var("LDLIBRARY")))')
+    python_libdir=$(dirname -- "$python_library")
+    if [[ ! -f "$python_library" ]]; then
+        echo "Python 共有ライブラリがありません: $python_library" >&2
+        if alive "$RUN/server.pid"; then read -r pid _ < "$RUN/server.pid"; kill -TERM "$pid"; fi
+        exit 1
+    fi
+    export LD_LIBRARY_PATH="$python_libdir:$LD_LIBRARY_PATH"
+    export LD_PRELOAD="$python_library${LD_PRELOAD:+:$LD_PRELOAD}"
 fi
 start_process nvr "$NVR" "$RUN/config.json"
 sleep 3
