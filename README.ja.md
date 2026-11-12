@@ -25,7 +25,9 @@ AMD の APU で動く、GStreamer ベースの映像解析フレームワーク�
 | --- | --- |
 | ハードウェア | Ryzen AI 9 HX 370 / Radeon 890M（gfx1150） |
 | OS | Ubuntu 24.04、カーネル 6.17.0-1032-oem 以降、Mesa 25.2.8 |
-| 依存関係 | GStreamer 1.28.2、ROCm 7.2.0 / MIGraphX 2.15.0（ブートストラップがリポジトリ内にインストールします） |
+| 依存関係 | GStreamer 1.28.2、ROCm 7.2.0 / MIGraphX 2.15.0 |
+
+ブートストラップの依存関係は Ubuntu 26.04 向けに固定されています。ROCm 10.1 と対応する MIGraphX は別途用意してください。Ubuntu 26.04 / ROCm 10.1 の映像解析パイプライン全体は未検証です。
 
 ## ドキュメント
 

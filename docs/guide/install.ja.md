@@ -1,6 +1,6 @@
 # インストール
 
-ブートストラップスクリプトを 1 回実行すると、固定したバージョンの GStreamer と ROCm をリポジトリ内の `.deps/` にインストールし、フレームワークをビルドしてテストまで実行します。sudo は使わず、システムのライブラリも置き換えません。最後に GPU の動作確認を 1 つ実行すれば、インストールは完了です。
+ブートストラップスクリプトは、Ubuntu 26.04 用に固定した GStreamer と開発パッケージをリポジトリ内の `.deps/` にインストールし、フレームワークをビルドしてテストします。sudo は使わず、システムのライブラリも置き換えません。ROCm 10.1 と対応する MIGraphX は事前に用意してください。
 
 ## 動作環境
 
@@ -9,10 +9,10 @@
 | ハードウェア | Ryzen AI 9 HX 370 / Radeon 890M（gfx1150、VPE 6.1.0） |
 | OS | Ubuntu 24.04、カーネル 6.17.0-1032-oem 以降、Mesa 25.2.8 |
 | デバイス | `/dev/dri/renderD128` と `/dev/kfd` にアクセスできるユーザー |
-| ツール | Python 3.12 以降、`uv`、C/C++ コンパイラー、CMake 3.22 以降、pkg-config、git、dpkg-deb、apt-get、m4、GLib の開発ファイル（2.64 以降） |
-| ディスク | ROCm のパッケージだけで数 GB をダウンロードし、展開後はさらに多くの容量を使います |
+| ツール | Python 3.12 以降、`uv`、C/C++ コンパイラー、CMake 3.22 以降、pkg-config、git、dpkg-deb、apt-get |
+| ディスク | 依存関係のダウンロードとビルドに十分な空き容量 |
 
-ほかの AMD APU や GPU では検証していません。
+上の表は従来の検証環境です。現在のブートストラップは Ubuntu 26.04 を対象としており、ROCm の既定パスは `/opt/rocm/core-10.1`、MIGraphX の既定パスは `.deps/migraphx` です。それぞれ `AMDVA_ROCM_ROOT`、`AMDVA_MIGRAPHX_ROOT` で変更できます。Ubuntu 26.04 と ROCm 10.1 で映像解析パイプライン全体の検証は完了していません。
 
 ## 1. 依存関係とフレームワークのビルド
 
@@ -25,7 +25,7 @@ python3 scripts/bootstrap.py --jobs 8
 最後に ctest が実行され、次のように表示されれば成功です。
 
 ```text
-100% tests passed, 0 tests failed out of 26
+100% tests passed, 0 tests failed out of ...
 ```
 
 テストが失敗した場合は、まず動作環境の表にある前提ツールと、デバイスファイルへのアクセス権を確認してください。

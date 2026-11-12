@@ -44,11 +44,10 @@ def main():
     if args.check:
         files = [(DEPS / "src" / Path(a["url"]).name, a["sha256"]) for a in lock["gstreamer"]]
         files += [(DEPS / "packages" / p["filename"], p["sha256"]) for p in lock["ubuntu"]["packages"]]
-        files += [(DEPS / "packages" / Path(p["Filename"]).name, p["SHA256"]) for p in lock["rocm"]["packages"]]
         missing = [str(path) for path, checksum in files if not verify(path, checksum)]
         print(json.dumps({"passed": not missing, "checked": len(files), "invalid": missing}))
         return 2 if missing else 0
-    for tool in ("uv", "cmake", "pkg-config", "git", "dpkg-deb", "apt-get", "m4", "cc", "c++"):
+    for tool in ("uv", "cmake", "pkg-config", "git", "dpkg-deb", "apt-get", "cc", "c++"):
         if not shutil.which(tool):
             raise RuntimeError(f"Required host tool not installed: {tool}")
     for directory in ("src", "packages", "sysroot", "prefix", "pkgconfig"):
@@ -64,15 +63,9 @@ def main():
         if not verify(path, package["sha256"]):
             raise RuntimeError(f"Ubuntu package checksum mismatch: {path}")
         run("dpkg-deb", "-x", path, DEPS / "sysroot")
-    for package in lock["rocm"]["packages"]:
-        path = DEPS / "packages" / Path(package["Filename"]).name
-        download(lock["rocm"]["repository"] + package["Filename"], path, package["SHA256"])
-        run("dpkg-deb", "-x", path, DEPS / "rocm72")
-    for name in ("libva", "libva-drm", "json-glib-1.0", "sqlite3", "libdrm", "libdrm_amdgpu",
-                 "fontconfig", "freetype2", "libpng", "libpng16", "zlib",
-                 "libbrotlicommon", "libbrotlidec", "libbrotlienc", "expat"):
-        path = DEPS / "sysroot/usr/lib/x86_64-linux-gnu/pkgconfig" / f"{name}.pc"
-        (DEPS / "pkgconfig" / path.name).write_text(path.read_text().replace("prefix=/usr", f"prefix={DEPS}/sysroot/usr"))
+    for directory in ("lib/x86_64-linux-gnu/pkgconfig", "share/pkgconfig"):
+        for path in (DEPS / "sysroot/usr" / directory).glob("*.pc"):
+            (DEPS / "pkgconfig" / path.name).write_text(path.read_text().replace("/usr", f"{DEPS}/sysroot/usr"))
     patch = ROOT / lock["gst_analytics_patch"]["path"]
     if not verify(patch, lock["gst_analytics_patch"]["sha256"]):
         raise RuntimeError("GstAnalytics patch differs from lock")
@@ -100,11 +93,11 @@ def main():
         build = DEPS / f"locked-build-{name}"
         command = ["meson", "setup"]
         if (build / "build.ninja").exists():
-            command += ["--reconfigure"]
+            command += ["--reconfigure", "--clearcache"]
         run(*command, build, DEPS / "src" / f"{name}-1.28.2", f"--prefix={DEPS}/prefix", "--libdir=lib", *options, env=env)
         run("meson", "compile", "-C", build, "-j", args.jobs, env=env)
         run("meson", "install", "-C", build, env=env)
-    run("cmake", "-S", ROOT, "-B", ROOT / "build", f"-DAMDVA_ROCM_ROOT={env['AMDVA_ROCM_ROOT']}",
+    run("cmake", "-S", ROOT, "-B", ROOT / "build", f"-DAMDVA_ROCM_ROOT={env['AMDVA_ROCM_ROOT']}", f"-DAMDVA_MIGRAPHX_ROOT={env['AMDVA_MIGRAPHX_ROOT']}",
         f"-DCMAKE_PREFIX_PATH={DEPS}/sysroot/usr", "-DCMAKE_BUILD_TYPE=RelWithDebInfo", f"-DCMAKE_INSTALL_PREFIX={DEPS}/prefix", env=env)
     run("cmake", "--build", ROOT / "build", "-j", args.jobs, env=env)
     run("ctest", "--test-dir", ROOT / "build", "--output-on-failure", env=env)

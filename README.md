@@ -1,4 +1,4 @@
-<!-- source: README.ja.md cd098d2f6b02cd1ed6a8c6ce2f97f95b03598fc1 -->
+<!-- source: README.ja.md 0afa8d734618cd08a789a0ee294f1e2e1fbbf828 -->
 # AMD Video Analytics Framework
 
 [日本語](README.ja.md)
@@ -26,7 +26,9 @@ For details and launch instructions of the NVR demo, which records multiple came
 | --- | --- |
 | Hardware | Ryzen AI 9 HX 370 / Radeon 890M (gfx1150) |
 | OS | Ubuntu 24.04, kernel 6.17.0-1032-oem or later, Mesa 25.2.8 |
-| Dependencies | GStreamer 1.28.2, ROCm 7.2.0 / MIGraphX 2.15.0 (the bootstrap installs them inside the repository) |
+| Dependencies | GStreamer 1.28.2, ROCm 7.2.0 / MIGraphX 2.15.0 |
+
+The bootstrap dependencies are pinned for Ubuntu 26.04. Install ROCm 10.1 and a matching MIGraphX separately. The complete video analytics pipeline has not been validated on Ubuntu 26.04 / ROCm 10.1.
 
 ## Documentation
 
