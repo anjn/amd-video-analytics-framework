@@ -11,3 +11,6 @@ core.*
 runs/
 .site-src/
 site/
+/PROGRESS.md
+/videos/SOURCES.md
+/videos/playlist.m3u8
