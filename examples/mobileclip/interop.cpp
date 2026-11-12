@@ -96,7 +96,7 @@ extern "C" __global__ void fill(unsigned char *p,unsigned bytes,unsigned seed) {
         unsigned reference_calls = 0;
         uint64_t diagnostic_bytes = 0;
         unsigned calls = 0;
-        uintptr_t previous_gpu = 0, previous_npu = 0;
+        std::set<uintptr_t> seen_gpu, seen_npu;
         unsigned reuse_count = 0, rejected = 0;
         std::mutex measurements;
         auto exemption = symbol<void (*)(bool)>("amdva_audit_embedding_scope");
@@ -164,10 +164,11 @@ extern "C" __global__ void fill(unsigned char *p,unsigned bytes,unsigned seed) {
                 if (on_npu ? (e.host == 0 || e.bound != e.host)
                            : (e.host != 0 || e.bound != e.device))
                     throw std::runtime_error("Input alias proof failed");
-                auto &previous = on_npu ? previous_npu : previous_gpu;
-                if (previous == e.device)
+                // A downstream element can retain the preceding input until the
+                // next buffer arrives, so a bounded pool may alternate buffers.
+                auto &seen = on_npu ? seen_npu : seen_gpu;
+                if (!seen.insert(e.device).second)
                     ++reuse_count;
-                previous = e.device;
                 if (ref.ctx) {
                     unsigned physical = on_npu ? 1u : (valid == 1 ? 1u : 4u);
                     std::vector<reference::ReferenceImage> refs(physical, ref_im);
@@ -246,6 +247,8 @@ extern "C" __global__ void fill(unsigned char *p,unsigned bytes,unsigned seed) {
                   << ",\"min_embedding_cosine\":" << min_cosine
                   << ",\"min_text_cosine\":" << min_text_cosine
                   << ",\"buffer_reuses\":" << reuse_count
+                  << ",\"gpu_input_buffers\":" << seen_gpu.size()
+                  << ",\"npu_input_buffers\":" << seen_npu.size()
                   << ",\"invalid_inputs_rejected\":" << rejected
                   << ",\"diagnostic_input_readback_bytes\":" << diagnostic_bytes
                   << ",\"reference_mean_call_ms\":"
