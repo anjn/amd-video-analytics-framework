@@ -1,0 +1,31 @@
+{
+  "time_jst": "2026-11-13T23:30:56.582103+09:00",
+  "reason": "Free diagnostic capacity; only hash-verified redundant originals are removed.",
+  "files": [
+    {
+      "file": "/home/amd/work/rai/logs/input-decode-20261113/dispatch-normal-02/catalog-snapshot.sqlite",
+      "local_copy": "C:/Users/juna/Work/kuroko/logs/input-decode-20261113-remote/dispatch-normal-02/catalog-snapshot.sqlite",
+      "bytes": 774279168,
+      "sha256": "18512b83cf4de9048f830811d4d78bc7f7815aeae5d662be01536a2e3b133cec"
+    },
+    {
+      "file": "/home/amd/work/rai/logs/input-decode-20261113/dispatch-normal-02/diagnostics/events.csv.gz",
+      "local_copy": "C:/Users/juna/Work/kuroko/logs/input-decode-20261113-remote/dispatch-normal-02/diagnostics/events.csv.gz",
+      "bytes": 626208259,
+      "sha256": "ba788c207cf0bb0a3c54b43cf4426d9e5123bde98b9a3c53b6cf5f514810adde"
+    },
+    {
+      "file": "/home/amd/work/rai/logs/input-decode-20261113/dispatch-normal-02/diagnostics/status.jsonl",
+      "local_copy": "C:/Users/juna/Work/kuroko/logs/input-decode-20261113-remote/dispatch-normal-02/diagnostics/status.jsonl",
+      "bytes": 103828060,
+      "sha256": "00951d2ef802de93a7e7ea8913e7494d70c87ce89da01107506412011eec5897"
+    },
+    {
+      "file": "/home/amd/work/rai/logs/input-decode-20261113/dispatch-normal-02/resources.jsonl",
+      "local_copy": "C:/Users/juna/Work/kuroko/logs/input-decode-20261113-remote/dispatch-normal-02/resources.jsonl",
+      "bytes": 78131171,
+      "sha256": "7cd532a5baf0bd0ab520d0dd38acb484a0bce220b26ca8e9f22f5c4719d63887"
+    }
+  ],
+  "bytes_freed": 1582446658
+}

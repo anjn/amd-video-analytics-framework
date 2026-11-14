@@ -129,6 +129,11 @@ def main():
     run("cmake", "-S", ROOT, "-B", ROOT / "build", *extra, f"-DAMDVA_ROCM_ROOT={env['AMDVA_ROCM_ROOT']}",
         f"-DAMDVA_MIGRAPHX_ROOT={env['AMDVA_MIGRAPHX_ROOT']}", "-DCMAKE_BUILD_TYPE=RelWithDebInfo", f"-DCMAKE_INSTALL_PREFIX={DEPS}/prefix", env=env)
     run("cmake", "--build", ROOT / "build", "-j", args.jobs, env=env)
+    # The VPE auditor did not exist when a fresh checkout's build env was read.
+    # Re-resolve it after the build, using the same launcher rules.
+    raw = subprocess.check_output(["bash", "-c", "source scripts/env.sh && env -0"], cwd=ROOT)
+    env = {item.split(b"=", 1)[0].decode(): item.split(b"=", 1)[1].decode()
+           for item in raw.split(b"\0") if b"=" in item}
     run("ctest", "--test-dir", ROOT / "build", "--output-on-failure", env=env)
     return 0
 

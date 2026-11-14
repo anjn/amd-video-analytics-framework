@@ -1,0 +1,11 @@
+{
+  "file": "/home/amd/work/rai/logs/input-decode-20261113/dispatch-normal-04/catalog-snapshot.sqlite",
+  "sha256": "caea8fe5598eff266f16133f69879d1f2b6ab958536b725bcb27c1985e599b31",
+  "bytes": 775782400,
+  "counts": {
+    "recordings": 2028,
+    "observations": 16338,
+    "analysis_frames": 40288,
+    "analysis_objects": 124287
+  }
+}

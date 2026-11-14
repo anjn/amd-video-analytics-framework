@@ -83,7 +83,7 @@ Enable that test in CTest by setting `AMDVA_ANALYTICS_MODELS`,
 pipeline test with the copy auditor:
 
 ```bash
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/src/gst/framework-pipeline-tests "$VIDEO" "$MODELS" "$NVR_MODELS"
 ```
 

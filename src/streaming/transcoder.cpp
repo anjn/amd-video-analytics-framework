@@ -133,10 +133,13 @@ bool Transcoder::push(GstSample *sample) {
                                             GST_CLOCK_TIME_NONE);
     if (options_.on_input)
         options_.on_input(b);
+    {
+    std::lock_guard<std::mutex> lock(pushed_mutex_);
     pushed_[GST_BUFFER_PTS(b)] = g_get_monotonic_time();
     // Frames the decoder or encoder dropped would otherwise stay forever.
     while (pushed_.size() > 512)
         pushed_.erase(pushed_.begin());
+    }
     return gst_app_src_push_buffer(GST_APP_SRC(input_), b) == GST_FLOW_OK;
 }
 void Transcoder::max_fps(double fps) {
@@ -171,6 +174,7 @@ GstSample *Transcoder::pull() {
     gst_sample_unref(encoded);
     encoded_++;
     const auto pts = GST_BUFFER_PTS(gst_sample_get_buffer(sample));
+    std::lock_guard<std::mutex> lock(pushed_mutex_);
     auto it = pushed_.find(pts);
     if (it != pushed_.end()) {
         const double ms = (g_get_monotonic_time() - it->second) / 1000.;

@@ -2,6 +2,7 @@
 #include "amdva/vui.hpp"
 #include "renderer.hpp"
 #include "wave_collector.hpp"
+#include "gpu_display.hpp"
 #include <algorithm>
 #include <atomic>
 #include <chrono>
@@ -124,6 +125,8 @@ struct App {
     Options options;
     WaveCollector wave_collector;
     ResourceMonitor monitor;
+    GpuDisplayFilter gpu_display;
+    ResourceSample raw_sample;
     Renderer renderer;
     std::mutex mutex, render_mutex;
     std::deque<ResourceSample> history;
@@ -138,8 +141,10 @@ struct App {
     App(Options o)
         : options(o), wave_collector(o.node),
           monitor(ResourceMonitorConfig{o.node, "/proc", "/sys", wave_collector.sample_path()}),
+          gpu_display(!wave_collector.sample_path().empty()),
           renderer(o.node, o.font, o.fps, o.power) {
-        history.push_back(monitor.sample());
+        raw_sample = monitor.sample();
+        history.push_back(gpu_display.apply(raw_sample));
         sampler = std::thread([this] {
             auto next = std::chrono::steady_clock::now();
             while (running) {
@@ -153,7 +158,8 @@ struct App {
                 }
                 {
                     std::lock_guard<std::mutex> lock(mutex);
-                    history.push_back(s);
+                    raw_sample = s;
+                    history.push_back(gpu_display.apply(s));
                     while (history.size() > 601 ||
                            s.monotonic_ns - history.front().monotonic_ns > 60000000000LL)
                         history.pop_front();
@@ -395,10 +401,11 @@ int main(int argc, char **argv) {
             [](gpointer p) -> gboolean {
                 auto &a = *static_cast<App *>(p);
                 a.wave_collector.poll();
-                ResourceSample s;
+                ResourceSample s, raw;
                 {
                     std::lock_guard<std::mutex> lock(a.mutex);
                     s = a.history.back();
+                    raw = a.raw_sample;
                 }
                 auto value = [](std::optional<double> v) {
                     return v ? std::to_string(*v) : "null";
@@ -408,6 +415,9 @@ int main(int argc, char **argv) {
                           << ",\"gpu_pct\":" << value(s.gpu_pct)
                           << ",\"gpu_source\":\"" << s.gpu_source << "\""
                           << ",\"gpu_status\":\"" << s.gpu_status << "\""
+                          << ",\"gpu_raw_pct\":" << value(raw.gpu_pct)
+                          << ",\"gpu_raw_source\":\"" << raw.gpu_source << "\""
+                          << ",\"gpu_raw_status\":\"" << raw.gpu_status << "\""
                           << ",\"vcn_pct\":" << value(s.vcn_pct)
                           << ",\"vpe_pct\":" << value(s.vpe_pct)
                           << ",\"socket_w\":" << value(s.socket_w) << "}\n"

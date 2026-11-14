@@ -7,6 +7,12 @@
 #include <vector>
 
 namespace amdva::detail {
+// OS/GPU pairs covered by the hardware validation records.
+inline bool wave_supported_host(const std::string &ubuntu, unsigned gfx) {
+    return (ubuntu == "26.04" && gfx == 110501) ||
+           (ubuntu == "24.04" && gfx == 110500);
+}
+
 // A cycle-weighted ratio over the returned hardware regions, not ALU issue time.
 inline std::optional<double> wave_presence(double elapsed, const std::vector<double> &busy) {
     if (!std::isfinite(elapsed) || elapsed <= 0 || elapsed >= 4294967295. || busy.empty())

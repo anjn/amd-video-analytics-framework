@@ -1,4 +1,4 @@
-<!-- source: docs/dev/validation.md daf98fb5949c8f56bb01ce58a811458feed150be -->
+<!-- source: docs/dev/validation.md 8accc9e8d7b2281113baf26f43095de5c8b5643b -->
 # 検証と再現
 
 当初の単一ストリームでの結果は `validation-results.json` に残しています。NVR の回帰試験には別のレポートがあります。拡張したフレームワークのタスク、結果の送信、Python、バッチ処理、GPU 描画、SDK の確認については、[フレームワークの検証](framework-validation.ja.md)と、その[記録した結果](framework-validation-results.json)で説明しています。ログ、コンパイル済みモデル、映像のテスト用素材は、無視対象の `artifacts/` に置いたままです。レポートには、すべての APU やモデルとの互換性を主張するのではなく、明記したホストで完了した確認を記録しています。
@@ -30,7 +30,7 @@ ctest --test-dir build --output-on-failure
 uv pip install --python .deps/venv/bin/python onnxruntime==1.24.4
 build/src/gst/amdva-dump-tensor artifacts/bus.h264 artifacts/input.f32 \
   > artifacts/input-geometry.json
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/src/gst/amdva-run artifacts/bus.h264 artifacts/yolov8n.mxr \
   /path/yolov8n.json --events=artifacts/events.jsonl
 .deps/venv/bin/python tools/compare_reference.py /path/yolov8n.onnx \

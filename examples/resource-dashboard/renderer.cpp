@@ -451,6 +451,10 @@ struct Renderer::Impl {
                 quad(x + 470, 321, 16, 16, green);
                 text("Write", x + 496, 307, 32, muted);
             }
+            if (i == 1 && s.gpu_source == "wave-held")
+                text("Wave / holding", x + 26, 307, 32, muted);
+            else if (i == 1 && s.gpu_source == "unavailable")
+                text("Wave / unavailable", x + 26, 307, 32, muted);
             for (int j = 0; j <= 4; j++)
                 quad(x + 26, 352 + j * 65, 548, 1, color(0x29394c));
             if (i < 2)

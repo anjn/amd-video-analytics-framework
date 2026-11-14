@@ -26,6 +26,9 @@ class PipelineTelemetry {
     // Separate appsrc pipelines: register the copied/rebased AU before push.
     void submit(GstBuffer *);
     void background(bool);
+    // After input admission stops, wait only for RTP groups observed before the
+    // cutoff to reach the AU probe. New groups cannot prolong this drain.
+    size_t unassembled_before(int64_t cutoff_ns) const;
 
   private:
     struct Impl;

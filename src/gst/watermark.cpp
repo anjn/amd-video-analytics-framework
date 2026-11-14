@@ -278,11 +278,9 @@ static GstFlowReturn transform(GstBaseTransform *t, GstBuffer *input, GstBuffer 
         auto surface = gst_va_buffer_get_surface(input);
         if (surface == VA_INVALID_SURFACE)
             throw std::runtime_error("Missing decoded surface");
-        auto before = amdva::engine_time_ns("vpe");
         s.va->scale(surface, slot->id, s.video.width, s.video.height, s.video.width,
                     s.video.height);
-        if (amdva::engine_time_ns("vpe") <= before)
-            throw std::runtime_error("VPE execution not observed");
+        // VaSession verifies the accepted VPE command and exact target completion.
         s.renderer->draw(*slot->image, s.video.width, s.video.height,
                          amdva::overlay_from_buffer(input, s.video.width, s.video.height));
         return GST_FLOW_OK;

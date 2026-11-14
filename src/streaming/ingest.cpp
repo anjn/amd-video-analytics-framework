@@ -1,4 +1,6 @@
 #include "amdva/streaming/ingest.hpp"
+#include "amdva/gst_telemetry.hpp"
+#include "amdva/diagnostics.hpp"
 #include <gst/app/gstappsink.h>
 #include <stdexcept>
 
@@ -13,10 +15,19 @@ std::string message_error(GstMessage *m) {
     g_free(debug);
     return s;
 }
+GQuark sequence_quark() {
+    static const auto value=g_quark_from_static_string("amdva-ingest-sequence");
+    return value;
+}
 Sample own(GstSample *s) {
     return Sample(s, [](GstSample *p) { gst_sample_unref(p); });
 }
 } // namespace
+
+uint64_t ingest_sequence(const Sample &sample) {
+    static_assert(sizeof(gsize)>=sizeof(uint64_t),"Ingest identities require 64-bit gsize");
+    return sample ? GPOINTER_TO_SIZE(gst_mini_object_get_qdata(GST_MINI_OBJECT_CAST(sample.get()),sequence_quark())) : 0;
+}
 
 RtspIngest::RtspIngest(Options options, Hooks hooks)
     : options_(std::move(options)), hooks_(std::move(hooks)) {}
@@ -30,10 +41,13 @@ GstFlowReturn RtspIngest::received(GstAppSink *sink, gpointer data) {
     auto *b = gst_sample_get_buffer(sample.get());
     const auto size = gst_buffer_get_size(b);
     // Count before queue drops and before any consumer selection.
-    c.frames_.fetch_add(1, std::memory_order_relaxed);
+    const auto sequence=c.frames_.fetch_add(1, std::memory_order_relaxed)+1;
+    gst_mini_object_set_qdata(GST_MINI_OBJECT_CAST(sample.get()),sequence_quark(),GSIZE_TO_POINTER(sequence),nullptr);
     c.bytes_.fetch_add(size, std::memory_order_relaxed);
     c.last_packet_us_ = g_get_monotonic_time();
     const auto limit = c.options_.queue_limit_bytes;
+    const auto dispatch_sample = c.hooks_.on_sample ? sample : Sample{};
+    {
     std::lock_guard<std::mutex> l(c.mutex_);
     if (c.queued_ + size > limit ||
         (!c.queue_.empty() && GST_CLOCK_TIME_IS_VALID(GST_BUFFER_PTS(b)) &&
@@ -42,17 +56,36 @@ GstFlowReturn RtspIngest::received(GstAppSink *sink, gpointer data) {
              GST_BUFFER_PTS(gst_sample_get_buffer(c.queue_.front().get())) + 2 * GST_SECOND)) {
         if (c.hooks_.on_discarded)
             c.hooks_.on_discarded(c.queue_.size());
+        if(diagnostics_enabled()) for(const auto &queued:c.queue_) {
+            const auto trace=frame_trace(gst_sample_get_buffer(queued.get()));
+            if(trace.telemetry) trace.telemetry->diagnostic(trace.frame,"ingest_discarded",1);
+        }
         c.queue_.clear();
         c.queued_ = 0;
         c.overflow_ = true;
     }
     // An oversized AU must not bypass the queue's hard cap.
     if (size > limit) {
+        const auto trace=frame_trace(b);
+        if(trace.telemetry) trace.telemetry->diagnostic(trace.frame,"ingest_discarded",2);
         if (c.hooks_.on_discarded)
             c.hooks_.on_discarded(1);
     } else {
         c.queued_ += size;
         c.queue_.push_back(std::move(sample));
+    }
+    }
+    if (c.hooks_.on_sample) {
+        try { c.hooks_.on_sample(dispatch_sample); }
+        catch (const std::exception &e) {
+            std::lock_guard<std::mutex> lock(c.mutex_);
+            c.consumer_error_ = e.what();
+            return GST_FLOW_ERROR;
+        } catch (...) {
+            std::lock_guard<std::mutex> lock(c.mutex_);
+            c.consumer_error_ = "Unknown encoded consumer failure";
+            return GST_FLOW_ERROR;
+        }
     }
     return GST_FLOW_OK;
 }
@@ -116,6 +149,7 @@ void RtspIngest::pad_added(GstElement *, GstPad *pad, gpointer data) {
 
 void RtspIngest::start() {
     stop();
+    { std::lock_guard<std::mutex> lock(mutex_); consumer_error_.clear(); }
     codec_ = 0;
     overflow_ = false;
     frames_ = 0;
@@ -149,10 +183,15 @@ void RtspIngest::stop() {
     frames_ = 0;
     bytes_ = 0;
     std::lock_guard<std::mutex> l(mutex_);
+    if(diagnostics_enabled()) for(const auto &sample:queue_) {
+        const auto trace=frame_trace(gst_sample_get_buffer(sample.get()));
+        if(trace.telemetry) trace.telemetry->diagnostic(trace.frame,"ingest_retired");
+    }
     queue_.clear();
     queued_ = 0;
 }
 std::string RtspIngest::poll() {
+    { std::lock_guard<std::mutex> lock(mutex_); if (!consumer_error_.empty()) return consumer_error_; }
     if (!pipeline_)
         return {};
     auto *bus = gst_element_get_bus(pipeline_);
@@ -172,6 +211,14 @@ std::string RtspIngest::poll() {
 std::deque<Sample> RtspIngest::take() {
     std::deque<Sample> out;
     std::lock_guard<std::mutex> l(mutex_);
+    if (!queue_.empty()) {
+        const auto trace = frame_trace(gst_sample_get_buffer(queue_.front().get()));
+        if (trace.telemetry) {
+            const auto now = Telemetry::monotonic_ns();
+            trace.telemetry->diagnostic(trace.frame, "ingest_queue", queued_, queue_.size(), GST_BUFFER_PTS(gst_sample_get_buffer(queue_.front().get())), now);
+            trace.telemetry->diagnostic(trace.frame, "ingest_oldest_age", trace.frame.ns[unsigned(TimingStage::AccessUnit)] ? now-trace.frame.ns[unsigned(TimingStage::AccessUnit)] : -1);
+        }
+    }
     out.swap(queue_);
     queued_ = 0;
     return out;

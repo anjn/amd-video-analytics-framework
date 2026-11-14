@@ -1,4 +1,4 @@
-<!-- source: docs/dev/nvr/nvr-ai-performance.md 24ac68e85d0f6e5b4767f0ef20165cbb1b4e3b4d -->
+<!-- source: docs/dev/nvr/nvr-ai-performance.md c1c66cd2487b7f840808aa103b7705935956ff56 -->
 # AI のスケジューリング、統計、16 カメラでの評価
 
 NVR には、60 秒の移動ウィンドウで集計する **AI Statistics** タブがあります。完了した処理の実時間の平均、P50、P95、最大値、平均待ち時間、1 秒あたりの呼び出し回数、論理バッチサイズ、未処理の作業量、累積の破棄数を表示します。サマリーは全カメラをまとめた値で、詳細のセレクターでは個々のカメラを選べます。カメラの表には、検出/トラッキングの更新レート、確定した人物数、トラッキング対象フレームの経過時間を表示します。
@@ -169,7 +169,7 @@ Recall@5 は 108 × 192 で 82.6%、384 正方形で 66.7% でした。どちら
 ```bash
 source scripts/env.sh
 source examples/nvr/scripts/mobileclip-env.sh "$AMDVA_RYZEN_AI_VENV"
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/examples/nvr/amdva-scheduling-validate examples/nvr/config/nvr-frequency-17.json
 ```
 

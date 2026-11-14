@@ -1,0 +1,1129 @@
+{
+  "samples": 728,
+  "windows": {
+    "baseline_5_10": {
+      "rss_kib": {
+        "samples": 60,
+        "first": 1737912,
+        "last": 1753500,
+        "minimum": 1737912,
+        "maximum": 1753500,
+        "median": 1745602.0,
+        "slope_per_minute": 3145.7668716452563
+      },
+      "rss_anon_kib": {
+        "samples": 60,
+        "first": 845520,
+        "last": 861108,
+        "minimum": 845520,
+        "maximum": 861108,
+        "median": 853210.0,
+        "slope_per_minute": 3145.7668716452563
+      },
+      "rss_file_kib": {
+        "samples": 60,
+        "first": 497260,
+        "last": 497260,
+        "minimum": 497260,
+        "maximum": 497260,
+        "median": 497260.0,
+        "slope_per_minute": 0.0
+      },
+      "rss_shmem_kib": {
+        "samples": 60,
+        "first": 395132,
+        "last": 395132,
+        "minimum": 395132,
+        "maximum": 395132,
+        "median": 395132.0,
+        "slope_per_minute": 0.0
+      },
+      "virtual_kib": {
+        "samples": 60,
+        "first": 14028416,
+        "last": 14030516,
+        "minimum": 14028416,
+        "maximum": 14030516,
+        "median": 14030464.0,
+        "slope_per_minute": 23.697560914815753
+      },
+      "fd_count": {
+        "samples": 60,
+        "first": 228,
+        "last": 228,
+        "minimum": 227,
+        "maximum": 228,
+        "median": 228.0,
+        "slope_per_minute": 0.03018965729807339
+      },
+      "threads": {
+        "samples": 60,
+        "first": 236,
+        "last": 235,
+        "minimum": 235,
+        "maximum": 236,
+        "median": 235.0,
+        "slope_per_minute": -0.011277619355530963
+      },
+      "free_bytes": {
+        "samples": 60,
+        "first": 10595311616,
+        "last": 5968494592,
+        "minimum": 5968494592,
+        "maximum": 10595311616,
+        "median": 8323457024.0,
+        "slope_per_minute": -937598633.5686253
+      },
+      "drm_vram_kib": {
+        "samples": 60,
+        "first": 141468,
+        "last": 141504,
+        "minimum": 141468,
+        "maximum": 141504,
+        "median": 141488.0,
+        "slope_per_minute": 6.547313231570502
+      },
+      "drm_gtt_kib": {
+        "samples": 60,
+        "first": 2345252,
+        "last": 2347320,
+        "minimum": 2345252,
+        "maximum": 2347320,
+        "median": 2347308.0,
+        "slope_per_minute": 27.929118383058423
+      },
+      "drm_cpu_kib": {
+        "samples": 60,
+        "first": 0,
+        "last": 0,
+        "minimum": 0,
+        "maximum": 0,
+        "median": 0.0,
+        "slope_per_minute": 0.0
+      },
+      "read_bytes": {
+        "samples": 60,
+        "first": 1257472,
+        "last": 1257472,
+        "minimum": 1257472,
+        "maximum": 1257472,
+        "median": 1257472.0,
+        "slope_per_minute": 0.0
+      },
+      "write_bytes": {
+        "samples": 60,
+        "first": 10689433600,
+        "last": 16674455552,
+        "minimum": 10689433600,
+        "maximum": 16674455552,
+        "median": 13614813184.0,
+        "slope_per_minute": 1213491111.7868507
+      },
+      "cancelled_write_bytes": {
+        "samples": 60,
+        "first": 1423716352,
+        "last": 1431220224,
+        "minimum": 1423716352,
+        "maximum": 1431220224,
+        "median": 1426849792.0,
+        "slope_per_minute": 1562569.86340132
+      },
+      "cpu_cores": {
+        "samples": 60,
+        "first": 1.6054553321195328,
+        "last": 1.9771759801513242,
+        "minimum": 1.5939752739846569,
+        "maximum": 2.2882583587363787,
+        "median": 2.0209792449400377,
+        "slope_per_minute": 0.1115193370760195
+      }
+    },
+    "late_20_60": {
+      "rss_kib": {
+        "samples": 478,
+        "first": 1773644,
+        "last": 1836016,
+        "minimum": 1773644,
+        "maximum": 1836016,
+        "median": 1800172.0,
+        "slope_per_minute": 1601.5185609209184
+      },
+      "rss_anon_kib": {
+        "samples": 478,
+        "first": 881252,
+        "last": 943624,
+        "minimum": 881252,
+        "maximum": 943624,
+        "median": 907780.0,
+        "slope_per_minute": 1601.5185609209184
+      },
+      "rss_file_kib": {
+        "samples": 478,
+        "first": 497260,
+        "last": 497260,
+        "minimum": 497260,
+        "maximum": 497260,
+        "median": 497260.0,
+        "slope_per_minute": 0.0
+      },
+      "rss_shmem_kib": {
+        "samples": 478,
+        "first": 395132,
+        "last": 395132,
+        "minimum": 395132,
+        "maximum": 395132,
+        "median": 395132.0,
+        "slope_per_minute": 0.0
+      },
+      "virtual_kib": {
+        "samples": 478,
+        "first": 14030516,
+        "last": 14040820,
+        "minimum": 14028416,
+        "maximum": 14042868,
+        "median": 14030464.0,
+        "slope_per_minute": 189.54405583001224
+      },
+      "fd_count": {
+        "samples": 478,
+        "first": 228,
+        "last": 228,
+        "minimum": 226,
+        "maximum": 229,
+        "median": 228.0,
+        "slope_per_minute": -0.0004879934595320191
+      },
+      "threads": {
+        "samples": 478,
+        "first": 235,
+        "last": 235,
+        "minimum": 235,
+        "maximum": 239,
+        "median": 235.0,
+        "slope_per_minute": -0.0035108949091172945
+      },
+      "free_bytes": {
+        "samples": 478,
+        "first": 5278756864,
+        "last": 3249139712,
+        "minimum": 3247796224,
+        "maximum": 5286330368,
+        "median": 4263614464.0,
+        "slope_per_minute": -50984212.02971506
+      },
+      "drm_vram_kib": {
+        "samples": 478,
+        "first": 141540,
+        "last": 141644,
+        "minimum": 141540,
+        "maximum": 141644,
+        "median": 141580.0,
+        "slope_per_minute": 2.7647188792286204
+      },
+      "drm_gtt_kib": {
+        "samples": 478,
+        "first": 2347320,
+        "last": 2345272,
+        "minimum": 2345272,
+        "maximum": 2347320,
+        "median": 2347320.0,
+        "slope_per_minute": 1.2457800060196693
+      },
+      "drm_cpu_kib": {
+        "samples": 478,
+        "first": 0,
+        "last": 0,
+        "minimum": 0,
+        "maximum": 0,
+        "median": 0.0,
+        "slope_per_minute": 0.0
+      },
+      "read_bytes": {
+        "samples": 478,
+        "first": 1257472,
+        "last": 1257472,
+        "minimum": 1257472,
+        "maximum": 1257472,
+        "median": 1257472.0,
+        "slope_per_minute": 0.0
+      },
+      "write_bytes": {
+        "samples": 478,
+        "first": 30826479616,
+        "last": 87891640320,
+        "minimum": 30826479616,
+        "maximum": 87891640320,
+        "median": 59204446208.0,
+        "slope_per_minute": 1425462602.9014146
+      },
+      "cancelled_write_bytes": {
+        "samples": 478,
+        "first": 2087362560,
+        "last": 4879126528,
+        "minimum": 2087362560,
+        "maximum": 4879126528,
+        "median": 3462285312.0,
+        "slope_per_minute": 69625561.53997995
+      },
+      "cpu_cores": {
+        "samples": 478,
+        "first": 1.9416679808089672,
+        "last": 1.9979750825032283,
+        "minimum": 1.5740547712027997,
+        "maximum": 2.305599076243172,
+        "median": 2.070854946042004,
+        "slope_per_minute": -5.548917498811958e-05
+      }
+    },
+    "final_10": {
+      "rss_kib": {
+        "samples": 120,
+        "first": 1822824,
+        "last": 1836436,
+        "minimum": 1822824,
+        "maximum": 1836544,
+        "median": 1827250.0,
+        "slope_per_minute": 1425.319258021785
+      },
+      "rss_anon_kib": {
+        "samples": 120,
+        "first": 930432,
+        "last": 944044,
+        "minimum": 930432,
+        "maximum": 944152,
+        "median": 934858.0,
+        "slope_per_minute": 1425.319258021785
+      },
+      "rss_file_kib": {
+        "samples": 120,
+        "first": 497260,
+        "last": 497260,
+        "minimum": 497260,
+        "maximum": 497260,
+        "median": 497260.0,
+        "slope_per_minute": 0.0
+      },
+      "rss_shmem_kib": {
+        "samples": 120,
+        "first": 395132,
+        "last": 395132,
+        "minimum": 395132,
+        "maximum": 395132,
+        "median": 395132.0,
+        "slope_per_minute": 0.0
+      },
+      "virtual_kib": {
+        "samples": 120,
+        "first": 14032892,
+        "last": 14043032,
+        "minimum": 14032160,
+        "maximum": 14043032,
+        "median": 14035808.0,
+        "slope_per_minute": 1032.802373585807
+      },
+      "fd_count": {
+        "samples": 120,
+        "first": 228,
+        "last": 228,
+        "minimum": 227,
+        "maximum": 229,
+        "median": 228.0,
+        "slope_per_minute": 0.011940140659498081
+      },
+      "threads": {
+        "samples": 120,
+        "first": 235,
+        "last": 236,
+        "minimum": 235,
+        "maximum": 238,
+        "median": 235.0,
+        "slope_per_minute": 0.06704296180194423
+      },
+      "free_bytes": {
+        "samples": 120,
+        "first": 3696320512,
+        "last": 3187355648,
+        "minimum": 3187355648,
+        "maximum": 3696472064,
+        "median": 3452022784.0,
+        "slope_per_minute": -51336862.88397644
+      },
+      "drm_vram_kib": {
+        "samples": 120,
+        "first": 141624,
+        "last": 141644,
+        "minimum": 141624,
+        "maximum": 141644,
+        "median": 141632.0,
+        "slope_per_minute": 2.002753414649647
+      },
+      "drm_gtt_kib": {
+        "samples": 120,
+        "first": 2347320,
+        "last": 2347320,
+        "minimum": 2345272,
+        "maximum": 2347320,
+        "median": 2347320.0,
+        "slope_per_minute": -10.26138011710249
+      },
+      "drm_cpu_kib": {
+        "samples": 120,
+        "first": 0,
+        "last": 0,
+        "minimum": 0,
+        "maximum": 0,
+        "median": 0.0,
+        "slope_per_minute": 0.0
+      },
+      "read_bytes": {
+        "samples": 120,
+        "first": 1257472,
+        "last": 1257472,
+        "minimum": 1257472,
+        "maximum": 1257472,
+        "median": 1257472.0,
+        "slope_per_minute": 0.0
+      },
+      "write_bytes": {
+        "samples": 120,
+        "first": 75090288640,
+        "last": 89460621312,
+        "minimum": 75090288640,
+        "maximum": 89460621312,
+        "median": 82075559936.0,
+        "slope_per_minute": 1411507633.8364162
+      },
+      "cancelled_write_bytes": {
+        "samples": 120,
+        "first": 4244684800,
+        "last": 4962766848,
+        "minimum": 4244684800,
+        "maximum": 4962766848,
+        "median": 4580077568.0,
+        "slope_per_minute": 68746056.22668661
+      },
+      "cpu_cores": {
+        "samples": 120,
+        "first": 2.1612508528991135,
+        "last": 2.151413732076494,
+        "minimum": 1.5740547712027997,
+        "maximum": 2.2937060192382006,
+        "median": 2.052198219467547,
+        "slope_per_minute": 0.021240830111245702
+      }
+    },
+    "minutes_10_20": {
+      "rss_kib": {
+        "samples": 119,
+        "first": 1753504,
+        "last": 1773644,
+        "minimum": 1753504,
+        "maximum": 1773752,
+        "median": 1761720,
+        "slope_per_minute": 1992.5031539549634
+      },
+      "rss_anon_kib": {
+        "samples": 119,
+        "first": 861112,
+        "last": 881252,
+        "minimum": 861112,
+        "maximum": 881360,
+        "median": 869328,
+        "slope_per_minute": 1992.5031539549634
+      },
+      "rss_file_kib": {
+        "samples": 119,
+        "first": 497260,
+        "last": 497260,
+        "minimum": 497260,
+        "maximum": 497260,
+        "median": 497260,
+        "slope_per_minute": 0.0
+      },
+      "rss_shmem_kib": {
+        "samples": 119,
+        "first": 395132,
+        "last": 395132,
+        "minimum": 395132,
+        "maximum": 395132,
+        "median": 395132,
+        "slope_per_minute": 0.0
+      },
+      "virtual_kib": {
+        "samples": 119,
+        "first": 14028416,
+        "last": 14028416,
+        "minimum": 14028416,
+        "maximum": 14038660,
+        "median": 14030464,
+        "slope_per_minute": -47.26820969801314
+      },
+      "fd_count": {
+        "samples": 119,
+        "first": 228,
+        "last": 228,
+        "minimum": 227,
+        "maximum": 229,
+        "median": 228,
+        "slope_per_minute": 0.00646780709794622
+      },
+      "threads": {
+        "samples": 119,
+        "first": 235,
+        "last": 235,
+        "minimum": 235,
+        "maximum": 239,
+        "median": 235,
+        "slope_per_minute": -0.039216595714507814
+      },
+      "free_bytes": {
+        "samples": 119,
+        "first": 5892837376,
+        "last": 5280382976,
+        "minimum": 5280382976,
+        "maximum": 5892837376,
+        "median": 5540495360,
+        "slope_per_minute": -51791324.60897699
+      },
+      "drm_vram_kib": {
+        "samples": 119,
+        "first": 141504,
+        "last": 141540,
+        "minimum": 141504,
+        "maximum": 141540,
+        "median": 141516,
+        "slope_per_minute": 3.755331602004647
+      },
+      "drm_gtt_kib": {
+        "samples": 119,
+        "first": 2345272,
+        "last": 2345272,
+        "minimum": 2345272,
+        "maximum": 2347320,
+        "median": 2347320,
+        "slope_per_minute": -20.72021860779396
+      },
+      "drm_cpu_kib": {
+        "samples": 119,
+        "first": 0,
+        "last": 0,
+        "minimum": 0,
+        "maximum": 0,
+        "median": 0,
+        "slope_per_minute": 0.0
+      },
+      "read_bytes": {
+        "samples": 119,
+        "first": 1257472,
+        "last": 1257472,
+        "minimum": 1257472,
+        "maximum": 1257472,
+        "median": 1257472,
+        "slope_per_minute": 0.0
+      },
+      "write_bytes": {
+        "samples": 119,
+        "first": 16773607424,
+        "last": 30705836032,
+        "minimum": 16773607424,
+        "maximum": 30705836032,
+        "median": 23762829312,
+        "slope_per_minute": 1390003696.310023
+      },
+      "cancelled_write_bytes": {
+        "samples": 119,
+        "first": 1431826432,
+        "last": 2080165888,
+        "minimum": 1431826432,
+        "maximum": 2080165888,
+        "median": 1753755648,
+        "slope_per_minute": 64026951.93059652
+      },
+      "cpu_cores": {
+        "samples": 119,
+        "first": 1.9006549633696748,
+        "last": 2.102620105269587,
+        "minimum": 1.6340630694379645,
+        "maximum": 2.31416580133748,
+        "median": 2.0952589136094573,
+        "slope_per_minute": 0.015187031409393687
+      }
+    },
+    "minutes_20_30": {
+      "rss_kib": {
+        "samples": 120,
+        "first": 1773644,
+        "last": 1787708,
+        "minimum": 1773644,
+        "maximum": 1787816,
+        "median": 1779032.0,
+        "slope_per_minute": 1150.8978426605256
+      },
+      "rss_anon_kib": {
+        "samples": 120,
+        "first": 881252,
+        "last": 895316,
+        "minimum": 881252,
+        "maximum": 895424,
+        "median": 886640.0,
+        "slope_per_minute": 1150.8978426605256
+      },
+      "rss_file_kib": {
+        "samples": 120,
+        "first": 497260,
+        "last": 497260,
+        "minimum": 497260,
+        "maximum": 497260,
+        "median": 497260.0,
+        "slope_per_minute": 0.0
+      },
+      "rss_shmem_kib": {
+        "samples": 120,
+        "first": 395132,
+        "last": 395132,
+        "minimum": 395132,
+        "maximum": 395132,
+        "median": 395132.0,
+        "slope_per_minute": 0.0
+      },
+      "virtual_kib": {
+        "samples": 120,
+        "first": 14030516,
+        "last": 14030464,
+        "minimum": 14028416,
+        "maximum": 14036612,
+        "median": 14030464.0,
+        "slope_per_minute": 48.690877184778145
+      },
+      "fd_count": {
+        "samples": 120,
+        "first": 228,
+        "last": 228,
+        "minimum": 227,
+        "maximum": 229,
+        "median": 228.0,
+        "slope_per_minute": -0.025870545171575943
+      },
+      "threads": {
+        "samples": 120,
+        "first": 235,
+        "last": 235,
+        "minimum": 235,
+        "maximum": 239,
+        "median": 235.0,
+        "slope_per_minute": 0.10717345474554628
+      },
+      "free_bytes": {
+        "samples": 120,
+        "first": 5278756864,
+        "last": 4779823104,
+        "minimum": 4778795008,
+        "maximum": 5286330368,
+        "median": 5030072320.0,
+        "slope_per_minute": -51139956.96403506
+      },
+      "drm_vram_kib": {
+        "samples": 120,
+        "first": 141540,
+        "last": 141560,
+        "minimum": 141540,
+        "maximum": 141560,
+        "median": 141548.0,
+        "slope_per_minute": 1.7332897615299137
+      },
+      "drm_gtt_kib": {
+        "samples": 120,
+        "first": 2347320,
+        "last": 2347320,
+        "minimum": 2345272,
+        "maximum": 2347320,
+        "median": 2347320.0,
+        "slope_per_minute": 12.65311861784253
+      },
+      "drm_cpu_kib": {
+        "samples": 120,
+        "first": 0,
+        "last": 0,
+        "minimum": 0,
+        "maximum": 0,
+        "median": 0.0,
+        "slope_per_minute": 0.0
+      },
+      "read_bytes": {
+        "samples": 120,
+        "first": 1257472,
+        "last": 1257472,
+        "minimum": 1257472,
+        "maximum": 1257472,
+        "median": 1257472.0,
+        "slope_per_minute": 0.0
+      },
+      "write_bytes": {
+        "samples": 120,
+        "first": 30826479616,
+        "last": 44969517056,
+        "minimum": 30826479616,
+        "maximum": 44969517056,
+        "median": 37912248320.0,
+        "slope_per_minute": 1392632071.2207668
+      },
+      "cancelled_write_bytes": {
+        "samples": 120,
+        "first": 2087362560,
+        "last": 2766094336,
+        "minimum": 2087362560,
+        "maximum": 2766094336,
+        "median": 2423537664.0,
+        "slope_per_minute": 65105033.73734569
+      },
+      "cpu_cores": {
+        "samples": 120,
+        "first": 1.9416679808089672,
+        "last": 1.9422876079084166,
+        "minimum": 1.6374143068292712,
+        "maximum": 2.2980065180769818,
+        "median": 2.090243878645982,
+        "slope_per_minute": 0.007589193214929084
+      }
+    },
+    "minutes_30_40": {
+      "rss_kib": {
+        "samples": 119,
+        "first": 1787816,
+        "last": 1800288,
+        "minimum": 1787708,
+        "maximum": 1800288,
+        "median": 1790764,
+        "slope_per_minute": 963.982777137203
+      },
+      "rss_anon_kib": {
+        "samples": 119,
+        "first": 895424,
+        "last": 907896,
+        "minimum": 895316,
+        "maximum": 907896,
+        "median": 898372,
+        "slope_per_minute": 963.982777137203
+      },
+      "rss_file_kib": {
+        "samples": 119,
+        "first": 497260,
+        "last": 497260,
+        "minimum": 497260,
+        "maximum": 497260,
+        "median": 497260,
+        "slope_per_minute": 0.0
+      },
+      "rss_shmem_kib": {
+        "samples": 119,
+        "first": 395132,
+        "last": 395132,
+        "minimum": 395132,
+        "maximum": 395132,
+        "median": 395132,
+        "slope_per_minute": 0.0
+      },
+      "virtual_kib": {
+        "samples": 119,
+        "first": 14028416,
+        "last": 14030464,
+        "minimum": 14028416,
+        "maximum": 14030516,
+        "median": 14030464,
+        "slope_per_minute": -35.63068375103638
+      },
+      "fd_count": {
+        "samples": 119,
+        "first": 227,
+        "last": 228,
+        "minimum": 226,
+        "maximum": 229,
+        "median": 228,
+        "slope_per_minute": 0.00467610152017542
+      },
+      "threads": {
+        "samples": 119,
+        "first": 235,
+        "last": 235,
+        "minimum": 235,
+        "maximum": 238,
+        "median": 235,
+        "slope_per_minute": -0.10705341460661617
+      },
+      "free_bytes": {
+        "samples": 119,
+        "first": 4774391808,
+        "last": 4261748736,
+        "minimum": 4261748736,
+        "maximum": 4774391808,
+        "median": 4512854016,
+        "slope_per_minute": -51217917.73098428
+      },
+      "drm_vram_kib": {
+        "samples": 119,
+        "first": 141560,
+        "last": 141580,
+        "minimum": 141560,
+        "maximum": 141580,
+        "median": 141564,
+        "slope_per_minute": 1.336424159116089
+      },
+      "drm_gtt_kib": {
+        "samples": 119,
+        "first": 2345272,
+        "last": 2347320,
+        "minimum": 2345272,
+        "maximum": 2347320,
+        "median": 2347320,
+        "slope_per_minute": -36.04197337948387
+      },
+      "drm_cpu_kib": {
+        "samples": 119,
+        "first": 0,
+        "last": 0,
+        "minimum": 0,
+        "maximum": 0,
+        "median": 0,
+        "slope_per_minute": 0.0
+      },
+      "read_bytes": {
+        "samples": 119,
+        "first": 1257472,
+        "last": 1257472,
+        "minimum": 1257472,
+        "maximum": 1257472,
+        "median": 1257472,
+        "slope_per_minute": 0.0
+      },
+      "write_bytes": {
+        "samples": 119,
+        "first": 45095141376,
+        "last": 59141816320,
+        "minimum": 45095141376,
+        "maximum": 59141816320,
+        "median": 52135763968,
+        "slope_per_minute": 1393358805.985991
+      },
+      "cancelled_write_bytes": {
+        "samples": 119,
+        "first": 2771795968,
+        "last": 3458572288,
+        "minimum": 2771795968,
+        "maximum": 3458572288,
+        "median": 3113283584,
+        "slope_per_minute": 66472938.55789759
+      },
+      "cpu_cores": {
+        "samples": 119,
+        "first": 1.9428000126820781,
+        "last": 2.025736911042223,
+        "minimum": 1.5868228236051543,
+        "maximum": 2.2606696138720834,
+        "median": 2.037434212535881,
+        "slope_per_minute": 0.01738403033191466
+      }
+    },
+    "minutes_40_50": {
+      "rss_kib": {
+        "samples": 119,
+        "first": 1800168,
+        "last": 1822048,
+        "minimum": 1800168,
+        "maximum": 1822048,
+        "median": 1808072,
+        "slope_per_minute": 2171.638692551569
+      },
+      "rss_anon_kib": {
+        "samples": 119,
+        "first": 907776,
+        "last": 929656,
+        "minimum": 907776,
+        "maximum": 929656,
+        "median": 915680,
+        "slope_per_minute": 2171.638692551569
+      },
+      "rss_file_kib": {
+        "samples": 119,
+        "first": 497260,
+        "last": 497260,
+        "minimum": 497260,
+        "maximum": 497260,
+        "median": 497260,
+        "slope_per_minute": 0.0
+      },
+      "rss_shmem_kib": {
+        "samples": 119,
+        "first": 395132,
+        "last": 395132,
+        "minimum": 395132,
+        "maximum": 395132,
+        "median": 395132,
+        "slope_per_minute": 0.0
+      },
+      "virtual_kib": {
+        "samples": 119,
+        "first": 14030464,
+        "last": 14032076,
+        "minimum": 14028416,
+        "maximum": 14032076,
+        "median": 14030464,
+        "slope_per_minute": 0.6817151545883858
+      },
+      "fd_count": {
+        "samples": 119,
+        "first": 228,
+        "last": 228,
+        "minimum": 227,
+        "maximum": 229,
+        "median": 228,
+        "slope_per_minute": -0.00858801555432316
+      },
+      "threads": {
+        "samples": 119,
+        "first": 235,
+        "last": 235,
+        "minimum": 235,
+        "maximum": 238,
+        "median": 235,
+        "slope_per_minute": 0.1098301750525724
+      },
+      "free_bytes": {
+        "samples": 119,
+        "first": 4258439168,
+        "last": 3764330496,
+        "minimum": 3755450368,
+        "maximum": 4265480192,
+        "median": 4004118528,
+        "slope_per_minute": -51197921.9878377
+      },
+      "drm_vram_kib": {
+        "samples": 119,
+        "first": 141580,
+        "last": 141620,
+        "minimum": 141580,
+        "maximum": 141620,
+        "median": 141592,
+        "slope_per_minute": 3.929682771564983
+      },
+      "drm_gtt_kib": {
+        "samples": 119,
+        "first": 2347320,
+        "last": 2347320,
+        "minimum": 2345272,
+        "maximum": 2347320,
+        "median": 2347320,
+        "slope_per_minute": -27.67393236155995
+      },
+      "drm_cpu_kib": {
+        "samples": 119,
+        "first": 0,
+        "last": 0,
+        "minimum": 0,
+        "maximum": 0,
+        "median": 0,
+        "slope_per_minute": 0.0
+      },
+      "read_bytes": {
+        "samples": 119,
+        "first": 1257472,
+        "last": 1257472,
+        "minimum": 1257472,
+        "maximum": 1257472,
+        "median": 1257472,
+        "slope_per_minute": 0.0
+      },
+      "write_bytes": {
+        "samples": 119,
+        "first": 59267076096,
+        "last": 73434349568,
+        "minimum": 59267076096,
+        "maximum": 73434349568,
+        "median": 66351521792,
+        "slope_per_minute": 1404070928.2874537
+      },
+      "cancelled_write_bytes": {
+        "samples": 119,
+        "first": 3465998336,
+        "last": 4157014016,
+        "minimum": 3465998336,
+        "maximum": 4157014016,
+        "median": 3811262464,
+        "slope_per_minute": 66684070.64991535
+      },
+      "cpu_cores": {
+        "samples": 119,
+        "first": 2.062514640191085,
+        "last": 2.068792856610133,
+        "minimum": 1.5863599870529734,
+        "maximum": 2.305599076243172,
+        "median": 2.0840738581694227,
+        "slope_per_minute": 0.012778765741911368
+      }
+    },
+    "minutes_50_60": {
+      "rss_kib": {
+        "samples": 120,
+        "first": 1821940,
+        "last": 1836016,
+        "minimum": 1821940,
+        "maximum": 1836016,
+        "median": 1826452.0,
+        "slope_per_minute": 1319.0122901770565
+      },
+      "rss_anon_kib": {
+        "samples": 120,
+        "first": 929548,
+        "last": 943624,
+        "minimum": 929548,
+        "maximum": 943624,
+        "median": 934060.0,
+        "slope_per_minute": 1319.0122901770567
+      },
+      "rss_file_kib": {
+        "samples": 120,
+        "first": 497260,
+        "last": 497260,
+        "minimum": 497260,
+        "maximum": 497260,
+        "median": 497260.0,
+        "slope_per_minute": 0.0
+      },
+      "rss_shmem_kib": {
+        "samples": 120,
+        "first": 395132,
+        "last": 395132,
+        "minimum": 395132,
+        "maximum": 395132,
+        "median": 395132.0,
+        "slope_per_minute": 0.0
+      },
+      "virtual_kib": {
+        "samples": 120,
+        "first": 14032076,
+        "last": 14040820,
+        "minimum": 14030028,
+        "maximum": 14042868,
+        "median": 14035012.0,
+        "slope_per_minute": 960.4009881616391
+      },
+      "fd_count": {
+        "samples": 120,
+        "first": 228,
+        "last": 228,
+        "minimum": 227,
+        "maximum": 229,
+        "median": 228.0,
+        "slope_per_minute": 0.008912879865262032
+      },
+      "threads": {
+        "samples": 120,
+        "first": 235,
+        "last": 235,
+        "minimum": 235,
+        "maximum": 235,
+        "median": 235.0,
+        "slope_per_minute": 0.0
+      },
+      "free_bytes": {
+        "samples": 120,
+        "first": 3763867648,
+        "last": 3249139712,
+        "minimum": 3247796224,
+        "maximum": 3763867648,
+        "median": 3494936576.0,
+        "slope_per_minute": -51178752.750616156
+      },
+      "drm_vram_kib": {
+        "samples": 120,
+        "first": 141620,
+        "last": 141644,
+        "minimum": 141620,
+        "maximum": 141644,
+        "median": 141628.0,
+        "slope_per_minute": 1.7956778812009748
+      },
+      "drm_gtt_kib": {
+        "samples": 120,
+        "first": 2347320,
+        "last": 2345272,
+        "minimum": 2345272,
+        "maximum": 2347320,
+        "median": 2347320.0,
+        "slope_per_minute": -3.2977600913915426
+      },
+      "drm_cpu_kib": {
+        "samples": 120,
+        "first": 0,
+        "last": 0,
+        "minimum": 0,
+        "maximum": 0,
+        "median": 0.0,
+        "slope_per_minute": 0.0
+      },
+      "read_bytes": {
+        "samples": 120,
+        "first": 1257472,
+        "last": 1257472,
+        "minimum": 1257472,
+        "maximum": 1257472,
+        "median": 1257472.0,
+        "slope_per_minute": 0.0
+      },
+      "write_bytes": {
+        "samples": 120,
+        "first": 73556336640,
+        "last": 87891640320,
+        "minimum": 73556336640,
+        "maximum": 87891640320,
+        "median": 80703887360.0,
+        "slope_per_minute": 1407063318.636963
+      },
+      "cancelled_write_bytes": {
+        "samples": 120,
+        "first": 4163854336,
+        "last": 4879126528,
+        "minimum": 4163854336,
+        "maximum": 4879126528,
+        "median": 4516558848.0,
+        "slope_per_minute": 68259700.072263
+      },
+      "cpu_cores": {
+        "samples": 120,
+        "first": 1.9552072284794904,
+        "last": 1.9979750825032283,
+        "minimum": 1.5740547712027997,
+        "maximum": 2.2937060192382006,
+        "median": 2.0544692008017877,
+        "slope_per_minute": 0.011626319858744348
+      }
+    }
+  },
+  "helpers": {
+    "rtsp": {
+      "rss_kib": {
+        "samples": 366,
+        "first": 19540,
+        "last": 146272,
+        "minimum": 19540,
+        "maximum": 148612,
+        "median": 111772.0,
+        "slope_per_minute": 1552.8427966855284
+      },
+      "last_alive": false
+    },
+    "dashboard": {
+      "rss_kib": {
+        "samples": 366,
+        "first": 132976,
+        "last": 171216,
+        "minimum": 132976,
+        "maximum": 171216,
+        "median": 171092.0,
+        "slope_per_minute": 12.748489519708277
+      },
+      "last_alive": false
+    }
+  },
+  "helper_leak_report_exists": false,
+  "note": "Observed slopes and ranges, not proof of no leak. DRM allocations deduplicate shared client descriptors. KiB units follow kernel fdinfo. Review kernel logs and frame/AI/audit results separately."
+}

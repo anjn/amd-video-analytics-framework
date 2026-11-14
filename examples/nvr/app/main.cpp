@@ -1,4 +1,5 @@
 #include "window.hpp"
+#include "diagnostics_session.hpp"
 #include <QApplication>
 #include <QSurfaceFormat>
 #include <iostream>
@@ -18,6 +19,7 @@ int main(int argc, char **argv) {
     QApplication app(argc, argv);
     amdva::nvr::install_shutdown_signals(app);
     try {
+        amdva::diagnostics_enabled();
         auto options = amdva::nvr::load_config(config);
         // Clear the previous run before any camera starts recording. Catalog owns
         // the exclusive root lock and removes dependent search/analysis records.
@@ -32,6 +34,7 @@ int main(int argc, char **argv) {
         }
         amdva::nvr::Controller controller(options);
         amdva::nvr::Window window(controller, options, config);
+        amdva::nvr::DiagnosticsSession diagnostics(controller);
         if (fullscreen)
             window.showFullScreen();
         else

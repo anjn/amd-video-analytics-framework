@@ -12,9 +12,8 @@ if [[ $# != 1 ]]; then
     exit 2
 fi
 config="$(realpath -- "$1")"
-if [[ ${AMDVA_ROOT:-} != "$nvr_root" ]]; then
-    source "$nvr_root/scripts/env.sh"
-fi
+if [[ "$mode" == --soak || "$mode" == --validate ]]; then export AMDVA_COPY_AUDIT=1; fi
+source "$nvr_root/scripts/env.sh"
 # Read config as data; no interpolation into shell code. Relative venv paths follow config.
 mapfile -t search_environment < <(python3 - "$config" <<'PY'
 import json, os, sys
@@ -47,6 +46,7 @@ if [[ ${search_environment[0]} == mobileclip2-s2 ]]; then
         exit 2
     fi
 fi
+source "$nvr_root/scripts/audit-env.sh" --copy
 case "$mode" in
     --soak) exec "$nvr_root/build/examples/nvr/amdva-demo-soak" "$config" "$seconds" "$(dirname "$config")/logs/soak.jsonl" ;;
     --validate) exec "$nvr_root/build/examples/nvr/amdva-mobileclip-nvr-validate" "$config" ;;

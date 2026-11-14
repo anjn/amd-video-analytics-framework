@@ -1,0 +1,28 @@
+0 stale translation(s)
+62 pages and 12 assets staged in /home/amd/work/amd-video-analysis-framework/.site-src
+
+[33m │  [1mMaterial for MkDocs reaches end of life on May 5, 2027.[0m
+[33m │[0m  Critical fixes and security updates continue until that date.
+[33m │[0m
+[33m │[0m  Zensical is its maintained successor, built by the same team.
+[33m │[0m  Try it alongside MkDocs with your existing mkdocs.yml:
+[33m │[0m  [36m[4mhttps://zensical.org/docs/compatibility/mkdocs/migration/[0m
+
+[90m  To disable this warning, set NO_MKDOCS_2_WARNING=1.[0m
+
+INFO    -  mkdocs_static_i18n: Building 'en' documentation to directory: /home/amd/work/amd-video-analysis-framework/site
+INFO    -  Cleaning site directory
+INFO    -  Building documentation to directory: /home/amd/work/amd-video-analysis-framework/site
+INFO    -  The following pages exist in the docs directory, but are not included in the "nav" configuration:
+  - dev/npu-interop.md
+  - dev/support-matrix.md
+  - dev/nvr/input-decode-latency.md
+INFO    -  mkdocs_static_i18n: Building 'ja' documentation to directory: /home/amd/work/amd-video-analysis-framework/site/ja
+INFO    -  mkdocs_static_i18n: Overriding 'ja' config 'site_description' with 'AMD APU 向けの GStreamer 映像解析フレームワーク（VA、VPE、HIP、MIGraphX）'
+INFO    -  mkdocs_static_i18n: Overriding 'ja' config 'site_name' with 'AMD Video Analytics Framework'
+INFO    -  The following pages exist in the docs directory, but are not included in the "nav" configuration:
+  - dev/npu-interop.ja.md
+  - dev/support-matrix.ja.md
+  - dev/nvr/input-decode-latency.ja.md
+INFO    -  mkdocs_static_i18n: Translated 32 navigation elements to 'ja'
+INFO    -  Documentation built in 0.90 seconds

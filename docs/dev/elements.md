@@ -140,7 +140,7 @@ ROIs, partial/multiple batches and no input uploads:
 
 ```bash
 source scripts/env.sh
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/examples/nvr/amdva-reid-validate /path/to/osnet.mxr /path/to/hevc.mp4
 ```
 

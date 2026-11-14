@@ -1,0 +1,2 @@
+Nov 13 22:17:30 amd-rai370 kernel: TCP: request_sock_TCP: Possible SYN flooding on port 127.0.0.1:18570. Sending cookies.
+Nov 13 23:18:18 amd-rai370 kernel: workqueue: delayed_fput hogged CPU for >10000us 19 times, consider switching to WQ_UNBOUND

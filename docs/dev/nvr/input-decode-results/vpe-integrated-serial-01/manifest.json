@@ -1,0 +1,17 @@
+{
+  "threads": "1",
+  "probe_sha256": "58424fe9127ae65d079d98c5f06b6cd2cd49fe9f1cb59b00418feff2a1499d01",
+  "command": [
+    "/home/amd/work/rai/logs/input-decode-20261113/vpe-audit-work/vpe-context-probe",
+    "/home/amd/work/videos-2/M01_1440p30_10min_hevc.mp4",
+    "20000"
+  ],
+  "start_monotonic_ns": 19105226401497,
+  "libraries_sha256": {
+    "/home/amd/work/amd-video-analysis-framework/build/libamdva_vpe_audit.so": "bed70ac121f01cf18572e188d8e19d01d19f905a5f41a6ba9c0570073240798b",
+    "/home/amd/work/amd-video-analysis-framework/build/libamdva_runtime.so": "380668f1d5e9e82cf56f877ec7d19c0e5f63a0586c2df2ae92f0317ee2c7f8c5",
+    "/home/amd/work/amd-video-analysis-framework/build/src/gst/libamdva_copy_audit.so": "10bbed9ebba3f7239dcc210161f1515a627abb0d5c0eee0cf03456c0658b3f59"
+  },
+  "returncode": 0,
+  "end_monotonic_ns": 19110047827137
+}

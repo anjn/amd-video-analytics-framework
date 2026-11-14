@@ -36,10 +36,11 @@ public:
             std::string line;
             bool supported_os = false, ubuntu = false;
             while (std::getline(os, line)) {
-                if (line == "VERSION_ID=\"26.04\"" || line == "VERSION_ID=26.04") supported_os = true;
+                if (line == "VERSION_ID=\"26.04\"" || line == "VERSION_ID=26.04" ||
+                    line == "VERSION_ID=\"24.04\"" || line == "VERSION_ID=24.04") supported_os = true;
                 if (line == "ID=ubuntu" || line == "ID=\"ubuntu\"") ubuntu = true;
             }
-            if (!supported_os || !ubuntu) throw std::runtime_error("Wave counting is validated only on Ubuntu 26.04");
+            if (!supported_os || !ubuntu) throw std::runtime_error("Wave counting requires Ubuntu 24.04 or 26.04");
             namespace fs = std::filesystem;
             const auto runtime = fs::path("/run/user") / std::to_string(getuid());
             struct stat st{};

@@ -55,8 +55,20 @@ int initialize(rocprofiler_client_finalize_t, void *) {
                 }
                 return ROCPROFILER_STATUS_SUCCESS;
             }, sizeof(rocprofiler_agent_t), &chosen));
-        if (!chosen.id.handle || chosen.gfx_target_version != 110501)
-            throw std::runtime_error("Wave counting is validated only on gfx1151");
+        std::ifstream release("/etc/os-release");
+        std::string line, ubuntu;
+        bool is_ubuntu = false;
+        while (std::getline(release, line)) {
+            if (line == "ID=ubuntu" || line == R"(ID="ubuntu")") is_ubuntu = true;
+            if (line.rfind("VERSION_ID=", 0) == 0) {
+                ubuntu = line.substr(11);
+                if (ubuntu.size() >= 2 && ubuntu.front() == '"' && ubuntu.back() == '"')
+                    ubuntu = ubuntu.substr(1, ubuntu.size() - 2);
+            }
+        }
+        if (!chosen.id.handle || !is_ubuntu ||
+            !amdva::detail::wave_supported_host(ubuntu, chosen.gfx_target_version))
+            throw std::runtime_error("Wave counting supports Ubuntu 26.04/gfx1151 and Ubuntu 24.04/gfx1150");
         std::vector<rocprofiler_counter_id_t> counters;
         check(rocprofiler_iterate_agent_supported_counters(chosen.id,
             [](rocprofiler_agent_id_t, rocprofiler_counter_id_t *ids, size_t count, void *data) {

@@ -127,6 +127,41 @@ int main() {
         std::filesystem::remove_all(root);
         return 1;
     }
+    try {
+        auto rollback_root = root / "quota-rollback";
+        Catalog c(rollback_root);
+        for (auto name : {"a.mkv", "b.mkv"}) {
+            c.opened(name,"rollback");
+            std::ofstream(rollback_root / name) << std::string(100,'x');
+            c.closed(name);
+        }
+        c.with_database([](sqlite3 *db) {
+            require(sqlite3_exec(db,
+                "UPDATE recordings SET created=CASE name WHEN 'a.mkv' THEN 1 ELSE 2 END;"
+                "CREATE TEMP TRIGGER fail_second BEFORE DELETE ON recordings "
+                "WHEN old.name='b.mkv' BEGIN SELECT RAISE(ABORT,'injected delete failure'); END;",
+                nullptr,nullptr,nullptr)==SQLITE_OK,"Install failure trigger");
+        });
+        bool failed=false;
+        try { c.enforce(0,0); } catch (...) { failed=true; }
+        require(failed,"Quota deletion failure was hidden");
+        c.with_database([](sqlite3 *db) {
+            require(sqlite3_get_autocommit(db),"Quota failure leaked a transaction");
+            sqlite3_stmt *stmt{};
+            require(sqlite3_prepare_v2(db,"SELECT count(*) FROM recordings",-1,&stmt,nullptr)==SQLITE_OK,"Check rollback");
+            const bool restored=sqlite3_step(stmt)==SQLITE_ROW && sqlite3_column_int(stmt,0)==2;
+            sqlite3_finalize(stmt);
+            require(restored,"Quota deletion metadata was partially committed");
+            require(sqlite3_exec(db,"DROP TRIGGER fail_second",nullptr,nullptr,nullptr)==SQLITE_OK,"Remove failure trigger");
+        });
+        // Filesystem unlinks cannot be rolled back: re-create the test inputs.
+        for (auto name : {"a.mkv", "b.mkv"})
+            std::ofstream(rollback_root/name)<<std::string(100,'x');
+        require(c.enforce(0,0),"Quota retry after rollback failed");
+        c.with_database([](sqlite3 *db) { require(sqlite3_get_autocommit(db),"Quota success leaked transaction"); });
+    } catch (const std::exception &e) {
+        std::cerr<<e.what()<<"\n";std::filesystem::remove_all(root);return 1;
+    }
     std::filesystem::remove_all(root);
     std::cout << "Quota, active protection, ownership, symlinks and root lock passed\n";
 }

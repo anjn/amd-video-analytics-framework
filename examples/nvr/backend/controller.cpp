@@ -1,5 +1,12 @@
 #include "backend/controller.hpp"
+#include "backend/preview_publication.hpp"
+#include "backend/encoded_dispatch.hpp"
+#include "backend/recording_clock.hpp"
 #include "amdva/batching.hpp"
+#include "amdva/diagnostics.hpp"
+#include "amdva/copy_audit.hpp"
+#include "amdva/vpe_audit.hpp"
+#include <fstream>
 #include "amdva/preprocess.hpp"
 #include "amdva/streaming/ingest.hpp"
 #include "amdva/streaming/keyframe.hpp"
@@ -23,6 +30,21 @@
 namespace amdva::nvr {
 using namespace amdva::streaming;
 namespace {
+// Control-path spans above 1 ms identify where ingest draining is delayed.
+struct DiagnosticControlSpan {
+    const std::string source;
+    const char *event;
+    int64_t start;
+    DiagnosticControlSpan(std::string source, const char *event)
+        : source(std::move(source)), event(event),
+          start(diagnostics_enabled() ? Telemetry::monotonic_ns() : 0) {}
+    ~DiagnosticControlSpan() {
+        if (!start) return;
+        const auto end=Telemetry::monotonic_ns();
+        if (end-start>=1000000)
+            diagnostic_event(source,0,0,event,end,end-start);
+    }
+};
 constexpr uint64_t compressed_limit = 16ull << 20;
 GstElement *parse(const std::string &description) {
     GError *error{};
@@ -84,12 +106,58 @@ struct Controller::Channel {
     std::unique_ptr<PipelineTelemetry> receive_timing, decode_timing;
     std::unique_ptr<RtspIngest> ingest;
     GstElement *decoder{}, *decode_input{};
+    RecordingClock recording_clock;
+    std::atomic<bool> dispatch_closing{false};
+    EncodedDispatch<Sample> input_dispatch{
+        compressed_limit,
+        [](const Sample &s) { return gst_buffer_get_size(gst_sample_get_buffer(s.get())); },
+        [](const Sample &s) { return !GST_BUFFER_FLAG_IS_SET(gst_sample_get_buffer(s.get()), GST_BUFFER_FLAG_DELTA_UNIT); },
+        [](const Sample &s) { return ingest_sequence(s); },
+        [this](const Sample &s) {
+            const auto trace=frame_trace(gst_sample_get_buffer(s.get()));
+            if(trace.telemetry) trace.telemetry->diagnostic(trace.frame,"decode_preroll");
+        }};
+    void retire_dispatch() {
+        for (const auto &sample:input_dispatch.close()) {
+            const auto trace=frame_trace(gst_sample_get_buffer(sample.get()));
+            if(trace.telemetry) trace.telemetry->diagnostic(trace.frame,"decode_dispatch_retired");
+        }
+    }
+    void update_dispatch_mode() {
+        if (state.slot>=0 || state.source.transcode.enabled ||
+            (controller.options_.background_ai_enabled && continuous_search())) input_dispatch.enable();
+        else retire_dispatch();
+    }
+    void publish_recording_clock(GstSample *sample) {
+        if (!recording) return;
+        const auto pts=GST_BUFFER_PTS(gst_sample_get_buffer(sample));
+        const auto wall=recording->wall_time_ms(pts);
+        if(wall) recording_clock.publish(pts,*wall,recording->session());
+    }
+    void activate_dispatch(bool transcoded, const Sample &seed) {
+        input_dispatch.activate([this,transcoded](const Sample &sample) {
+            if (transcoded) {
+                auto *buffer=gst_sample_get_buffer(sample.get());
+                const auto pts=GST_BUFFER_PTS(buffer);
+                stamp(pts,pts);
+                {
+                    std::lock_guard<std::mutex> lock(transcode_wall_mutex);
+                    transcode_wall[pts]=g_get_real_time()/1000;
+                    while(transcode_wall.size()>512) transcode_wall.erase(transcode_wall.begin());
+                }
+                if(!transcoder->push(sample.get())) throw std::runtime_error("Transcoder input backlog or invalid PTS");
+            } else if(!push(decode_input,sample,decode_origin)) {
+                throw std::runtime_error("Decoder input backlog or invalid PTS");
+            }
+        },seed);
+    }
     std::vector<std::unique_ptr<SegmentRecorder>> recordings;
     SegmentRecorder *recording{};
     // With Source::transcode, received samples go through the transcoder and the
     // recorder opens on its first output. transcode_wall keeps the receive time of each
     // pushed PTS so the recording clock does not include the encode delay.
     std::unique_ptr<Transcoder> transcoder;
+    std::mutex transcode_wall_mutex;
     std::map<GstClockTime, int64_t> transcode_wall;
     uint64_t output_bytes{}, output_bytes_base{}, output_frames{}, output_frames_base{};
     // 0 until the stream is seen, 1 H.264, 2 H.265, -1 unsupported.
@@ -152,11 +220,10 @@ struct Controller::Channel {
     std::mutex search_stamp_mutex;
     std::map<GstClockTime, SearchStamp> search_stamps;
     void stamp(GstClockTime decoded_pts, GstClockTime original_pts) {
-        const auto wall = recording ? recording->wall_time_ms(original_pts) : std::nullopt;
-        if (!wall)
-            return;
+        const auto mapped = recording_clock.at(original_pts);
+        if (!mapped) return;
         std::lock_guard<std::mutex> lock(search_stamp_mutex);
-        search_stamps[decoded_pts] = {*wall, recording->session()};
+        search_stamps[decoded_pts] = {mapped->wall_ms, mapped->session};
         while (search_stamps.size() > 256)
             search_stamps.erase(search_stamps.begin());
     }
@@ -206,12 +273,19 @@ struct Controller::Channel {
                      crop->height != unsigned(info.height)))
             return GST_FLOW_NOT_NEGOTIATED;
         auto &slot = c.controller.ai_slot(index);
+        const auto lock_start = Telemetry::monotonic_ns();
         std::lock_guard<std::mutex> l(slot.mutex);
+        const auto acquired = Telemetry::monotonic_ns();
+        const auto diagnostic_trace = frame_trace(gst_sample_get_buffer(s.get()));
+        c.timing->diagnostic(diagnostic_trace.frame, "decoded_lock", acquired-lock_start, 0,
+                             GST_BUFFER_PTS(gst_sample_get_buffer(s.get())), acquired);
         if (slot.latest.sample && (slot.latest.width != unsigned(info.width) ||
                                    slot.latest.height != unsigned(info.height)))
             slot.detections.clear();
-        if (slot.latest.sample && !slot.latest.preview_consumed)
+        if (slot.latest.sample && !slot.latest.preview_consumed) {
+            c.timing->diagnostic(slot.latest.timing.frame,"latest_replaced");
             c.timing->counter(TimingCounter::LatestReplaced);
+        }
         auto trace = frame_trace(gst_sample_get_buffer(s.get()));
         slot.latest = {std::move(trace),
                        std::move(s),
@@ -230,6 +304,7 @@ struct Controller::Channel {
                 c.search_stamps.erase(it);
             }
         }
+        c.timing->diagnostic(diagnostic_trace.frame, "handoff", Telemetry::monotonic_ns()-acquired);
         return GST_FLOW_OK;
     }
     void start_receive() {
@@ -260,6 +335,22 @@ struct Controller::Channel {
             hooks.on_discarded = [this](uint64_t count) {
                 timing->counter(TimingCounter::EncodedDiscarded, count);
             };
+            update_dispatch_mode();
+            hooks.on_sample = [this](const Sample &sample) {
+                const auto started=diagnostics_enabled()?Telemetry::monotonic_ns():0;
+                const bool accepted=input_dispatch.receive(sample);
+                if(!accepted && dispatch_closing.load()) {
+                    const auto trace=frame_trace(gst_sample_get_buffer(sample.get()));
+                    if(trace.telemetry) trace.telemetry->diagnostic(trace.frame,"decode_dispatch_retired");
+                }
+                if(started) {
+                    const auto trace=frame_trace(gst_sample_get_buffer(sample.get()));
+                    const auto queue=input_dispatch.snapshot();
+                    timing->diagnostic(trace.frame,"decode_dispatch_wait",Telemetry::monotonic_ns()-started);
+                    timing->diagnostic(trace.frame,"decode_dispatch_queue",queue.bytes,queue.frames);
+                    timing->diagnostic(trace.frame,"decode_dispatch_oldest",queue.oldest_ns);
+                }
+            };
             ingest = std::make_unique<RtspIngest>(std::move(options), std::move(hooks));
             ingest->start();
         } catch (const std::exception &e) {
@@ -267,9 +358,13 @@ struct Controller::Channel {
         }
     }
     void stop_receive() {
+        // Wake any bounded startup producer before joining the receiver.
+        dispatch_closing=true;
+        retire_dispatch();
         if (ingest)
             controller.request_reclaim();
         ingest.reset();
+        dispatch_closing=false;
         receive_timing.reset();
         reset_input_metrics();
         timing->availability(TimingStage::Input, true, false);
@@ -283,6 +378,11 @@ struct Controller::Channel {
         std::lock_guard<std::mutex> l(s.mutex);
         s.channel.clear();
         s.generation = ++controller.next_generation_;
+        // This existing release used to erase the last hidden-camera identity
+        // before the final shutdown snapshot could see it.
+        if(s.latest.sample && !s.latest.preview_consumed && s.latest.timing.telemetry)
+            s.latest.timing.telemetry->diagnostic(s.latest.timing.frame,
+                controller.stopping_.load()?"shutdown_latest_retired":"background_latest_released");
         s.latest = {};
         s.detections.clear();
         s.job_done = false;
@@ -316,12 +416,8 @@ struct Controller::Channel {
         }
         try {
             if (!transcoder && !decoder && key)
-                start_decoder(gst_sample_get_caps(sample.get()));
-            if (!transcoder && decoder && !push(decode_input, sample, decode_origin)) {
-                cancel_background();
-                state.background_state = "continuous decode backlog";
-            } else
-                state.background_state = "continuous person tracking";
+                start_decoder(gst_sample_get_caps(sample.get()), true, &sample);
+            state.background_state = "continuous person tracking";
         } catch (const std::exception &e) {
             cancel_background();
             state.background_state = e.what();
@@ -419,8 +515,22 @@ struct Controller::Channel {
         // The transcoder owns the decode while it runs; see end_record().
         if (transcoder)
             return;
+        input_dispatch.pause();
         if (decoder)
             controller.request_reclaim();
+        if (controller.stopping_.load() && decoder && decode_input) {
+            const auto before=Telemetry::monotonic_ns();
+            gst_app_src_end_of_stream(GST_APP_SRC(decode_input));
+            auto *bus=gst_element_get_bus(decoder);
+            auto *message=gst_bus_timed_pop_filtered(bus,2*GST_SECOND,
+                GstMessageType(GST_MESSAGE_EOS|GST_MESSAGE_ERROR));
+            const int result=message && GST_MESSAGE_TYPE(message)==GST_MESSAGE_EOS ? 0 : message ? 2 : 1;
+            if(result) state.error="Decoder shutdown drain failed";
+            if(message) gst_message_unref(message);
+            gst_object_unref(bus);
+            diagnostic_event(state.source.id,state.generation,0,"decoder_drain",Telemetry::monotonic_ns(),
+                Telemetry::monotonic_ns()-before,result);
+        }
         if (decode_input) {
             gst_object_unref(decode_input);
             decode_input = nullptr;
@@ -439,6 +549,8 @@ struct Controller::Channel {
         }
     }
     void end_record() {
+        recording_clock.clear();
+        if(transcoder) input_dispatch.pause();
         if (recording) {
             recording->end();
             recording = nullptr;
@@ -450,7 +562,7 @@ struct Controller::Channel {
             transcoder.reset();
             stop_decode();
         }
-        transcode_wall.clear();
+        { std::lock_guard<std::mutex> lock(transcode_wall_mutex); transcode_wall.clear(); }
     }
     void failed(const std::string &error) {
         if (state.received && recording)
@@ -486,7 +598,7 @@ struct Controller::Channel {
         gst_query_add_allocation_meta(query, GST_VIDEO_CROP_META_API_TYPE, nullptr);
         return GST_PAD_PROBE_HANDLED;
     }
-    void start_decoder(GstCaps *caps) {
+    void start_decoder(GstCaps *caps, bool live = false, const Sample *seed = nullptr) {
         const char *decode =
             codec_id() == 1
                 ? "appsrc name=input is-live=true format=time block=false ! h264parse ! "
@@ -519,8 +631,12 @@ struct Controller::Channel {
         if (gst_element_set_state(decoder, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
             throw std::runtime_error("Cannot start VA decoder");
         decode_wait = false;
+        if(live) {
+            if(!seed) throw std::logic_error("Live decoder needs a bootstrap AU");
+            activate_dispatch(false,*seed);
+        }
     }
-    void start_record(GstCaps *caps) {
+    void start_record(GstCaps *caps, const Sample &seed) {
         const auto &t = state.source.transcode;
         if (!t.enabled) {
             open_recorder(caps, codec_id() == 1 ? RecordCodec::H264 : RecordCodec::H265);
@@ -549,6 +665,7 @@ struct Controller::Channel {
         cb.new_sample = decoded;
         gst_app_sink_set_callbacks(GST_APP_SINK(transcoder->frames()), &cb, this, nullptr);
         state.recording = "encoding";
+        activate_dispatch(true,seed);
     }
     // Moves re-encoded access units into the recorder.
     void drain_transcoder() {
@@ -562,11 +679,14 @@ struct Controller::Channel {
             const auto pts = GST_BUFFER_PTS(buffer);
             std::optional<int64_t> wall;
             // Output is in presentation order; earlier entries were dropped frames.
+            {
+            std::lock_guard<std::mutex> lock(transcode_wall_mutex);
             for (auto it = transcode_wall.begin();
                  it != transcode_wall.end() && it->first <= pts;) {
                 if (it->first == pts)
                     wall = it->second;
                 it = transcode_wall.erase(it);
+            }
             }
             output_format(gst_sample_get_caps(raw));
             output_bytes += gst_buffer_get_size(buffer);
@@ -582,6 +702,7 @@ struct Controller::Channel {
                 state.recording = "waiting for keyframe";
                 return;
             }
+            publish_recording_clock(raw);
         }
     }
     void output_format(GstCaps *caps) {
@@ -610,9 +731,15 @@ struct Controller::Channel {
         if (state.error.rfind("Recording:", 0) == 0 || state.error.rfind("Storage:", 0) == 0)
             state.error.clear();
     }
-    bool push(GstElement *input, Sample &sample, GstClockTime &origin) {
-        guint64 level{};
+    bool push(GstElement *input, const Sample &sample, GstClockTime &origin) {
+        guint64 level{}, frames{}, duration{};
         g_object_get(input, "current-level-bytes", &level, nullptr);
+        if (diagnostics_enabled()) {
+            g_object_get(input, "current-level-buffers", &frames, "current-level-time", &duration, nullptr);
+            const auto trace = frame_trace(gst_sample_get_buffer(sample.get()));
+            timing->diagnostic(trace.frame, "appsrc_queue", level, frames, GST_BUFFER_PTS(gst_sample_get_buffer(sample.get())));
+            timing->diagnostic(trace.frame, "appsrc_time", duration);
+        }
         if (level > compressed_limit)
             return false;
         auto *original = gst_sample_get_buffer(sample.get());
@@ -641,6 +768,7 @@ struct Controller::Channel {
         return gst_app_src_push_buffer(GST_APP_SRC(input), b) == GST_FLOW_OK;
     }
     void tick(bool space) {
+        DiagnosticControlSpan tick_span(state.source.id,"control_tick");
         if (receive_timing)
             receive_timing->background(state.slot < 0);
         // The shared transcoder decode outlives display changes.
@@ -740,25 +868,16 @@ struct Controller::Channel {
             try {
                 if (space && Clock::now() >= record_retry) {
                     if (!recording && !transcoder && key)
-                        start_record(gst_sample_get_caps(sample.get()));
+                        start_record(gst_sample_get_caps(sample.get()),sample);
                     if (transcoder) {
-                        auto *buffer = gst_sample_get_buffer(sample.get());
-                        if (transcoder->push(sample.get())) {
-                            // PTS pass through the shared decode unchanged.
-                            stamp(GST_BUFFER_PTS(buffer), GST_BUFFER_PTS(buffer));
-                            transcode_wall[GST_BUFFER_PTS(buffer)] = g_get_real_time() / 1000;
-                            if (transcode_wall.size() > 512)
-                                transcode_wall.erase(transcode_wall.begin());
-                        } else {
-                            // The video engine cannot keep up (or the PTS was invalid).
+                        // The receive producer already submitted this AU once.
+                        // Recording output is drained below, independently of input dispatch.
+                    } else if (recording) {
+                        if(!recording->push(sample.get())) {
                             end_record();
                             state.gaps++;
-                            state.recording = "encoder overloaded; waiting for keyframe";
-                        }
-                    } else if (recording && !recording->push(sample.get())) {
-                        end_record();
-                        state.gaps++;
-                        state.recording = "waiting for keyframe";
+                            state.recording = "waiting for keyframe";
+                        } else publish_recording_clock(sample.get());
                     }
                 }
             } catch (const std::exception &e) {
@@ -781,11 +900,8 @@ struct Controller::Channel {
             if (state.slot >= 0 && !transcoder) {
                 try {
                     if (!decoder && key)
-                        start_decoder(gst_sample_get_caps(sample.get()));
-                    if (decoder && !push(decode_input, sample, decode_origin)) {
-                        stop_decode();
-                        state.error = "Decoder backlog; waiting for keyframe";
-                    }
+                        start_decoder(gst_sample_get_caps(sample.get()), true, &sample);
+                    // Running AUs arrive directly from RtspIngest::on_sample.
                 } catch (const std::exception &e) {
                     stop_decode();
                     state.error = e.what();
@@ -803,6 +919,7 @@ struct Controller::Channel {
         }
         if (state.slot >= 0) {
             auto &slot = controller.slots_[state.slot];
+            DiagnosticControlSpan span(state.source.id,"control_status_slot");
             std::lock_guard<std::mutex> l(slot.mutex);
             state.decoded = slot.processed - decode_count_base;
             state.ai = slot.inferred - ai_count_base;
@@ -866,10 +983,8 @@ Controller::Controller(Options options) : options_(std::move(options)) {
         VaSession gate(static_cast<VADisplay>(gst_va_display_get_va_dpy(display_)));
         const auto test = gate.create_nv12(640, 360, true), output = gate.create_bgra(640, 360);
         try {
-            const auto before = engine_time_ns("vpe");
             gate.scale(test, output, 640, 360, 640, 360);
-            if (engine_time_ns("vpe") <= before)
-                throw std::runtime_error("Dedicated VPE scaling could not be observed");
+            // scale() verifies the accepted VPE submission and exact target fence.
         } catch (...) {
             gate.destroy_surface(test);
             gate.destroy_surface(output);
@@ -940,8 +1055,10 @@ Controller::~Controller() {
         gst_object_unref(display_);
 }
 void Controller::shutdown() {
+    const auto requested=Telemetry::monotonic_ns();
     if (stopping_.exchange(true))
         return;
+    diagnostic_event("controller",0,0,"shutdown_requested",requested);
     if (control_.joinable())
         control_.join();
     if (gpu_.joinable())
@@ -951,6 +1068,47 @@ void Controller::shutdown() {
     if (search_)
         search_->shutdown();
     channels_.clear();
+    // Log the existing shutdown dispositions after producers have joined.
+    // No frame is newly discarded here; the destructor already releases these.
+    auto record_shutdown=[](const auto &slot) {
+        if(slot.latest.sample && !slot.latest.preview_consumed && slot.latest.timing.telemetry)
+            slot.latest.timing.telemetry->diagnostic(slot.latest.timing.frame,"shutdown_latest_retired");
+        for(const auto &plane:slot.preview)
+            if(plane.state==1 && plane.timing.telemetry)
+                plane.timing.telemetry->diagnostic(plane.timing.frame,"shutdown_preview_retired");
+    };
+    for(const auto &slot:slots_) record_shutdown(slot);
+    for(const auto &slot:background_slots_) record_shutdown(slot);
+    if(const auto started=copy_audit_started_ns_.load();started && amdva_audit_errors) {
+        const auto ended=Telemetry::monotonic_ns();
+        const auto violations=amdva_audit_errors(),copies=amdva_audit_copies(),bytes=amdva_audit_bytes();
+        diagnostic_event("copy-audit",0,0,"copy_audit_result",ended,violations,copies);
+        std::cerr << "NVR copy audit complete violations=" << violations << " copies=" << copies
+                  << " bytes=" << bytes << '\n';
+        if(const auto *directory=std::getenv("AMDVA_DIAGNOSTICS_DIR");directory && *directory) {
+            std::ofstream out(std::filesystem::path(directory)/"copy-audit-summary.json");
+            out << "{\"requested\":true,\"active_start_ns\":" << started << ",\"active_end_ns\":" << ended
+                << ",\"violations\":" << violations << ",\"copies\":" << copies << ",\"bytes\":" << bytes << "}\n";
+            if(!out) std::cerr << "Copy audit summary write failed\n";
+        }
+        if(amdva_audit_stop) amdva_audit_stop();
+    }
+    AmdvaVpeAuditStats vpe{};
+    if(amdva_vpe_audit_snapshot && amdva_vpe_audit_snapshot(&vpe,sizeof(vpe))) {
+        std::cerr<<"NVR VPE audit complete scopes="<<vpe.scopes<<" completed="<<vpe.completed
+                 <<" failed="<<vpe.failed<<" active="<<vpe.active_scope<<'\n';
+        if(const auto *directory=std::getenv("AMDVA_DIAGNOSTICS_DIR");directory && *directory) {
+            std::ofstream out(std::filesystem::path(directory)/"vpe-audit-summary.json");
+            out<<"{\"schema\":1,\"method\":\"binary-syncobj-fence\",\"scopes\":"<<vpe.scopes
+               <<",\"completed\":"<<vpe.completed<<",\"failed\":"<<vpe.failed
+               <<",\"aborted\":"<<vpe.aborted<<",\"submissions\":"<<vpe.submissions
+               <<",\"rejected_submissions\":"<<vpe.rejected_submissions
+               <<",\"foreign_operations\":"<<vpe.foreign_operations<<",\"active_scope\":"<<vpe.active_scope
+               <<",\"observer_wait_ns\":"<<vpe.wait_ns<<",\"maximum_observer_wait_ns\":"<<vpe.maximum_wait_ns<<"}\n";
+            if(!out)std::cerr<<"VPE audit summary write failed\n";
+        }
+    }
+    diagnostic_event("controller",0,0,"shutdown_drained",Telemetry::monotonic_ns());
 }
 void Controller::retention_minutes(unsigned minutes) {
     if (minutes > 2147483647u)
@@ -1071,6 +1229,7 @@ void Controller::assign(Channel &c, bool value) {
                 s.last_ai = {};
                 c.decode_count_base = s.processed;
                 c.ai_count_base = s.inferred;
+                c.update_dispatch_mode();
                 return;
             }
         }
@@ -1090,6 +1249,7 @@ void Controller::assign(Channel &c, bool value) {
             s.latest = {};
             s.detections.clear();
         }
+        c.update_dispatch_mode();
     }
 }
 std::vector<Status> Controller::status() const {
@@ -1109,6 +1269,7 @@ void Controller::loop() {
         size_t background_cursor = 0;
         std::map<std::string, std::pair<uint64_t, uint64_t>> counts;
         while (true) {
+            DiagnosticControlSpan loop_span("controller","control_loop");
             std::deque<std::function<void()>> work;
             {
                 std::lock_guard<std::mutex> l(mutex_);
@@ -1119,6 +1280,7 @@ void Controller::loop() {
             if (stopping_)
                 break;
             if (Clock::now() >= quota_at) {
+                DiagnosticControlSpan span("controller","control_quota");
                 try {
                     space = catalog_->enforce(options_.quota, options_.reserve);
                     if (options_.retention_minutes && expired_delete_.done())
@@ -1145,8 +1307,10 @@ void Controller::loop() {
                     }
                     deletion_release_ = {};
                 }
-                if (released)
+                if (released) {
+                    DiagnosticControlSpan span("controller","control_manual_delete");
                     catalog_->delete_batch(manual_delete_);
+                }
                 deleting_ = !manual_delete_.done();
                 std::lock_guard<std::mutex> lock(mutex_);
                 deletion_status_ = {deleting_
@@ -1161,8 +1325,10 @@ void Controller::loop() {
                                     manual_delete_.protected_files,
                                     manual_delete_.failed,
                                     deletion_status_.operation};
-            } else if (!deleting_ && !expired_delete_.done())
+            } else if (!deleting_ && !expired_delete_.done()) {
+                DiagnosticControlSpan span("controller","control_expiry_delete");
                 catalog_->delete_batch(expired_delete_);
+            }
             // Older background deadlines win; rotate ties across equal-deadline cameras.
             std::vector<Channel *> order;
             for (size_t i = 0, n = channels_.size(); i < n; ++i)
@@ -1192,6 +1358,7 @@ void Controller::loop() {
                                [](const auto &c) { return c->removed && c->recordings.empty(); }),
                 channels_.end());
             if (reclaim_pending_ && Clock::now() >= reclaim_at_) {
+                DiagnosticControlSpan span("controller","control_malloc_trim");
                 malloc_trim(0);
                 reclaim_pending_ = false;
                 reclaim_at_ = Clock::now() + std::chrono::seconds(5);
@@ -1235,8 +1402,22 @@ void Controller::loop() {
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
+        // Do not call a previously admitted RTP group a shutdown cancellation.
+        // Let those groups assemble first; later packets have explicit post-stop
+        // identities. A timeout remains a validation error, never a guessed match.
+        const auto receive_cutoff=Telemetry::monotonic_ns();
+        const auto receive_deadline=Clock::now()+std::chrono::milliseconds(500);
+        bool unassembled=false;
+        do {
+            unassembled=false;
+            for(const auto &c:channels_)
+                if(c->receive_timing && c->receive_timing->unassembled_before(receive_cutoff)) unassembled=true;
+            if(!unassembled || Clock::now()>=receive_deadline) break;
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        } while(true);
+        if(unassembled) diagnostic_event("controller",0,0,"receive_drain_failed",Telemetry::monotonic_ns(),1);
+        for (auto &c : channels_) c->stop_receive();
         for (auto &c : channels_) {
-            c->stop_receive();
             c->cancel_background();
             c->stop_decode();
             c->end_record();
@@ -1276,11 +1457,16 @@ void Controller::loop() {
 void Controller::preview_loop() {
     try {
         std::array<Sample, 16> previous;
+        // Each producer alone owns its scaling context and mutable geometry.
+        std::array<PreviewSlot, 16> work;
+        std::array<uint64_t, 16> blocked{};
         const auto model_info = ModelInfo::load(options_.model_info);
         while (!stopping_) {
             for (unsigned index = 0; index < slots_.size(); ++index) {
                 auto &s = slots_[index];
-                std::lock_guard<std::mutex> l(s.mutex);
+                const auto preview_wait_start=Telemetry::monotonic_ns();
+                std::unique_lock<std::mutex> l(s.mutex);
+                const auto preview_acquired=Telemetry::monotonic_ns();
                 if (s.channel.empty() || !s.latest.sample) {
                     previous[index].reset();
                     continue;
@@ -1291,8 +1477,13 @@ void Controller::preview_loop() {
                                        [](const auto &p) { return p.state == 0; });
                 const bool preview = options_.preview_enabled && presentation_observed_.load() &&
                                      s.preview_visible.load();
-                if (preview && it == s.preview.end())
+                if (preview && it == s.preview.end()) {
+                    if (s.latest.timing.telemetry && blocked[index] != s.latest.timing.frame.sequence) {
+                        blocked[index]=s.latest.timing.frame.sequence;
+                        s.latest.timing.telemetry->diagnostic(s.latest.timing.frame, "preview_full");
+                    }
                     continue;
+                }
                 auto frame = s.latest;
                 auto *buffer = gst_sample_get_buffer(frame.sample.get());
                 if (gst_va_buffer_peek_display(buffer) != display_)
@@ -1334,25 +1525,38 @@ void Controller::preview_loop() {
                     }
                 }
                 if (!preview) {
+                    if(frame.timing.telemetry) frame.timing.telemetry->diagnostic(frame.timing.frame,"preview_not_requested",
+                        (!options_.preview_enabled?1:0)|(!presentation_observed_.load()?2:0)|(!s.preview_visible.load()?4:0));
                     s.latest.preview_consumed = true;
                     previous[index] = frame.sample;
                     s.processed++;
                     continue;
                 }
-                prepare_preview(display_, s, *it, frame.sample.get(), frame.generation,
-                                s.sequence + 1);
-                frame.timing.mark(TimingStage::PreviewReady);
-                s.latest.timing = frame.timing;
-                s.latest.preview_consumed = true;
-                it->timing = frame.timing;
-                it->original_width = frame.width;
-                it->original_height = frame.height;
-                it->generation = frame.generation;
-                it->sequence = ++s.sequence;
-                it->time = frame.received;
-                it->state = 1;
-                s.processed++;
-                previous[index] = frame.sample;
+                auto &job=work[index];
+                job.target_width=s.target_width;job.target_height=s.target_height;
+                const auto generation=s.generation,sequence=s.sequence+1;
+                // Retain the decoded GstSample before releasing the slot lock.
+                // Mark only this input consumed; a newer decoded frame can arrive.
+                s.latest.preview_consumed=true;previous[index]=frame.sample;
+                const auto reserved=Telemetry::monotonic_ns();
+                if(frame.timing.telemetry) frame.timing.telemetry->diagnostic(frame.timing.frame,"preview_lock",preview_acquired-preview_wait_start,reserved-preview_acquired);
+                const bool published=detail::publish_preview_unlocked(*it,l,[&](Plane &prepared) {
+                    const auto scale_start=Telemetry::monotonic_ns();
+                    prepare_preview(display_,job,prepared,frame.sample.get(),frame.generation,sequence);
+                    if(frame.timing.telemetry) frame.timing.telemetry->diagnostic(frame.timing.frame,"preview_scale",Telemetry::monotonic_ns()-scale_start);
+                    frame.timing.mark(TimingStage::PreviewReady);prepared.timing=frame.timing;
+                    prepared.original_width=frame.width;prepared.original_height=frame.height;
+                    prepared.time=frame.received;
+                },[&]{return s.generation==generation;});
+                if(published) {
+                    if(s.latest.sample==frame.sample)s.latest.timing=frame.timing;
+                    s.sequence=sequence;++s.processed;
+                }else if(frame.timing.telemetry) {
+                    // Same stale-generation discard as the display consumer;
+                    // no valid-generation frame is newly dropped.
+                    frame.timing.telemetry->diagnostic(frame.timing.frame,"preview_discarded");
+                    frame.timing.telemetry->counter(TimingCounter::PreviewDiscarded);
+                }
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(2));
         }
@@ -1438,6 +1642,16 @@ void Controller::gpu_loop() {
                               0,
                               0})
                     .get();
+        }
+        // The GUI launcher already preloads the auditor when requested. Start
+        // it after model warmup, just as the hardware validation tools do.
+        const auto *audit_requested=std::getenv("AMDVA_COPY_AUDIT");
+        if(audit_requested && std::string(audit_requested)=="1") {
+            if(!amdva_audit_start || !amdva_audit_errors || !amdva_audit_copies || !amdva_audit_bytes)
+                throw std::runtime_error("Copy audit requested but auditor hooks are missing");
+            amdva_audit_start();
+            copy_audit_started_ns_=Telemetry::monotonic_ns();
+            std::cerr << "NVR copy audit active ns=" << copy_audit_started_ns_.load() << '\n';
         }
         inference_ready_ = true;
         std::array<Sample, 32> previous;
@@ -1604,6 +1818,8 @@ void Controller::gpu_loop() {
                      prefix + "/" + prepared[i].channel,
                      prepared[i].frame.generation,
                      prepared[i].slot});
+            for(const auto &item:prepared)
+                if(item.frame.timing.telemetry) item.frame.timing.telemetry->diagnostic(item.frame.timing.frame,"ai_submit");
             const auto infer_started = Clock::now();
             ai_runtime_->record(
                 "YOLO preprocess", "",
@@ -1625,6 +1841,7 @@ void Controller::gpu_loop() {
             last_batch_ = valid;
             for (unsigned i = 0; i < valid; ++i) {
                 const auto &item = prepared[i];
+                if(item.frame.timing.telemetry) item.frame.timing.telemetry->diagnostic(item.frame.timing.frame,"ai_complete");
                 auto &s = ai_slot(item.slot);
                 std::lock_guard<std::mutex> l(s.mutex);
                 if (s.channel != item.channel || s.generation != item.frame.generation ||

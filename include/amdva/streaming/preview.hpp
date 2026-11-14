@@ -22,8 +22,9 @@ using Sample = std::shared_ptr<GstSample>;
 struct Plane {
     TraceToken timing;
     VASurfaceID surface{VA_INVALID_SURFACE};
-    // 0 free; 1 complete; 2 displayed; 3 fence pending. GL objects belong
-    // exclusively to the UI thread; VA writes only to state 0.
+    // 0 free; 1 complete; 2 displayed; 3 fence pending; 4 producer reserved.
+    // GL objects belong exclusively to the UI thread. A producer may reserve a
+    // free plane while scaling without the slot lock; consumers skip state 4.
     int state{};
     unsigned width{}, height{}, original_width{}, original_height{};
     uint64_t generation{}, sequence{};
@@ -48,7 +49,7 @@ struct PreviewSlot {
     PreviewSlot &operator=(const PreviewSlot &) = delete;
     virtual ~PreviewSlot();
 };
-// Caller holds the slot mutex. Pixels remain on VA surfaces.
+// Caller exclusively owns the work slot, or holds its mutex. Pixels remain on VA surfaces.
 void prepare_preview(GstVaDisplay *, PreviewSlot &, Plane &, GstSample *, uint64_t generation,
                      uint64_t sequence);
 } // namespace amdva::streaming

@@ -1,5 +1,6 @@
 #include "amdva/resource_monitor.hpp"
 #include "../src/wave_sample.hpp"
+#include "../examples/resource-dashboard/gpu_display.hpp"
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -20,6 +21,50 @@ int main() {
     const auto root =
         fs::temp_directory_path() / ("amdva-monitor-test-" + std::to_string(getpid()));
     try {
+        auto gpu = [](int64_t ns, double pct, const std::string &source = "wave") {
+            ResourceSample s;
+            s.monotonic_ns = ns;
+            s.gpu_pct = pct;
+            s.gpu_source = source;
+            return s;
+        };
+        dashboard::GpuDisplayFilter filter(true);
+        require(!filter.apply(gpu(1, 0, "sysfs")).gpu_pct,
+                "Wave startup is unavailable, not a false sysfs zero");
+        require(filter.apply(gpu(1000000000LL, 30)).gpu_pct == 30,
+                "First wave sample initializes the display");
+        auto dip = filter.apply(gpu(2000000000LL, 0));
+        require(dip.gpu_pct && *dip.gpu_pct > 20 && *dip.gpu_pct < 30,
+                "A real zero participates in smoothing without an instantaneous drop");
+        auto held = filter.apply(gpu(3000000000LL, 100, "sysfs"));
+        require(held.gpu_pct == dip.gpu_pct && held.gpu_source == "wave-held",
+                "Brief invalid samples hold wave and do not mix in sysfs");
+        auto missing = filter.apply(gpu(5000000000LL, 100, "sysfs"));
+        require(!missing.gpu_pct && missing.gpu_source == "unavailable",
+                "Prolonged failure expires the held reading");
+        require(filter.apply(gpu(6000000000LL, 70)).gpu_pct == 70,
+                "Recovery starts from a fresh sample after expiry");
+        dashboard::GpuDisplayFilter coarse(true), fine(true), direct(false);
+        coarse.apply(gpu(1000000000LL, 80));
+        fine.apply(gpu(1000000000LL, 80));
+        ResourceSample a, b;
+        for (int i = 1; i <= 9; ++i)
+            a = coarse.apply(gpu((i + 1) * 1000000000LL, 0));
+        for (int i = 1; i <= 90; ++i)
+            b = fine.apply(gpu(1000000000LL + i * 100000000LL, 0));
+        require(a.gpu_pct && b.gpu_pct && *a.gpu_pct < 4 &&
+                    std::abs(*a.gpu_pct - *b.gpu_pct) < 1e-9,
+                "Sustained idle decays toward zero independent of polling cadence");
+        require(direct.apply(gpu(1, 40, "sysfs")).gpu_pct == 40,
+                "Conventional mode remains unfiltered");
+        require(filter.apply(gpu(1, 10)).gpu_pct == 10,
+                "Clock regression resets display history");
+        require(detail::wave_supported_host("26.04", 110501) &&
+                    detail::wave_supported_host("24.04", 110500) &&
+                    !detail::wave_supported_host("24.04", 110501) &&
+                    !detail::wave_supported_host("26.04", 110500) &&
+                    !detail::wave_supported_host("24.04", 110000),
+                "Admit only validated wave host pairs");
         require(detail::wave_presence(100., {0., 100.}) == 50., "Wave mean over returned regions");
         require(detail::wave_presence(100., {25., 25., 25.}) == 25., "Wave region count is dynamic");
         require(detail::wave_presence(100., {0.}) == 0., "Valid idle wave value");

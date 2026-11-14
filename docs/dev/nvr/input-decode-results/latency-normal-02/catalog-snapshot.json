@@ -1,0 +1,11 @@
+{
+  "file": "/home/amd/work/rai/logs/input-decode-20261113/latency-normal-02/catalog-snapshot.sqlite",
+  "sha256": "1d814be23cb8fd922961f5d3119f1cfc7d5236b19a153d64f32dd04befbfe171",
+  "bytes": 765915136,
+  "counts": {
+    "recordings": 2020,
+    "observations": 16101,
+    "analysis_frames": 40296,
+    "analysis_objects": 124318
+  }
+}

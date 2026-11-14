@@ -1,3 +1,5 @@
+#include "amdva/diagnostics.hpp"
+#include "amdva/telemetry.hpp"
 #include "amdva/streaming/catalog.hpp"
 #include <algorithm>
 #include <cerrno>
@@ -168,7 +170,10 @@ bool Catalog::recording_present(const std::string &name) const {
            S_ISREG(st.st_mode);
 }
 uint64_t Catalog::bytes() const {
+    const auto started=diagnostics_enabled() ? Telemetry::monotonic_ns() : 0;
     std::lock_guard<std::recursive_mutex> guard(mutex_);
+    const auto acquired=started ? Telemetry::monotonic_ns() : 0;
+    if(started) diagnostic_event("catalog",0,0,"catalog_bytes_lock",acquired,acquired-started);
     Statement s(db_, "SELECT name FROM recordings");
     uint64_t total = 0;
     while (sqlite3_step(s.p) == SQLITE_ROW) {
@@ -178,18 +183,30 @@ uint64_t Catalog::bytes() const {
             S_ISREG(st.st_mode))
             total += uint64_t(st.st_size);
     }
+    const auto files_done=started ? Telemetry::monotonic_ns() : 0;
+    if(started) diagnostic_event("catalog",0,0,"catalog_file_sizes",files_done,files_done-acquired);
     for (const auto &extension : extensions_)
         if (extension.bytes)
             total += extension.bytes(db_);
-    Statement analysis_payload(
-        db_, "SELECT COALESCE((SELECT SUM(length(channel)+length(session)+length(run)+192) FROM "
-             "analysis_frames),0) + (SELECT COUNT(*)*96 FROM analysis_objects)");
-    if (sqlite3_step(analysis_payload.p) == SQLITE_ROW)
-        total += sqlite3_column_int64(analysis_payload.p, 0);
+    const auto extensions_done=started ? Telemetry::monotonic_ns() : 0;
+    if(started) diagnostic_event("catalog",0,0,"catalog_extension_sizes",extensions_done,extensions_done-files_done);
+    Statement analysis_payload(db_,"SELECT bytes FROM analysis_payload_bytes WHERE id=1");
+    if(sqlite3_step(analysis_payload.p)!=SQLITE_ROW)
+        throw std::runtime_error("Analysis quota counter is missing or unreadable");
+    total += sqlite3_column_int64(analysis_payload.p,0);
+    if(started) {
+        const auto done=Telemetry::monotonic_ns();
+        diagnostic_event("catalog",0,0,"catalog_analysis_sizes",done,done-extensions_done);
+    }
     return total;
 }
 bool Catalog::enforce(uint64_t quota, uint64_t reserve) {
+    const auto started=diagnostics_enabled() ? Telemetry::monotonic_ns() : 0;
     std::lock_guard<std::recursive_mutex> guard(mutex_);
+    if(started) {
+        const auto acquired=Telemetry::monotonic_ns();
+        diagnostic_event("catalog",0,0,"catalog_enforce_lock",acquired,acquired-started);
+    }
     playing_.erase(
         std::remove_if(playing_.begin(), playing_.end(), [](auto &p) { return p.expired(); }),
         playing_.end());
@@ -208,6 +225,22 @@ bool Catalog::enforce(uint64_t quota, uint64_t reserve) {
                 candidates.emplace_back(name, uint64_t(st.st_size));
         }
     }
+    // Keep FULL durability and the same deletion/vacuum policy, but avoid a
+    // separate durable commit for each recording and its metadata triggers.
+    bool transaction = false;
+    uint64_t deleted = 0;
+    auto commit = [&] {
+        if (!transaction) return;
+        const auto before = diagnostics_enabled() ? Telemetry::monotonic_ns() : 0;
+        sql("COMMIT;");
+        transaction = false;
+        if (before) {
+            const auto after = Telemetry::monotonic_ns();
+            diagnostic_event("catalog",0,0,"catalog_quota_commit",after,after-before,deleted);
+        }
+        deleted = 0;
+    };
+    try {
     for (const auto &item : candidates) {
         bool pinned = false;
         for (const auto &weak : playing_)
@@ -215,21 +248,50 @@ bool Catalog::enforce(uint64_t quota, uint64_t reserve) {
                 pinned |= file->recording().name == item.first;
         if (pinned)
             continue;
+        if (!transaction) {
+            sql("BEGIN IMMEDIATE;");
+            transaction = true;
+        }
         // unlinkat never follows a replacement symlink. The candidate came only
         // from this application's catalog; no directory scanning is used.
+        diagnostic_event("catalog", 0, 0, "retention_delete_attempt", Telemetry::monotonic_ns());
         if (unlinkat(directory_, item.first.c_str(), 0) != 0)
             continue;
+        diagnostic_event("catalog", 0, 0, "retention_deleted", Telemetry::monotonic_ns());
+        const auto delete_started=diagnostics_enabled() ? Telemetry::monotonic_ns() : 0;
         Statement s(db_, "DELETE FROM recordings WHERE name=?1 AND active=0");
         s.text(1, item.first);
         s.done();
         ++deletion_generation_;
+        ++deleted;
+        const auto delete_done=delete_started ? Telemetry::monotonic_ns() : 0;
+        if(delete_started) diagnostic_event("catalog",0,0,"catalog_delete_sql",delete_done,delete_done-delete_started);
         sql("PRAGMA incremental_vacuum(256);");
+        if(delete_started) {
+            const auto vacuum_done=Telemetry::monotonic_ns();
+            diagnostic_event("catalog",0,0,"catalog_delete_vacuum",vacuum_done,vacuum_done-delete_done);
+        }
         total = bytes();
         free = std::filesystem::space(root_).available;
-        if (total <= quota && free >= reserve)
-            return true;
+        if (total <= quota) {
+            // Disk reclamation may only be visible after the durable commit.
+            // Recheck before choosing any additional file for the reserve.
+            commit();
+            total = bytes();
+            free = std::filesystem::space(root_).available;
+            if (total <= quota && free >= reserve)
+                return true;
+        }
     }
-    return false;
+    commit();
+    return bytes() <= quota && std::filesystem::space(root_).available >= reserve;
+    } catch (...) {
+        if (transaction) {
+            sqlite3_exec(db_, "ROLLBACK;", nullptr, nullptr, nullptr);
+            diagnostic_event("catalog",0,0,"catalog_quota_rollback",Telemetry::monotonic_ns(),deleted);
+        }
+        throw;
+    }
 }
 
 DeletionJob Catalog::begin_delete(std::optional<int64_t> cutoff) const {

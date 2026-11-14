@@ -1,4 +1,7 @@
 #include "amdva/gst_telemetry.hpp"
+#include "amdva/diagnostics.hpp"
+#include <filesystem>
+#include <fstream>
 #include <atomic>
 #include <chrono>
 #include <gst/app/gstappsink.h>
@@ -164,6 +167,8 @@ void input_only_test(bool audio) {
     for (unsigned i = 0; i < 100 && delivered.load() != 8; i++)
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     check(delivered.load() == 8, "Input probe completion");
+    check(adapter->unassembled_before(INT64_MAX)==(audio?0:1),"Unassembled RTP group accounting");
+    check(adapter->unassembled_before(0)==0,"Drain cutoff excludes later input");
     gst_element_set_state(pipeline, GST_STATE_NULL);
     adapter.reset();
     auto snapshot = metrics->snapshot();
@@ -174,6 +179,39 @@ void input_only_test(bool audio) {
     gst_object_unref(after);
     gst_object_unref(input);
     gst_object_unref(pipeline);
+}
+
+// Observe a complete AU at the sink pad without pulling it. NULL flushes
+// the queued sample before any application consumer callback can run.
+void assembled_flush_test() {
+    auto metrics=std::make_shared<Telemetry>("assembled-flush");
+    metrics->begin_generation(1);
+    auto *pipe=gst_parse_launch(
+        "appsrc name=input is-live=true format=time "
+        "caps=\"application/x-rtp,media=video,encoding-name=H264,clock-rate=90000,payload=96\" "
+        "! identity name=before ! identity name=after ! appsink name=output sync=false max-buffers=1",
+        nullptr);
+    check(pipe,"Flush fixture parse");
+    auto *before=pad(pipe,"before","sink"),*after=pad(pipe,"after","src"),
+         *au=pad(pipe,"output","sink");
+    auto adapter=std::make_unique<PipelineTelemetry>(metrics);
+    adapter->attach_rtp(before,after);adapter->attach_access_units(au);
+    auto *input=gst_bin_get_by_name(GST_BIN(pipe),"input");
+    gst_element_set_state(pipe,GST_STATE_PLAYING);
+    auto *b=gst_rtp_buffer_new_allocate(4,0,0);
+    GstRTPBuffer packet=GST_RTP_BUFFER_INIT;
+    gst_rtp_buffer_map(b,GST_MAP_WRITE,&packet);
+    gst_rtp_buffer_set_ssrc(&packet,51);gst_rtp_buffer_set_timestamp(&packet,3000);
+    gst_rtp_buffer_unmap(&packet);GST_BUFFER_PTS(b)=0;
+    check(gst_app_src_push_buffer(GST_APP_SRC(input),b)==GST_FLOW_OK,"Flush fixture input");
+    for(unsigned i=0;i<100 && metrics->snapshot().stages[0][1].count!=1;i++)
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    check(metrics->snapshot().stages[0][1].count==1,"Complete AU observed before appsink pull");
+    check(adapter->unassembled_before(INT64_MAX)==0,"Flushed complete AU is not partial RTP");
+    gst_element_set_state(pipe,GST_STATE_NULL);
+    adapter.reset();
+    for(auto *p:{before,after,au}) gst_object_unref(p);
+    gst_object_unref(input);gst_object_unref(pipe);
 }
 
 void buffer_list_test() {
@@ -240,6 +278,12 @@ void submission_bounds() {
           "All retired submissions accounted");
 }
 int main(int argc, char **argv) {
+    auto *temporary=g_dir_make_tmp("amdva-gst-timing-XXXXXX",nullptr);
+    if(!temporary) return 1;
+    const std::filesystem::path diagnostic_directory(temporary);
+    g_setenv("AMDVA_DIAGNOSTICS_DIR",temporary,TRUE);
+    g_setenv("AMDVA_DIAGNOSTICS_TRACE","1",TRUE);
+    g_free(temporary);
     gst_init(&argc, &argv);
     try {
         std::atomic<int64_t> at{1000000000LL};
@@ -298,6 +342,7 @@ int main(int argc, char **argv) {
         auto s = metrics->snapshot();
         check(s.latency[0][0].samples == 12 && s.latency[0][1].mean_ms == 20, "Aggregation");
         check(!s.unmatched_rtp && !s.unmatched_decode, "Matching including RTP wrap");
+        check(adapter->unassembled_before(INT64_MAX)==0,"Complete AUs cannot prolong RTP drain");
         gst_element_set_state(pipe, GST_STATE_NULL);
         adapter.reset();
         gst_object_unref(input);
@@ -311,6 +356,25 @@ int main(int argc, char **argv) {
         input_only_test(true);
         submission_bounds();
         buffer_list_test();
+        assembled_flush_test();
+        diagnostics_close();
+        std::ifstream events(diagnostic_directory/"events.csv");
+        std::string line;unsigned partial=0,complete=0,audio=0,closed_complete=0,closed_flush=0;
+        while(std::getline(events,line)) {
+            if(line.find(",\"receive_au_closed\",")!=std::string::npos) {
+                if(line.find(",\"synthetic\",")!=std::string::npos) ++closed_complete;
+                if(line.find(",\"assembled-flush\",")!=std::string::npos) ++closed_flush;
+            }
+        }
+        check(closed_complete==12 && closed_flush==1,"Complete receiver groups closed explicitly, including unpulled AU");
+        events.clear();events.seekg(0);
+        while(std::getline(events,line)) if(line.find(",\"rtp_assembly_retired\",")!=std::string::npos) {
+            if(line.find(",\"partial-video\",")!=std::string::npos) ++partial;
+            if(line.find(",\"synthetic\",")!=std::string::npos) ++complete;
+            if(line.find(",\"audio\",")!=std::string::npos) ++audio;
+        }
+        check(partial==1 && complete==0 && audio==0,"Only unfinished video RTP group retired");
+        std::filesystem::remove_all(diagnostic_directory);
         std::cout
             << "GStreamer RTP, delay attribution, decode, wrap and metadata ownership passed\n";
         return 0;

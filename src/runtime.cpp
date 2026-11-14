@@ -1,4 +1,5 @@
 #include "amdva/runtime.hpp"
+#include "vpe_scope.hpp"
 #include <va/va_drm.h>
 #include <va/va_vpp.h>
 #include <fcntl.h>
@@ -229,6 +230,7 @@ void VaSession::scale(VASurfaceID src,VASurfaceID dst,unsigned sw,unsigned sh,un
 void VaSession::crop_scale(VASurfaceID src,VASurfaceID dst,unsigned x,unsigned y,unsigned sw,unsigned sh,unsigned dw,unsigned dh) {
     if(std::max({sw,sh,dw,dh})>32767) throw std::runtime_error("VA rectangle dimensions exceed supported bounds");
     if(x>32767||y>32767||!sw||!sh||!dw||!dh)throw std::runtime_error("Invalid VA crop rectangle");
+    detail::VpeAuditScope proof(display_,context_,dst);
     VARectangle in{static_cast<int16_t>(x),static_cast<int16_t>(y),static_cast<uint16_t>(sw),static_cast<uint16_t>(sh)};
     VARectangle out{0,0,static_cast<uint16_t>(dw),static_cast<uint16_t>(dh)};
     VAProcPipelineParameterBuffer p{}; p.surface=src; p.surface_region=&in; p.output_region=&out;
@@ -241,8 +243,9 @@ void VaSession::crop_scale(VASurfaceID src,VASurfaceID dst,unsigned x,unsigned y
         va_check(vaRenderPicture(display_,context_,&b,1),"VA render scale");
         va_check(vaEndPicture(display_,context_),"VA end scale");
         va_check(vaSyncSurface(display_,dst),"VA scale completion");
-        vaDestroyBuffer(display_,b);
-    } catch (...) { vaDestroyBuffer(display_,b); throw; }
+        vaDestroyBuffer(display_,b);b=VA_INVALID_ID;
+        proof.complete();
+    } catch (...) { if(b!=VA_INVALID_ID)vaDestroyBuffer(display_,b); throw; }
 }
 VADRMPRIMESurfaceDescriptor VaSession::export_surface(VASurfaceID s,bool writable) {
     va_check(vaSyncSurface(display_,s),"VA export readiness");

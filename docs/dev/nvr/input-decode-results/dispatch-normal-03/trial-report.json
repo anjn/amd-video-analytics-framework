@@ -1,0 +1,687 @@
+{
+  "trial": "dispatch-normal-03",
+  "elapsed_s": 3669.641255347,
+  "start_jst": "2026-11-13T23:36:16.661136+09:00",
+  "end_jst": "2026-11-14T00:37:26.740259+09:00",
+  "normal_exit": true,
+  "automated_gates_passed": true,
+  "expected_video_sources_present": true,
+  "latency_failures": [],
+  "progress_failures": [],
+  "audit_failures": [],
+  "worst_p99_growth": {
+    "source": "cam9",
+    "minute": 48,
+    "count": 1800,
+    "p99_growth_ms": 0.7842150000000001,
+    "max_growth_ms": 0.08645700000000023,
+    "passed": true
+  },
+  "worst_max_growth": {
+    "source": "cam10",
+    "minute": 60,
+    "count": 1617,
+    "p99_growth_ms": 0.151613,
+    "max_growth_ms": 2.5626080000000004,
+    "passed": true
+  },
+  "sources": {
+    "cam0": {
+      "coverage_seconds": 3652.71793845,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.5753640553333333,
+        "p99": 1.64216,
+        "maximum": 3.154713
+      },
+      "late_worst_minute_p99_ms": 1.949579,
+      "late_maximum_ms": 4.284399
+    },
+    "cam1": {
+      "coverage_seconds": 3653.721153662,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.6581429631111111,
+        "p99": 1.765107,
+        "maximum": 3.632941
+      },
+      "late_worst_minute_p99_ms": 2.176283,
+      "late_maximum_ms": 5.543414
+    },
+    "cam10": {
+      "coverage_seconds": 3652.747951287,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.5874018432222222,
+        "p99": 1.692729,
+        "maximum": 3.030146
+      },
+      "late_worst_minute_p99_ms": 2.427691,
+      "late_maximum_ms": 5.592754
+    },
+    "cam11": {
+      "coverage_seconds": 3653.748320517,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.5803699798888889,
+        "p99": 1.537302,
+        "maximum": 3.646061
+      },
+      "late_worst_minute_p99_ms": 1.90787,
+      "late_maximum_ms": 4.51925
+    },
+    "cam12": {
+      "coverage_seconds": 3652.752989849,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.6286496635555555,
+        "p99": 1.934212,
+        "maximum": 3.371498
+      },
+      "late_worst_minute_p99_ms": 2.27677,
+      "late_maximum_ms": 4.369156
+    },
+    "cam13": {
+      "coverage_seconds": 3652.731993302,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.5137538085555555,
+        "p99": 1.260149,
+        "maximum": 3.772207
+      },
+      "late_worst_minute_p99_ms": 1.65645,
+      "late_maximum_ms": 4.88507
+    },
+    "cam14": {
+      "coverage_seconds": 3653.786614269,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.5651732533333333,
+        "p99": 1.676149,
+        "maximum": 3.200822
+      },
+      "late_worst_minute_p99_ms": 2.283374,
+      "late_maximum_ms": 4.242275
+    },
+    "cam15": {
+      "coverage_seconds": 3652.745573096,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.60083952,
+        "p99": 1.869214,
+        "maximum": 3.795137
+      },
+      "late_worst_minute_p99_ms": 2.402392,
+      "late_maximum_ms": 4.867428
+    },
+    "cam2": {
+      "coverage_seconds": 3653.720923732,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.6251028451111111,
+        "p99": 1.794576,
+        "maximum": 3.893705
+      },
+      "late_worst_minute_p99_ms": 2.162517,
+      "late_maximum_ms": 5.426811
+    },
+    "cam3": {
+      "coverage_seconds": 3652.743996076,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.6484004956666667,
+        "p99": 1.715918,
+        "maximum": 3.909814
+      },
+      "late_worst_minute_p99_ms": 2.20892,
+      "late_maximum_ms": 4.716464
+    },
+    "cam4": {
+      "coverage_seconds": 3653.723462233,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.5988435652222223,
+        "p99": 1.498444,
+        "maximum": 3.907174
+      },
+      "late_worst_minute_p99_ms": 2.019552,
+      "late_maximum_ms": 4.110889
+    },
+    "cam5": {
+      "coverage_seconds": 3653.74315124,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.6622953311111112,
+        "p99": 1.714677,
+        "maximum": 3.799517
+      },
+      "late_worst_minute_p99_ms": 2.24572,
+      "late_maximum_ms": 5.7819
+    },
+    "cam6": {
+      "coverage_seconds": 3653.783649105,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.5970797108888889,
+        "p99": 1.347827,
+        "maximum": 3.833086
+      },
+      "late_worst_minute_p99_ms": 2.066606,
+      "late_maximum_ms": 3.849245
+    },
+    "cam7": {
+      "coverage_seconds": 3653.775918824,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.7355941352222222,
+        "p99": 1.923933,
+        "maximum": 3.858326
+      },
+      "late_worst_minute_p99_ms": 2.423592,
+      "late_maximum_ms": 5.233929
+    },
+    "cam8": {
+      "coverage_seconds": 3653.753655208,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.5753815351111111,
+        "p99": 1.64664,
+        "maximum": 4.168428
+      },
+      "late_worst_minute_p99_ms": 2.072744,
+      "late_maximum_ms": 5.002789
+    },
+    "cam9": {
+      "coverage_seconds": 3653.745208826,
+      "baseline": {
+        "count": 9000,
+        "mean": 0.7028300418888889,
+        "p99": 2.143887,
+        "maximum": 5.202322
+      },
+      "late_worst_minute_p99_ms": 2.928102,
+      "late_maximum_ms": 5.367319
+    }
+  },
+  "diagnostic_integrity": {
+    "accepted": 51446081,
+    "written": 51446081,
+    "queue_lost": 0,
+    "limit_lost": 0,
+    "bytes": 2910238928,
+    "write_failed": false,
+    "pending": 0
+  },
+  "diagnostic_records": 51446081,
+  "frame_dispositions": [
+    {
+      "source": "cam0",
+      "kind": "latest_replaced",
+      "count": 3
+    },
+    {
+      "source": "cam0",
+      "kind": "preview_discarded",
+      "count": 3496
+    },
+    {
+      "source": "cam0",
+      "kind": "preview_not_requested",
+      "count": 3
+    },
+    {
+      "source": "cam0",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam1",
+      "kind": "latest_replaced",
+      "count": 6
+    },
+    {
+      "source": "cam1",
+      "kind": "preview_discarded",
+      "count": 3464
+    },
+    {
+      "source": "cam1",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam1",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam10",
+      "kind": "latest_replaced",
+      "count": 6
+    },
+    {
+      "source": "cam10",
+      "kind": "preview_discarded",
+      "count": 5363
+    },
+    {
+      "source": "cam10",
+      "kind": "preview_not_requested",
+      "count": 3
+    },
+    {
+      "source": "cam10",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam11",
+      "kind": "latest_replaced",
+      "count": 6
+    },
+    {
+      "source": "cam11",
+      "kind": "preview_discarded",
+      "count": 3109
+    },
+    {
+      "source": "cam11",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam11",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam12",
+      "kind": "latest_replaced",
+      "count": 3
+    },
+    {
+      "source": "cam12",
+      "kind": "preview_discarded",
+      "count": 2730
+    },
+    {
+      "source": "cam12",
+      "kind": "preview_not_requested",
+      "count": 3
+    },
+    {
+      "source": "cam12",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam13",
+      "kind": "latest_replaced",
+      "count": 7
+    },
+    {
+      "source": "cam13",
+      "kind": "preview_discarded",
+      "count": 2800
+    },
+    {
+      "source": "cam13",
+      "kind": "preview_not_requested",
+      "count": 3
+    },
+    {
+      "source": "cam13",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam14",
+      "kind": "latest_replaced",
+      "count": 14
+    },
+    {
+      "source": "cam14",
+      "kind": "preview_discarded",
+      "count": 4048
+    },
+    {
+      "source": "cam14",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam14",
+      "kind": "shutdown_retired",
+      "count": 2
+    },
+    {
+      "source": "cam15",
+      "kind": "latest_replaced",
+      "count": 109584
+    },
+    {
+      "source": "cam15",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam2",
+      "kind": "latest_replaced",
+      "count": 6
+    },
+    {
+      "source": "cam2",
+      "kind": "preview_discarded",
+      "count": 3184
+    },
+    {
+      "source": "cam2",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam2",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam3",
+      "kind": "latest_replaced",
+      "count": 5
+    },
+    {
+      "source": "cam3",
+      "kind": "preview_discarded",
+      "count": 4005
+    },
+    {
+      "source": "cam3",
+      "kind": "preview_not_requested",
+      "count": 3
+    },
+    {
+      "source": "cam3",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam4",
+      "kind": "latest_replaced",
+      "count": 6
+    },
+    {
+      "source": "cam4",
+      "kind": "preview_discarded",
+      "count": 3106
+    },
+    {
+      "source": "cam4",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam4",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam5",
+      "kind": "latest_replaced",
+      "count": 8
+    },
+    {
+      "source": "cam5",
+      "kind": "preview_discarded",
+      "count": 3849
+    },
+    {
+      "source": "cam5",
+      "kind": "preview_not_requested",
+      "count": 3
+    },
+    {
+      "source": "cam5",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam6",
+      "kind": "latest_replaced",
+      "count": 6
+    },
+    {
+      "source": "cam6",
+      "kind": "preview_discarded",
+      "count": 3020
+    },
+    {
+      "source": "cam6",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam6",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam7",
+      "kind": "latest_replaced",
+      "count": 7
+    },
+    {
+      "source": "cam7",
+      "kind": "preview_discarded",
+      "count": 3681
+    },
+    {
+      "source": "cam7",
+      "kind": "preview_not_requested",
+      "count": 3
+    },
+    {
+      "source": "cam7",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam8",
+      "kind": "latest_replaced",
+      "count": 6
+    },
+    {
+      "source": "cam8",
+      "kind": "preview_discarded",
+      "count": 4621
+    },
+    {
+      "source": "cam8",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam8",
+      "kind": "shutdown_retired",
+      "count": 2
+    },
+    {
+      "source": "cam9",
+      "kind": "latest_replaced",
+      "count": 9
+    },
+    {
+      "source": "cam9",
+      "kind": "preview_discarded",
+      "count": 5525
+    },
+    {
+      "source": "cam9",
+      "kind": "preview_not_requested",
+      "count": 3
+    },
+    {
+      "source": "cam9",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "resource-monitor",
+      "kind": "preview_not_requested",
+      "count": 1
+    },
+    {
+      "source": "resource-monitor",
+      "kind": "shutdown_retired",
+      "count": 1
+    }
+  ],
+  "visible_sources": [
+    "cam0",
+    "cam1",
+    "cam10",
+    "cam11",
+    "cam12",
+    "cam13",
+    "cam14",
+    "cam2",
+    "cam3",
+    "cam4",
+    "cam5",
+    "cam6",
+    "cam7",
+    "cam8",
+    "cam9",
+    "resource-monitor"
+  ],
+  "ai_last_progress": {
+    "Analysis DB save": {
+      "elapsed_s": 3661.595094819,
+      "completed": 14013
+    },
+    "Decoded frame wait": {
+      "elapsed_s": 3661.595094819,
+      "completed": 496344
+    },
+    "Detection update": {
+      "elapsed_s": 3661.595094819,
+      "completed": 248170
+    },
+    "Embedding first result": {
+      "elapsed_s": 3661.595094819,
+      "completed": 11604
+    },
+    "Embedding freshness": {
+      "elapsed_s": 3661.595094819,
+      "completed": 100828
+    },
+    "Embedding update interval": {
+      "elapsed_s": 3661.595094819,
+      "completed": 77634
+    },
+    "Image embedding": {
+      "elapsed_s": 3661.595094819,
+      "completed": 100829
+    },
+    "Image embedding NPU": {
+      "elapsed_s": 3661.595094819,
+      "completed": 100829
+    },
+    "Image embedding NPU preprocess": {
+      "elapsed_s": 3661.595094819,
+      "completed": 100829
+    },
+    "Image embedding NPU total": {
+      "elapsed_s": 3661.595094819,
+      "completed": 100829
+    },
+    "PNG + DB save": {
+      "elapsed_s": 3661.595094819,
+      "completed": 100828
+    },
+    "Person crop": {
+      "elapsed_s": 3661.595094819,
+      "completed": 248169
+    },
+    "ReID inference + transfer": {
+      "elapsed_s": 3661.595094819,
+      "completed": 210211
+    },
+    "ReID preprocess": {
+      "elapsed_s": 3661.595094819,
+      "completed": 210211
+    },
+    "Tracking association": {
+      "elapsed_s": 3661.595094819,
+      "completed": 248167
+    },
+    "Tracking eligible": {
+      "elapsed_s": 3661.595094819,
+      "completed": 248170
+    },
+    "YOLO executor total": {
+      "elapsed_s": 3661.595094819,
+      "completed": 72991
+    },
+    "YOLO inference": {
+      "elapsed_s": 3661.595094819,
+      "completed": 72991
+    },
+    "YOLO postprocess": {
+      "elapsed_s": 3661.595094819,
+      "completed": 72991
+    },
+    "YOLO preprocess": {
+      "elapsed_s": 3661.595094819,
+      "completed": 72991
+    }
+  },
+  "ai_largest_progress_gap_s": {
+    "Analysis DB save": 5.032766756000001,
+    "Decoded frame wait": 5.032766756000001,
+    "Detection update": 5.032766756000001,
+    "Embedding first result": 5.032766756000001,
+    "Embedding freshness": 5.032766756000001,
+    "Embedding update interval": 5.032766756000001,
+    "Image embedding": 5.032766756000001,
+    "Image embedding NPU": 5.032766756000001,
+    "Image embedding NPU preprocess": 5.032766756000001,
+    "Image embedding NPU total": 5.032766756000001,
+    "PNG + DB save": 5.032766756000001,
+    "Person crop": 5.032766756000001,
+    "ReID inference + transfer": 5.032766756000001,
+    "ReID preprocess": 5.032766756000001,
+    "Tracking association": 5.032766756000001,
+    "Tracking eligible": 5.032766756000001,
+    "YOLO executor total": 5.032766756000001,
+    "YOLO inference": 5.032766756000001,
+    "YOLO postprocess": 5.032766756000001,
+    "YOLO preprocess": 5.032766756000001
+  },
+  "copy_active_seconds": 3657.777146938,
+  "vpe": {
+    "schema": 1,
+    "method": "binary-syncobj-fence",
+    "scopes": 3069704,
+    "completed": 3069704,
+    "failed": 0,
+    "aborted": 0,
+    "submissions": 4750171,
+    "rejected_submissions": 0,
+    "foreign_operations": 0,
+    "active_scope": 0,
+    "observer_wait_ns": 698778539,
+    "maximum_observer_wait_ns": 786684
+  },
+  "binary_sha256": "35062f59b16e090dd0964e04a0f18fe49ff6e223de1926ad232ca24aa1cd4fd7",
+  "runtime_inputs": {
+    "config.json": "9dc0ee34000e7bfba566b7272ce379336faecaf7ef8b272b9ee6342b0f1466e4",
+    "config.json.ui.json": "0e65c1db14d78c6c50a3224e70ded0c1bac62877d9cf8d4e6ad9bd9621b293f0",
+    "preparation.json": "4c91935213644eda238a018e039cde056115ab618fb6bf68425c3da35cd4658b",
+    "demo.json": "9eb1da1c181668362e60464db0cb87c78340639f39fdb06b3b64750adb2396d8",
+    "videos.txt": "dffccaf939e0c80d1cc4e4300cd741343ec7c53567c90f8848037dd0a116a864",
+    "model-info.json": "c7d6ac3ed9f0335995ac9383cbe0a3f5247304a17a013213df90f188ca382729",
+    "coco80.txt": "bd17f1ee35d5f3c862a4894605855abbb9dda4b0621fdb0ac4c2c8c7bb7e730a"
+  },
+  "source_patch_sha256": "0ac403b40e0f12c69b27ba1ce2bd3f94cac18335788d178b2622ef90354f893c",
+  "note": "Review kernel warnings, resource trends, existing presentation discards and owned-process cleanup separately. This is not certification of lossless presentation."
+}

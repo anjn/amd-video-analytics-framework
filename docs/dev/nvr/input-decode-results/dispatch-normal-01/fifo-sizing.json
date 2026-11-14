@@ -1,0 +1,913 @@
+{
+  "schema": 1,
+  "fps": 30,
+  "skip_seconds": 300,
+  "records_read": 51484146,
+  "input_file": "C:\\Users\\juna\\Work\\kuroko\\logs\\input-decode-20261113-remote\\dispatch-normal-01\\diagnostics\\events.csv.gz",
+  "input_sha256": "cf133d7c74c825fb11c24e6846a3e8c22295ccc4f7b501165a3e09e344a92098",
+  "tool_sha256": "d5752abde15527a9ddc2be3c449a4433acd73fb2e1743d3c5f778ff5105d7fb6",
+  "streams": [
+    {
+      "source": "cam0",
+      "generation": 33,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.400988932,
+        "observed_output_fps": 29.99999115551179,
+        "interval_p99_ms": 34.362911,
+        "maximum_interval_ms": 37.947636,
+        "minimum_phase_ms": -0.5074833333333333,
+        "maximum_phase_ms": 4.435845333333333,
+        "ending_phase_ms": 0.988932,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam0",
+      "generation": 33,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.40102664,
+        "observed_output_fps": 29.999990818271353,
+        "interval_p99_ms": 34.460862,
+        "maximum_interval_ms": 37.957337,
+        "minimum_phase_ms": -0.5156133333333334,
+        "maximum_phase_ms": 4.443185333333333,
+        "ending_phase_ms": 1.02664,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam1",
+      "generation": 17,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.400958273,
+        "observed_output_fps": 29.9999914297097,
+        "interval_p99_ms": 34.473475,
+        "maximum_interval_ms": 41.249227,
+        "minimum_phase_ms": -0.13545166666666666,
+        "maximum_phase_ms": 8.466823666666667,
+        "ending_phase_ms": 0.958273,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam1",
+      "generation": 17,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.400975003,
+        "observed_output_fps": 29.99999128008541,
+        "interval_p99_ms": 34.478409,
+        "maximum_interval_ms": 41.436341,
+        "minimum_phase_ms": -0.13511166666666666,
+        "maximum_phase_ms": 8.688977666666666,
+        "ending_phase_ms": 0.975003,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam10",
+      "generation": 26,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.401458677,
+        "observed_output_fps": 29.999986954361145,
+        "interval_p99_ms": 34.297135,
+        "maximum_interval_ms": 38.556153,
+        "minimum_phase_ms": -0.42894566666666667,
+        "maximum_phase_ms": 4.961212,
+        "ending_phase_ms": 1.458677,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam10",
+      "generation": 26,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.401459897,
+        "observed_output_fps": 29.999986943450114,
+        "interval_p99_ms": 34.731547,
+        "maximum_interval_ms": 39.255703,
+        "minimum_phase_ms": -0.446366,
+        "maximum_phase_ms": 6.435250666666667,
+        "ending_phase_ms": 1.459897,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam11",
+      "generation": 27,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.400903562,
+        "observed_output_fps": 29.999991919016008,
+        "interval_p99_ms": 34.631845,
+        "maximum_interval_ms": 37.991359,
+        "minimum_phase_ms": -0.25335633333333335,
+        "maximum_phase_ms": 5.247349,
+        "ending_phase_ms": 0.903562,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam11",
+      "generation": 27,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.400927151,
+        "observed_output_fps": 29.99999170804844,
+        "interval_p99_ms": 34.846816,
+        "maximum_interval_ms": 37.981309,
+        "minimum_phase_ms": -0.25959733333333335,
+        "maximum_phase_ms": 5.248178,
+        "ending_phase_ms": 0.927151,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam12",
+      "generation": 28,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.400521921,
+        "observed_output_fps": 29.99999533221215,
+        "interval_p99_ms": 34.215956,
+        "maximum_interval_ms": 37.702905,
+        "minimum_phase_ms": -0.28692833333333334,
+        "maximum_phase_ms": 4.715227,
+        "ending_phase_ms": 0.521921,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344444,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam12",
+      "generation": 28,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.400576639,
+        "observed_output_fps": 29.999994842843122,
+        "interval_p99_ms": 34.310674,
+        "maximum_interval_ms": 37.712115,
+        "minimum_phase_ms": -0.2934293333333333,
+        "maximum_phase_ms": 4.735886,
+        "ending_phase_ms": 0.576639,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344444,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam13",
+      "generation": 29,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.40234991,
+        "observed_output_fps": 29.99997898364816,
+        "interval_p99_ms": 34.156891,
+        "maximum_interval_ms": 37.362596,
+        "minimum_phase_ms": -0.3581076666666667,
+        "maximum_phase_ms": 4.496420666666667,
+        "ending_phase_ms": 2.34991,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam13",
+      "generation": 29,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.402363299,
+        "observed_output_fps": 29.99997886390411,
+        "interval_p99_ms": 35.208796,
+        "maximum_interval_ms": 37.734702,
+        "minimum_phase_ms": -0.36696466666666666,
+        "maximum_phase_ms": 4.505369666666667,
+        "ending_phase_ms": 2.363299,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam14",
+      "generation": 30,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.401000051,
+        "observed_output_fps": 29.999991056069327,
+        "interval_p99_ms": 34.402582,
+        "maximum_interval_ms": 38.549859,
+        "minimum_phase_ms": -0.404992,
+        "maximum_phase_ms": 5.071659666666667,
+        "ending_phase_ms": 1.000051,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam14",
+      "generation": 30,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.401009531,
+        "observed_output_fps": 29.99999097128521,
+        "interval_p99_ms": 34.727341,
+        "maximum_interval_ms": 39.939752,
+        "minimum_phase_ms": -0.414122,
+        "maximum_phase_ms": 7.441682,
+        "ending_phase_ms": 1.009531,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam15",
+      "generation": 31,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.400745687,
+        "observed_output_fps": 29.99999333096678,
+        "interval_p99_ms": 34.137195,
+        "maximum_interval_ms": 37.504601,
+        "minimum_phase_ms": -0.3073476666666667,
+        "maximum_phase_ms": 4.3094046666666666,
+        "ending_phase_ms": 0.745687,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam15",
+      "generation": 31,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.400774486,
+        "observed_output_fps": 29.999993073403697,
+        "interval_p99_ms": 34.143764,
+        "maximum_interval_ms": 37.536101,
+        "minimum_phase_ms": -0.3140676666666667,
+        "maximum_phase_ms": 4.339323666666667,
+        "ending_phase_ms": 0.774486,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam2",
+      "generation": 18,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100632,
+        "sufficient": true,
+        "duration_s": 3354.368354023,
+        "observed_output_fps": 29.999984909024693,
+        "interval_p99_ms": 34.464166,
+        "maximum_interval_ms": 40.298421,
+        "minimum_phase_ms": -0.411626,
+        "maximum_phase_ms": 7.075602666666667,
+        "ending_phase_ms": 1.6873563333333332,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100632,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344444,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam2",
+      "generation": 18,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100632,
+        "sufficient": true,
+        "duration_s": 3354.368357192,
+        "observed_output_fps": 29.99998488068256,
+        "interval_p99_ms": 34.470044,
+        "maximum_interval_ms": 40.300651,
+        "minimum_phase_ms": -0.417826,
+        "maximum_phase_ms": 7.082821666666667,
+        "ending_phase_ms": 1.6905253333333332,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100632,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344444,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam3",
+      "generation": 19,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100632,
+        "sufficient": true,
+        "duration_s": 3354.366806615,
+        "observed_output_fps": 29.999998748362884,
+        "interval_p99_ms": 35.046148,
+        "maximum_interval_ms": 38.224638,
+        "minimum_phase_ms": -0.5947506666666666,
+        "maximum_phase_ms": 4.950983666666667,
+        "ending_phase_ms": 0.13994833333333334,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100632,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344444,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam3",
+      "generation": 19,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100632,
+        "sufficient": true,
+        "duration_s": 3354.366812335,
+        "observed_output_fps": 29.99999869720569,
+        "interval_p99_ms": 35.058153,
+        "maximum_interval_ms": 38.294747,
+        "minimum_phase_ms": -0.6068106666666666,
+        "maximum_phase_ms": 5.020358666666667,
+        "ending_phase_ms": 0.14566833333333334,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100632,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344444,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam4",
+      "generation": 20,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100632,
+        "sufficient": true,
+        "duration_s": 3354.36738256,
+        "observed_output_fps": 29.99999359736202,
+        "interval_p99_ms": 34.128042,
+        "maximum_interval_ms": 38.246546,
+        "minimum_phase_ms": -0.6476463333333333,
+        "maximum_phase_ms": 5.105801333333333,
+        "ending_phase_ms": 0.7158933333333334,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100632,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344444,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam4",
+      "generation": 20,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100632,
+        "sufficient": true,
+        "duration_s": 3354.36738682,
+        "observed_output_fps": 29.999993559262446,
+        "interval_p99_ms": 34.129012,
+        "maximum_interval_ms": 38.247625,
+        "minimum_phase_ms": -0.6645663333333334,
+        "maximum_phase_ms": 5.102211333333333,
+        "ending_phase_ms": 0.7201533333333334,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100632,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344444,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam5",
+      "generation": 21,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.400772877,
+        "observed_output_fps": 29.999993087793747,
+        "interval_p99_ms": 34.160801,
+        "maximum_interval_ms": 38.29391,
+        "minimum_phase_ms": -0.2643953333333333,
+        "maximum_phase_ms": 5.106300666666667,
+        "ending_phase_ms": 0.772877,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam5",
+      "generation": 21,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.399949504,
+        "observed_output_fps": 30.000000451609832,
+        "interval_p99_ms": 34.243211,
+        "maximum_interval_ms": 38.30587,
+        "minimum_phase_ms": -1.0925083333333332,
+        "maximum_phase_ms": 4.688579666666667,
+        "ending_phase_ms": -0.050496,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam6",
+      "generation": 22,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.400862292,
+        "observed_output_fps": 29.99999228811312,
+        "interval_p99_ms": 34.126257,
+        "maximum_interval_ms": 39.766187,
+        "minimum_phase_ms": -0.30718433333333334,
+        "maximum_phase_ms": 6.895199666666667,
+        "ending_phase_ms": 0.862292,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344444,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam6",
+      "generation": 22,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.400879851,
+        "observed_output_fps": 29.999992131074684,
+        "interval_p99_ms": 34.365096,
+        "maximum_interval_ms": 39.785896,
+        "minimum_phase_ms": -0.3116443333333333,
+        "maximum_phase_ms": 6.918648666666667,
+        "ending_phase_ms": 0.879851,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344444,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam7",
+      "generation": 23,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.401037009,
+        "observed_output_fps": 29.999990725536495,
+        "interval_p99_ms": 34.615358,
+        "maximum_interval_ms": 44.912446,
+        "minimum_phase_ms": -0.459466,
+        "maximum_phase_ms": 11.967413666666666,
+        "ending_phase_ms": 1.037009,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam7",
+      "generation": 23,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.401044118,
+        "observed_output_fps": 29.999990661957355,
+        "interval_p99_ms": 34.625343,
+        "maximum_interval_ms": 44.918156,
+        "minimum_phase_ms": -0.470576,
+        "maximum_phase_ms": 11.976242666666666,
+        "ending_phase_ms": 1.044118,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam8",
+      "generation": 24,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.401390616,
+        "observed_output_fps": 29.999987563062632,
+        "interval_p99_ms": 34.249083,
+        "maximum_interval_ms": 41.094261,
+        "minimum_phase_ms": -0.278167,
+        "maximum_phase_ms": 8.134769666666667,
+        "ending_phase_ms": 1.390616,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam8",
+      "generation": 24,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100633,
+        "sufficient": true,
+        "duration_s": 3354.401399846,
+        "observed_output_fps": 29.999987480514406,
+        "interval_p99_ms": 34.57852,
+        "maximum_interval_ms": 41.126681,
+        "minimum_phase_ms": -0.281637,
+        "maximum_phase_ms": 8.173399666666667,
+        "ending_phase_ms": 1.399846,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100633,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344445,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam9",
+      "generation": 25,
+      "producer": "decode_output",
+      "arrival": {
+        "frames": 100632,
+        "sufficient": true,
+        "duration_s": 3354.368161607,
+        "observed_output_fps": 29.999986629908275,
+        "interval_p99_ms": 34.868197,
+        "maximum_interval_ms": 39.843479,
+        "minimum_phase_ms": -0.3328,
+        "maximum_phase_ms": 6.897107666666667,
+        "ending_phase_ms": 1.4949403333333333,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100632,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344444,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    },
+    {
+      "source": "cam9",
+      "generation": 25,
+      "producer": "handoff",
+      "arrival": {
+        "frames": 100632,
+        "sufficient": true,
+        "duration_s": 3354.368186345,
+        "observed_output_fps": 29.999986408662537,
+        "interval_p99_ms": 34.900041,
+        "maximum_interval_ms": 39.853848,
+        "minimum_phase_ms": -0.337089,
+        "maximum_phase_ms": 6.921186666666667,
+        "ending_phase_ms": 1.5196783333333332,
+        "initial_delay_frames": 2,
+        "initial_delay_ms": 66.66666666666667,
+        "capacity_frames_for_observed_arrivals": 3,
+        "note": "Includes one scheduling-margin frame and conservative tie ordering. Finite-trace estimate, not a guaranteed jitter bound or proof of VA completion."
+      },
+      "pts": {
+        "samples": 100632,
+        "backwards": 0,
+        "duplicates": 0,
+        "intervals_above_1_5_periods": 0,
+        "maximum_interval_ms": 33.344444,
+        "note": "PTS gaps need source/cadence review; they are not automatically declared packet or frame loss."
+      }
+    }
+  ],
+  "limits": [
+    "Only observed pad-output/handoff arrival times; neither is a VA hardware-ready fence.",
+    "Existing latest replacement and presentation discards must be removed and throughput verified in the future FIFO phase.",
+    "PTS discontinuity, missing inputs or continuing phase drift require separate investigation; a FIFO cannot repair lost frames or insufficient sustained throughput.",
+    "VA pool capacity must also cover decoder DPB, in-flight consumers and allocator requirements; no pool size is changed here."
+  ]
+}

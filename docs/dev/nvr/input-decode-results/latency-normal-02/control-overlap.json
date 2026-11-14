@@ -1,0 +1,1012 @@
+{
+  "rows_read": 22576475,
+  "window_minutes": [
+    25,
+    28
+  ],
+  "groups": {
+    "cam6": {
+      "high_frames": 135,
+      "quota_overlap_frames": 128,
+      "wait_ns": 8922609589,
+      "quota_overlap_ns": 7694842009,
+      "examples": [
+        {
+          "source": "cam6",
+          "minute": 25,
+          "sequence": 45007,
+          "generation": 22,
+          "input_ns": 23330171585053,
+          "au_ns": 23330171831368,
+          "decoder_ns": 23330231757810,
+          "output_ns": 23330232824049,
+          "input_decode_ms": 61.238996,
+          "au_decoder_ms": 59.926442,
+          "quota_overlap_ms": 50.481144
+        },
+        {
+          "source": "cam6",
+          "minute": 25,
+          "sequence": 45039,
+          "generation": 22,
+          "input_ns": 23331238257573,
+          "au_ns": 23331238577526,
+          "decoder_ns": 23331309548104,
+          "output_ns": 23331310306448,
+          "input_decode_ms": 72.048875,
+          "au_decoder_ms": 70.970578,
+          "quota_overlap_ms": 69.446098
+        },
+        {
+          "source": "cam6",
+          "minute": 25,
+          "sequence": 45166,
+          "generation": 22,
+          "input_ns": 23335471597851,
+          "au_ns": 23335471936354,
+          "decoder_ns": 23335525408846,
+          "output_ns": 23335526231129,
+          "input_decode_ms": 54.633278,
+          "au_decoder_ms": 53.472492,
+          "quota_overlap_ms": 52.813915
+        },
+        {
+          "source": "cam6",
+          "minute": 25,
+          "sequence": 45181,
+          "generation": 22,
+          "input_ns": 23335971637306,
+          "au_ns": 23335972713675,
+          "decoder_ns": 23336024847554,
+          "output_ns": 23336026574139,
+          "input_decode_ms": 54.936833,
+          "au_decoder_ms": 52.133879,
+          "quota_overlap_ms": 0.0
+        }
+      ],
+      "frame_overlap_fraction": 0.9481481481481482,
+      "wait_overlap_fraction": 0.8623981507031732
+    },
+    "cam13": {
+      "high_frames": 133,
+      "quota_overlap_frames": 129,
+      "wait_ns": 8758432074,
+      "quota_overlap_ns": 7633619355,
+      "examples": [
+        {
+          "source": "cam13",
+          "minute": 25,
+          "sequence": 44976,
+          "generation": 29,
+          "input_ns": 23330177413945,
+          "au_ns": 23330177801497,
+          "decoder_ns": 23330232277910,
+          "output_ns": 23330235385447,
+          "input_decode_ms": 57.971502,
+          "au_decoder_ms": 54.476413,
+          "quota_overlap_ms": 50.481144
+        },
+        {
+          "source": "cam13",
+          "minute": 25,
+          "sequence": 45008,
+          "generation": 29,
+          "input_ns": 23331244174203,
+          "au_ns": 23331244666803,
+          "decoder_ns": 23331310173901,
+          "output_ns": 23331314717849,
+          "input_decode_ms": 70.543646,
+          "au_decoder_ms": 65.507098,
+          "quota_overlap_ms": 64.281513
+        },
+        {
+          "source": "cam13",
+          "minute": 25,
+          "sequence": 45040,
+          "generation": 29,
+          "input_ns": 23332310648681,
+          "au_ns": 23332311013774,
+          "decoder_ns": 23332384514789,
+          "output_ns": 23332385982949,
+          "input_decode_ms": 75.334268,
+          "au_decoder_ms": 73.501015,
+          "quota_overlap_ms": 66.326841
+        },
+        {
+          "source": "cam13",
+          "minute": 25,
+          "sequence": 45198,
+          "generation": 29,
+          "input_ns": 23337577275200,
+          "au_ns": 23337577526985,
+          "decoder_ns": 23337631564405,
+          "output_ns": 23337632101164,
+          "input_decode_ms": 54.825964,
+          "au_decoder_ms": 54.03742,
+          "quota_overlap_ms": 53.688107
+        }
+      ],
+      "frame_overlap_fraction": 0.9699248120300752,
+      "wait_overlap_fraction": 0.8715737349451984
+    },
+    "cam11": {
+      "high_frames": 136,
+      "quota_overlap_frames": 130,
+      "wait_ns": 9199176930,
+      "quota_overlap_ns": 7779048393,
+      "examples": [
+        {
+          "source": "cam11",
+          "minute": 25,
+          "sequence": 45007,
+          "generation": 27,
+          "input_ns": 23330174923806,
+          "au_ns": 23330175191910,
+          "decoder_ns": 23330232134513,
+          "output_ns": 23330235547714,
+          "input_decode_ms": 60.623908,
+          "au_decoder_ms": 56.942603,
+          "quota_overlap_ms": 50.481144
+        },
+        {
+          "source": "cam11",
+          "minute": 25,
+          "sequence": 45039,
+          "generation": 27,
+          "input_ns": 23331241575775,
+          "au_ns": 23331241838760,
+          "decoder_ns": 23331309981185,
+          "output_ns": 23331312715609,
+          "input_decode_ms": 71.139834,
+          "au_decoder_ms": 68.142425,
+          "quota_overlap_ms": 67.109556
+        },
+        {
+          "source": "cam11",
+          "minute": 25,
+          "sequence": 45071,
+          "generation": 27,
+          "input_ns": 23332308163602,
+          "au_ns": 23332308354818,
+          "decoder_ns": 23332384371762,
+          "output_ns": 23332385842002,
+          "input_decode_ms": 77.6784,
+          "au_decoder_ms": 76.016944,
+          "quota_overlap_ms": 66.326841
+        },
+        {
+          "source": "cam11",
+          "minute": 25,
+          "sequence": 45229,
+          "generation": 27,
+          "input_ns": 23337574830890,
+          "au_ns": 23337575052715,
+          "decoder_ns": 23337631442898,
+          "output_ns": 23337634017685,
+          "input_decode_ms": 59.186795,
+          "au_decoder_ms": 56.390183,
+          "quota_overlap_ms": 56.162377
+        }
+      ],
+      "frame_overlap_fraction": 0.9558823529411765,
+      "wait_overlap_fraction": 0.8456243914204181
+    },
+    "cam0": {
+      "high_frames": 129,
+      "quota_overlap_frames": 125,
+      "wait_ns": 8743248237,
+      "quota_overlap_ns": 7591351802,
+      "examples": [
+        {
+          "source": "cam0",
+          "minute": 25,
+          "sequence": 45007,
+          "generation": 33,
+          "input_ns": 23330179605010,
+          "au_ns": 23330180060091,
+          "decoder_ns": 23330232547814,
+          "output_ns": 23330235958885,
+          "input_decode_ms": 56.353875,
+          "au_decoder_ms": 52.487723,
+          "quota_overlap_ms": 50.481144
+        },
+        {
+          "source": "cam0",
+          "minute": 25,
+          "sequence": 45039,
+          "generation": 33,
+          "input_ns": 23331246071784,
+          "au_ns": 23331246486046,
+          "decoder_ns": 23331310500494,
+          "output_ns": 23331312599852,
+          "input_decode_ms": 66.528068,
+          "au_decoder_ms": 64.014448,
+          "quota_overlap_ms": 62.46227
+        },
+        {
+          "source": "cam0",
+          "minute": 25,
+          "sequence": 45071,
+          "generation": 33,
+          "input_ns": 23332312751979,
+          "au_ns": 23332312992634,
+          "decoder_ns": 23332384700695,
+          "output_ns": 23332385703095,
+          "input_decode_ms": 72.951116,
+          "au_decoder_ms": 71.708061,
+          "quota_overlap_ms": 66.326841
+        },
+        {
+          "source": "cam0",
+          "minute": 25,
+          "sequence": 45103,
+          "generation": 33,
+          "input_ns": 23333379378649,
+          "au_ns": 23333379644994,
+          "decoder_ns": 23333448395875,
+          "output_ns": 23333448972984,
+          "input_decode_ms": 69.594335,
+          "au_decoder_ms": 68.750881,
+          "quota_overlap_ms": 53.10628
+        }
+      ],
+      "frame_overlap_fraction": 0.9689922480620154,
+      "wait_overlap_fraction": 0.8682530332233549
+    },
+    "cam2": {
+      "high_frames": 113,
+      "quota_overlap_frames": 107,
+      "wait_ns": 7962372387,
+      "quota_overlap_ns": 6611438277,
+      "examples": [
+        {
+          "source": "cam2",
+          "minute": 25,
+          "sequence": 45007,
+          "generation": 18,
+          "input_ns": 23331229723646,
+          "au_ns": 23331230016400,
+          "decoder_ns": 23331309203561,
+          "output_ns": 23331309631492,
+          "input_decode_ms": 79.907846,
+          "au_decoder_ms": 79.187161,
+          "quota_overlap_ms": 69.446098
+        },
+        {
+          "source": "cam2",
+          "minute": 25,
+          "sequence": 45134,
+          "generation": 18,
+          "input_ns": 23335463036175,
+          "au_ns": 23335463243201,
+          "decoder_ns": 23335525191150,
+          "output_ns": 23335526645051,
+          "input_decode_ms": 63.608876,
+          "au_decoder_ms": 61.947949,
+          "quota_overlap_ms": 53.287256
+        },
+        {
+          "source": "cam2",
+          "minute": 25,
+          "sequence": 45149,
+          "generation": 18,
+          "input_ns": 23335963019012,
+          "au_ns": 23335963248177,
+          "decoder_ns": 23336024206007,
+          "output_ns": 23336024573919,
+          "input_decode_ms": 61.554907,
+          "au_decoder_ms": 60.95783,
+          "quota_overlap_ms": 0.0
+        },
+        {
+          "source": "cam2",
+          "minute": 25,
+          "sequence": 45197,
+          "generation": 18,
+          "input_ns": 23337563079159,
+          "au_ns": 23337563336494,
+          "decoder_ns": 23337632089584,
+          "output_ns": 23337633721041,
+          "input_decode_ms": 70.641882,
+          "au_decoder_ms": 68.75309,
+          "quota_overlap_ms": 58.196025
+        }
+      ],
+      "frame_overlap_fraction": 0.9469026548672567,
+      "wait_overlap_fraction": 0.8303352261939366
+    },
+    "cam5": {
+      "high_frames": 116,
+      "quota_overlap_frames": 113,
+      "wait_ns": 7975822116,
+      "quota_overlap_ns": 7012003492,
+      "examples": [
+        {
+          "source": "cam5",
+          "minute": 25,
+          "sequence": 45039,
+          "generation": 21,
+          "input_ns": 23331230460531,
+          "au_ns": 23331230663987,
+          "decoder_ns": 23331309454366,
+          "output_ns": 23331310146372,
+          "input_decode_ms": 79.685841,
+          "au_decoder_ms": 78.790379,
+          "quota_overlap_ms": 69.446098
+        },
+        {
+          "source": "cam5",
+          "minute": 25,
+          "sequence": 45166,
+          "generation": 21,
+          "input_ns": 23335463735691,
+          "au_ns": 23335463879808,
+          "decoder_ns": 23335525372547,
+          "output_ns": 23335528379685,
+          "input_decode_ms": 64.643994,
+          "au_decoder_ms": 61.492739,
+          "quota_overlap_ms": 53.287256
+        },
+        {
+          "source": "cam5",
+          "minute": 25,
+          "sequence": 45181,
+          "generation": 21,
+          "input_ns": 23335963804806,
+          "au_ns": 23335964586310,
+          "decoder_ns": 23336024614689,
+          "output_ns": 23336025561589,
+          "input_decode_ms": 61.756783,
+          "au_decoder_ms": 60.028379,
+          "quota_overlap_ms": 0.0
+        },
+        {
+          "source": "cam5",
+          "minute": 25,
+          "sequence": 45229,
+          "generation": 21,
+          "input_ns": 23337563762535,
+          "au_ns": 23337563964031,
+          "decoder_ns": 23337632305160,
+          "output_ns": 23337632752451,
+          "input_decode_ms": 68.989916,
+          "au_decoder_ms": 68.341129,
+          "quota_overlap_ms": 58.196025
+        }
+      ],
+      "frame_overlap_fraction": 0.9741379310344828,
+      "wait_overlap_fraction": 0.8791574573777768
+    },
+    "cam9": {
+      "high_frames": 133,
+      "quota_overlap_frames": 129,
+      "wait_ns": 9058234435,
+      "quota_overlap_ns": 7894440482,
+      "examples": [
+        {
+          "source": "cam9",
+          "minute": 25,
+          "sequence": 45008,
+          "generation": 25,
+          "input_ns": 23331251829617,
+          "au_ns": 23331252162900,
+          "decoder_ns": 23331309846648,
+          "output_ns": 23331310547653,
+          "input_decode_ms": 58.718036,
+          "au_decoder_ms": 57.683748,
+          "quota_overlap_ms": 56.785416
+        },
+        {
+          "source": "cam9",
+          "minute": 25,
+          "sequence": 45040,
+          "generation": 25,
+          "input_ns": 23332318444883,
+          "au_ns": 23332318637199,
+          "decoder_ns": 23332384279774,
+          "output_ns": 23332385207575,
+          "input_decode_ms": 66.762692,
+          "au_decoder_ms": 65.642575,
+          "quota_overlap_ms": 64.951219
+        },
+        {
+          "source": "cam9",
+          "minute": 25,
+          "sequence": 45072,
+          "generation": 25,
+          "input_ns": 23333385140412,
+          "au_ns": 23333385305179,
+          "decoder_ns": 23333447181980,
+          "output_ns": 23333448181460,
+          "input_decode_ms": 63.041048,
+          "au_decoder_ms": 61.876801,
+          "quota_overlap_ms": 53.10628
+        },
+        {
+          "source": "cam9",
+          "minute": 25,
+          "sequence": 45451,
+          "generation": 25,
+          "input_ns": 23346018564073,
+          "au_ns": 23346019918185,
+          "decoder_ns": 23346091204692,
+          "output_ns": 23346091652473,
+          "input_decode_ms": 73.0884,
+          "au_decoder_ms": 71.286507,
+          "quota_overlap_ms": 47.131649
+        }
+      ],
+      "frame_overlap_fraction": 0.9699248120300752,
+      "wait_overlap_fraction": 0.8715208839701443
+    },
+    "cam8": {
+      "high_frames": 135,
+      "quota_overlap_frames": 129,
+      "wait_ns": 8949442406,
+      "quota_overlap_ns": 7779072657,
+      "examples": [
+        {
+          "source": "cam8",
+          "minute": 25,
+          "sequence": 45039,
+          "generation": 24,
+          "input_ns": 23331256217418,
+          "au_ns": 23331256607690,
+          "decoder_ns": 23331309745480,
+          "output_ns": 23331310770999,
+          "input_decode_ms": 54.553581,
+          "au_decoder_ms": 53.13779,
+          "quota_overlap_ms": 52.340626
+        },
+        {
+          "source": "cam8",
+          "minute": 25,
+          "sequence": 45071,
+          "generation": 24,
+          "input_ns": 23332322980021,
+          "au_ns": 23332323498600,
+          "decoder_ns": 23332384167606,
+          "output_ns": 23332385358382,
+          "input_decode_ms": 62.378361,
+          "au_decoder_ms": 60.669006,
+          "quota_overlap_ms": 60.089818
+        },
+        {
+          "source": "cam8",
+          "minute": 25,
+          "sequence": 45103,
+          "generation": 24,
+          "input_ns": 23333389695579,
+          "au_ns": 23333389964634,
+          "decoder_ns": 23333447141161,
+          "output_ns": 23333448015303,
+          "input_decode_ms": 58.319724,
+          "au_decoder_ms": 57.176527,
+          "quota_overlap_ms": 53.10628
+        },
+        {
+          "source": "cam8",
+          "minute": 25,
+          "sequence": 45355,
+          "generation": 24,
+          "input_ns": 23341789585223,
+          "au_ns": 23341790044054,
+          "decoder_ns": 23341859443490,
+          "output_ns": 23341861242154,
+          "input_decode_ms": 71.656931,
+          "au_decoder_ms": 69.399436,
+          "quota_overlap_ms": 58.256723
+        }
+      ],
+      "frame_overlap_fraction": 0.9555555555555556,
+      "wait_overlap_fraction": 0.869224282820643
+    },
+    "cam15": {
+      "high_frames": 122,
+      "quota_overlap_frames": 116,
+      "wait_ns": 8172595272,
+      "quota_overlap_ns": 6976157470,
+      "examples": [
+        {
+          "source": "cam15",
+          "minute": 25,
+          "sequence": 45039,
+          "generation": 31,
+          "input_ns": 23331234473860,
+          "au_ns": 23331234800103,
+          "decoder_ns": 23331310284539,
+          "output_ns": 23331311520054,
+          "input_decode_ms": 77.046194,
+          "au_decoder_ms": 75.484436,
+          "quota_overlap_ms": 69.446098
+        },
+        {
+          "source": "cam15",
+          "minute": 25,
+          "sequence": 45166,
+          "generation": 31,
+          "input_ns": 23335467705250,
+          "au_ns": 23335467804868,
+          "decoder_ns": 23335524957415,
+          "output_ns": 23335525460815,
+          "input_decode_ms": 57.755565,
+          "au_decoder_ms": 57.152547,
+          "quota_overlap_ms": 53.287256
+        },
+        {
+          "source": "cam15",
+          "minute": 25,
+          "sequence": 45181,
+          "generation": 31,
+          "input_ns": 23335967746826,
+          "au_ns": 23335968415722,
+          "decoder_ns": 23336031973779,
+          "output_ns": 23336032436939,
+          "input_decode_ms": 64.690113,
+          "au_decoder_ms": 63.558057,
+          "quota_overlap_ms": 0.0
+        },
+        {
+          "source": "cam15",
+          "minute": 25,
+          "sequence": 45229,
+          "generation": 31,
+          "input_ns": 23337567800453,
+          "au_ns": 23337568069038,
+          "decoder_ns": 23337631755251,
+          "output_ns": 23337632308300,
+          "input_decode_ms": 64.507847,
+          "au_decoder_ms": 63.686213,
+          "quota_overlap_ms": 58.196025
+        }
+      ],
+      "frame_overlap_fraction": 0.9508196721311475,
+      "wait_overlap_fraction": 0.8536036886472163
+    },
+    "cam14": {
+      "high_frames": 130,
+      "quota_overlap_frames": 125,
+      "wait_ns": 8819225629,
+      "quota_overlap_ns": 7627287183,
+      "examples": [
+        {
+          "source": "cam14",
+          "minute": 25,
+          "sequence": 45008,
+          "generation": 30,
+          "input_ns": 23331248197191,
+          "au_ns": 23331248506274,
+          "decoder_ns": 23331310267039,
+          "output_ns": 23331312016194,
+          "input_decode_ms": 63.819003,
+          "au_decoder_ms": 61.760765,
+          "quota_overlap_ms": 60.442042
+        },
+        {
+          "source": "cam14",
+          "minute": 25,
+          "sequence": 45040,
+          "generation": 30,
+          "input_ns": 23332314786167,
+          "au_ns": 23332314877325,
+          "decoder_ns": 23332384562618,
+          "output_ns": 23332386720294,
+          "input_decode_ms": 71.934127,
+          "au_decoder_ms": 69.685293,
+          "quota_overlap_ms": 66.326841
+        },
+        {
+          "source": "cam14",
+          "minute": 25,
+          "sequence": 45072,
+          "generation": 30,
+          "input_ns": 23333381456137,
+          "au_ns": 23333381559675,
+          "decoder_ns": 23333448232319,
+          "output_ns": 23333449885485,
+          "input_decode_ms": 68.429348,
+          "au_decoder_ms": 66.672644,
+          "quota_overlap_ms": 53.10628
+        },
+        {
+          "source": "cam14",
+          "minute": 25,
+          "sequence": 45261,
+          "generation": 30,
+          "input_ns": 23339681559639,
+          "au_ns": 23339681988911,
+          "decoder_ns": 23339738700286,
+          "output_ns": 23339740560728,
+          "input_decode_ms": 59.001089,
+          "au_decoder_ms": 56.711375,
+          "quota_overlap_ms": 55.621877
+        }
+      ],
+      "frame_overlap_fraction": 0.9615384615384616,
+      "wait_overlap_fraction": 0.8648477206342716
+    },
+    "cam7": {
+      "high_frames": 131,
+      "quota_overlap_frames": 125,
+      "wait_ns": 8826382816,
+      "quota_overlap_ns": 7502249433,
+      "examples": [
+        {
+          "source": "cam7",
+          "minute": 25,
+          "sequence": 45033,
+          "generation": 23,
+          "input_ns": 23331229274455,
+          "au_ns": 23331229509881,
+          "decoder_ns": 23331309613663,
+          "output_ns": 23331312294918,
+          "input_decode_ms": 83.020463,
+          "au_decoder_ms": 80.103782,
+          "quota_overlap_ms": 69.446098
+        },
+        {
+          "source": "cam7",
+          "minute": 25,
+          "sequence": 45066,
+          "generation": 23,
+          "input_ns": 23332329325251,
+          "au_ns": 23332329537097,
+          "decoder_ns": 23332384155937,
+          "output_ns": 23332385036429,
+          "input_decode_ms": 55.711178,
+          "au_decoder_ms": 54.61884,
+          "quota_overlap_ms": 54.051321
+        },
+        {
+          "source": "cam7",
+          "minute": 25,
+          "sequence": 45160,
+          "generation": 23,
+          "input_ns": 23335462582084,
+          "au_ns": 23335462798070,
+          "decoder_ns": 23335525498124,
+          "output_ns": 23335527013703,
+          "input_decode_ms": 64.431619,
+          "au_decoder_ms": 62.700054,
+          "quota_overlap_ms": 53.287256
+        },
+        {
+          "source": "cam7",
+          "minute": 25,
+          "sequence": 45175,
+          "generation": 23,
+          "input_ns": 23335962623430,
+          "au_ns": 23335962851225,
+          "decoder_ns": 23336024703047,
+          "output_ns": 23336025890323,
+          "input_decode_ms": 63.266893,
+          "au_decoder_ms": 61.851822,
+          "quota_overlap_ms": 0.0
+        }
+      ],
+      "frame_overlap_fraction": 0.9541984732824428,
+      "wait_overlap_fraction": 0.8499800642456068
+    },
+    "cam12": {
+      "high_frames": 130,
+      "quota_overlap_frames": 128,
+      "wait_ns": 8953133821,
+      "quota_overlap_ns": 7855884044,
+      "examples": [
+        {
+          "source": "cam12",
+          "minute": 25,
+          "sequence": 45039,
+          "generation": 28,
+          "input_ns": 23331249820418,
+          "au_ns": 23331250089222,
+          "decoder_ns": 23331310075793,
+          "output_ns": 23331312859226,
+          "input_decode_ms": 63.038808,
+          "au_decoder_ms": 59.986571,
+          "quota_overlap_ms": 58.859094
+        },
+        {
+          "source": "cam12",
+          "minute": 25,
+          "sequence": 45071,
+          "generation": 28,
+          "input_ns": 23332316535442,
+          "au_ns": 23332316790736,
+          "decoder_ns": 23332384445141,
+          "output_ns": 23332389575626,
+          "input_decode_ms": 73.040184,
+          "au_decoder_ms": 67.654405,
+          "quota_overlap_ms": 66.326841
+        },
+        {
+          "source": "cam12",
+          "minute": 25,
+          "sequence": 45103,
+          "generation": 28,
+          "input_ns": 23333383189942,
+          "au_ns": 23333383427787,
+          "decoder_ns": 23333448188450,
+          "output_ns": 23333452510632,
+          "input_decode_ms": 69.32069,
+          "au_decoder_ms": 64.760663,
+          "quota_overlap_ms": 53.10628
+        },
+        {
+          "source": "cam12",
+          "minute": 25,
+          "sequence": 45292,
+          "generation": 28,
+          "input_ns": 23339683269104,
+          "au_ns": 23339683559669,
+          "decoder_ns": 23339738518549,
+          "output_ns": 23339739798303,
+          "input_decode_ms": 56.529199,
+          "au_decoder_ms": 54.95888,
+          "quota_overlap_ms": 54.051119
+        }
+      ],
+      "frame_overlap_fraction": 0.9846153846153847,
+      "wait_overlap_fraction": 0.8774451718317503
+    },
+    "cam3": {
+      "high_frames": 129,
+      "quota_overlap_frames": 124,
+      "wait_ns": 8738572883,
+      "quota_overlap_ns": 7555147439,
+      "examples": [
+        {
+          "source": "cam3",
+          "minute": 25,
+          "sequence": 45040,
+          "generation": 19,
+          "input_ns": 23332322541849,
+          "au_ns": 23332322868203,
+          "decoder_ns": 23332383909572,
+          "output_ns": 23332384375332,
+          "input_decode_ms": 61.833483,
+          "au_decoder_ms": 61.041369,
+          "quota_overlap_ms": 60.720215
+        },
+        {
+          "source": "cam3",
+          "minute": 25,
+          "sequence": 45072,
+          "generation": 19,
+          "input_ns": 23333389142860,
+          "au_ns": 23333389402385,
+          "decoder_ns": 23333448697879,
+          "output_ns": 23333449375115,
+          "input_decode_ms": 60.232255,
+          "au_decoder_ms": 59.295494,
+          "quota_overlap_ms": 53.10628
+        },
+        {
+          "source": "cam3",
+          "minute": 25,
+          "sequence": 45324,
+          "generation": 19,
+          "input_ns": 23341789234591,
+          "au_ns": 23341789654652,
+          "decoder_ns": 23341858910631,
+          "output_ns": 23341859881301,
+          "input_decode_ms": 70.64671,
+          "au_decoder_ms": 69.255979,
+          "quota_overlap_ms": 58.256723
+        },
+        {
+          "source": "cam3",
+          "minute": 25,
+          "sequence": 45356,
+          "generation": 19,
+          "input_ns": 23342856022505,
+          "au_ns": 23342856405468,
+          "decoder_ns": 23342929560207,
+          "output_ns": 23342929955509,
+          "input_decode_ms": 73.933004,
+          "au_decoder_ms": 73.154739,
+          "quota_overlap_ms": 64.009185
+        }
+      ],
+      "frame_overlap_fraction": 0.9612403100775194,
+      "wait_overlap_fraction": 0.8645745180769467
+    },
+    "cam4": {
+      "high_frames": 101,
+      "quota_overlap_frames": 95,
+      "wait_ns": 7018610219,
+      "quota_overlap_ns": 5942058684,
+      "examples": [
+        {
+          "source": "cam4",
+          "minute": 25,
+          "sequence": 45071,
+          "generation": 20,
+          "input_ns": 23332327153026,
+          "au_ns": 23332327343822,
+          "decoder_ns": 23332383969040,
+          "output_ns": 23332384617717,
+          "input_decode_ms": 57.464691,
+          "au_decoder_ms": 56.625218,
+          "quota_overlap_ms": 56.244596
+        },
+        {
+          "source": "cam4",
+          "minute": 25,
+          "sequence": 45355,
+          "generation": 20,
+          "input_ns": 23341793821327,
+          "au_ns": 23341794066232,
+          "decoder_ns": 23341859080658,
+          "output_ns": 23341859566958,
+          "input_decode_ms": 65.745631,
+          "au_decoder_ms": 65.014426,
+          "quota_overlap_ms": 58.256723
+        },
+        {
+          "source": "cam4",
+          "minute": 25,
+          "sequence": 45387,
+          "generation": 20,
+          "input_ns": 23342860484225,
+          "au_ns": 23342860695680,
+          "decoder_ns": 23342929670525,
+          "output_ns": 23342930146725,
+          "input_decode_ms": 69.6625,
+          "au_decoder_ms": 68.974845,
+          "quota_overlap_ms": 64.009185
+        },
+        {
+          "source": "cam4",
+          "minute": 25,
+          "sequence": 45482,
+          "generation": 20,
+          "input_ns": 23346027182347,
+          "au_ns": 23346027335834,
+          "decoder_ns": 23346109208015,
+          "output_ns": 23346109441700,
+          "input_decode_ms": 82.259353,
+          "au_decoder_ms": 81.872181,
+          "quota_overlap_ms": 47.131649
+        }
+      ],
+      "frame_overlap_fraction": 0.9405940594059405,
+      "wait_overlap_fraction": 0.8466147141088304
+    },
+    "cam1": {
+      "high_frames": 120,
+      "quota_overlap_frames": 113,
+      "wait_ns": 8118312540,
+      "quota_overlap_ns": 6892652763,
+      "examples": [
+        {
+          "source": "cam1",
+          "minute": 25,
+          "sequence": 45072,
+          "generation": 17,
+          "input_ns": 23332325768914,
+          "au_ns": 23332326009219,
+          "decoder_ns": 23332384794194,
+          "output_ns": 23332386359462,
+          "input_decode_ms": 60.590548,
+          "au_decoder_ms": 58.784975,
+          "quota_overlap_ms": 57.579199
+        },
+        {
+          "source": "cam1",
+          "minute": 25,
+          "sequence": 45104,
+          "generation": 17,
+          "input_ns": 23333392400464,
+          "au_ns": 23333392658709,
+          "decoder_ns": 23333448482084,
+          "output_ns": 23333449482413,
+          "input_decode_ms": 57.081949,
+          "au_decoder_ms": 55.823375,
+          "quota_overlap_ms": 53.10628
+        },
+        {
+          "source": "cam1",
+          "minute": 25,
+          "sequence": 45183,
+          "generation": 17,
+          "input_ns": 23336025676717,
+          "au_ns": 23336025892572,
+          "decoder_ns": 23336093471418,
+          "output_ns": 23336093911918,
+          "input_decode_ms": 68.235201,
+          "au_decoder_ms": 67.578846,
+          "quota_overlap_ms": 0.0
+        },
+        {
+          "source": "cam1",
+          "minute": 25,
+          "sequence": 45332,
+          "generation": 17,
+          "input_ns": 23340992467881,
+          "au_ns": 23340992741116,
+          "decoder_ns": 23341047938292,
+          "output_ns": 23341048330824,
+          "input_decode_ms": 55.862943,
+          "au_decoder_ms": 55.197176,
+          "quota_overlap_ms": 0.0
+        }
+      ],
+      "frame_overlap_fraction": 0.9416666666666667,
+      "wait_overlap_fraction": 0.8490253028617694
+    },
+    "cam10": {
+      "high_frames": 111,
+      "quota_overlap_frames": 107,
+      "wait_ns": 7540438375,
+      "quota_overlap_ns": 6561126567,
+      "examples": [
+        {
+          "source": "cam10",
+          "minute": 25,
+          "sequence": 45040,
+          "generation": 26,
+          "input_ns": 23332326114947,
+          "au_ns": 23332326377291,
+          "decoder_ns": 23332384346453,
+          "output_ns": 23332389092276,
+          "input_decode_ms": 62.977329,
+          "au_decoder_ms": 57.969162,
+          "quota_overlap_ms": 57.211127
+        },
+        {
+          "source": "cam10",
+          "minute": 25,
+          "sequence": 45072,
+          "generation": 26,
+          "input_ns": 23333392776757,
+          "au_ns": 23333393173659,
+          "decoder_ns": 23333447551332,
+          "output_ns": 23333450579491,
+          "input_decode_ms": 57.802734,
+          "au_decoder_ms": 54.377673,
+          "quota_overlap_ms": 53.027161
+        },
+        {
+          "source": "cam10",
+          "minute": 25,
+          "sequence": 45324,
+          "generation": 26,
+          "input_ns": 23341792806468,
+          "au_ns": 23341793096032,
+          "decoder_ns": 23341859669556,
+          "output_ns": 23341863111566,
+          "input_decode_ms": 70.305098,
+          "au_decoder_ms": 66.573524,
+          "quota_overlap_ms": 58.256723
+        },
+        {
+          "source": "cam10",
+          "minute": 25,
+          "sequence": 45356,
+          "generation": 26,
+          "input_ns": 23342859450166,
+          "au_ns": 23342859978535,
+          "decoder_ns": 23342933537716,
+          "output_ns": 23342935634493,
+          "input_decode_ms": 76.184327,
+          "au_decoder_ms": 73.559181,
+          "quota_overlap_ms": 64.009185
+        }
+      ],
+      "frame_overlap_fraction": 0.963963963963964,
+      "wait_overlap_fraction": 0.870125348249398
+    }
+  },
+  "totals": {
+    "high_frames": 2004,
+    "quota_overlap_frames": 1923,
+    "wait_ns": 135756609729,
+    "quota_overlap_ns": 116908380050
+  },
+  "trace_sha256": "f43f13d290a1fc312633774203547aee1ae15f0c8a3c32d3e801590adc418e23",
+  "analysis_sha256": "eee5f3173b1cfb3a03e1b9d168c73453da8c7f7ebda6e6322f2e84cc6ae34488",
+  "script_sha256": "a85e198bd8f2c79022b92470b5ec48f64fbfde33da5b56667363a4a2441e7960",
+  "high_frame_definition": "Input-to-decode exceeds this source's exact minutes 5\u201310 P99 by more than 1000/30 ms.",
+  "note": "Exact interval overlap with control_quota during AU-to-decoder waiting. Overlap establishes a blocked dispatch interval, not attribution of every nanosecond to a disk operation."
+}

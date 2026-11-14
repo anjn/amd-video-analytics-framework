@@ -1,0 +1,1781 @@
+{
+  "schema": 1,
+  "date": "2026-11-12",
+  "host": "amd-rai370",
+  "baseline_commit": "e284b96b1fe7c261e58f890f2fcd5b3e01dd393a",
+  "branch": "codex/reference-wave-demo",
+  "host_environment": {
+    "os": "Ubuntu 24.04.5 LTS",
+    "kernel": "6.17.0-1033-oem",
+    "cpu": "AMD Ryzen AI 9 HX 370",
+    "gpu": "gfx1150 Radeon 890M",
+    "mesa": "25.2.8",
+    "rocm": "10.1.0",
+    "migraphx": "2.18.0",
+    "wave_regions": 8
+  },
+  "source_hashes": {
+    "docs/dev/resource-dashboard/README.ja.md": "1ee9147073b9b99a627591e07ce412a1cd4ac5ef9f687898ac90bf85c1f4d572",
+    "docs/dev/resource-dashboard/README.md": "1e2b814c57acfd18b83e4e6be9a7f319d202f1f662e085cc6f5cba4463bad9bf",
+    "docs/dev/support-matrix.ja.md": "f7d06c08cf5a60d670dc46ef479cc723b26e8a85691d472d9a40f27fca6fc2de",
+    "docs/dev/support-matrix.md": "981f6970f8ebefe0eb9bfb2398774c818370ab7599debb213ed50b31671bdd3e",
+    "examples/nvr/demo/1440p/README.ja.md": "5ac1738e4c8c24aa4c2744e7edc5b1803ebe48602b5df4e51365e14c0ccd0ef9",
+    "examples/nvr/demo/1440p/README.md": "7d9ea5d7d696f54449db0090cee64fcf81a99de8331f60472e629acc76bac339",
+    "examples/nvr/demo/1440p/run.sh": "1e19a5d231d0c99824dcbf8e85e8ba02864aba136e2806c31d785c747882a23c",
+    "examples/resource-dashboard/wave_collector.hpp": "87149ef18730ca3b1d5c0007726b6a22a92d1d42d45b42008999ac9a34f0d42a",
+    "src/wave_sample.hpp": "5ea5c2f53bc061d3729ed73ea9b6c6febe3da55b106cb0ff1c1d6ca4666deeeb",
+    "tests/resource_monitor_tests.cpp": "ac53156a7b0a2be35a243011966e4b3496d786881b5a0ad8f7473e332ec489ef",
+    "tests/test_setup.py": "0d1f8f8d0e953e3c2d8fe5966eb86575f40a8fa92ecd26dbaa2130ae7312cbae",
+    "tools/wave_sampler.cpp": "30ed352f985d8da6cd478c9e853e5aa253af19cc553eec1324eed21ae96ea519"
+  },
+  "host_preflight": {
+    "sdk_packages": {
+      "amdrocm-amdsmi10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-amdsmi10.1": "10.1.0-3",
+      "amdrocm-base10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-base10.1": "10.1.0-3",
+      "amdrocm-blas-host10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-blas-host10.1": "10.1.0-3",
+      "amdrocm-blas10.0-gfx1010": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1011": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1012": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1030": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1031": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1032": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1033": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1034": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1035": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1036": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1100": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1101": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1102": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1103": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1150": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1151": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1152": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1153": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1200": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1201": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx1250": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx908": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx90a": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx942": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.0-gfx950": "10.0.0~pre4-32424980240",
+      "amdrocm-blas10.1-gfx1150": "10.1.0-3",
+      "amdrocm-ck10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-ck10.1": "10.1.0-3",
+      "amdrocm-core10.0-gfx1010": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1011": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1012": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1030": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1031": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1032": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1033": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1034": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1035": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1036": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1100": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1101": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1102": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1103": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1150": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1151": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1152": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1153": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1200": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1201": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx1250": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx908": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx90a": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx942": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.0-gfx950": "10.0.0~pre4-32424980240",
+      "amdrocm-core10.1-gfx1150": "10.1.0-3",
+      "amdrocm-decode10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-decode10.1": "10.1.0-3",
+      "amdrocm-dnn-host10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn-host10.1": "10.1.0-3",
+      "amdrocm-dnn10.0-gfx1030": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn10.0-gfx1100": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn10.0-gfx1101": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn10.0-gfx1102": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn10.0-gfx1150": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn10.0-gfx1151": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn10.0-gfx1152": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn10.0-gfx1153": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn10.0-gfx1200": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn10.0-gfx1201": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn10.0-gfx1250": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn10.0-gfx908": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn10.0-gfx90a": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn10.0-gfx942": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn10.0-gfx950": "10.0.0~pre4-32424980240",
+      "amdrocm-dnn10.1-gfx1150": "10.1.0-3",
+      "amdrocm-fft-host10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-fft-host10.1": "10.1.0-3",
+      "amdrocm-fft10.0-gfx1010": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1011": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1012": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1030": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1031": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1032": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1033": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1034": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1035": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1036": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1100": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1101": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1102": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1103": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1150": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1151": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1152": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1153": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1200": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1201": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx1250": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx908": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx90a": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx942": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.0-gfx950": "10.0.0~pre4-32424980240",
+      "amdrocm-fft10.1-gfx1150": "10.1.0-3",
+      "amdrocm-hipfile10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-hipfile10.1": "10.1.0-3",
+      "amdrocm-hipify10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-hipify10.1": "10.1.0-3",
+      "amdrocm-jpeg10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-jpeg10.1": "10.1.0-3",
+      "amdrocm-llvm-dev10.1": "10.1.0-3",
+      "amdrocm-llvm10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-llvm10.1": "10.1.0-3",
+      "amdrocm-math-common10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-math-common10.1": "10.1.0-3",
+      "amdrocm-profiler-base10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-profiler-base10.1": "10.1.0-3",
+      "amdrocm-rand-host10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-rand-host10.1": "10.1.0-3",
+      "amdrocm-rand10.0-gfx1010": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1011": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1012": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1030": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1031": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1032": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1033": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1034": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1035": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1036": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1100": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1101": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1102": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1103": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1150": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1151": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1152": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1153": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1200": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1201": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx1250": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx908": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx90a": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx942": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.0-gfx950": "10.0.0~pre4-32424980240",
+      "amdrocm-rand10.1-gfx1150": "10.1.0-3",
+      "amdrocm-rccl-host10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1010": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1011": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1012": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1030": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1031": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1032": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1033": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1034": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1035": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1036": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1100": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1101": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1102": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1151": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1200": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1201": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx1250": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx908": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx90a": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx942": "10.0.0~pre4-32424980240",
+      "amdrocm-rccl10.0-gfx950": "10.0.0~pre4-32424980240",
+      "amdrocm-rocshmem10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-rocshmem10.1": "10.1.0-3",
+      "amdrocm-rpp10.1": "10.1.0-3",
+      "amdrocm-runtime-dev10.1": "10.1.0-3",
+      "amdrocm-runtime10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-runtime10.1": "10.1.0-3",
+      "amdrocm-solver-host10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-solver-host10.1": "10.1.0-3",
+      "amdrocm-solver10.0-gfx1010": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1011": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1012": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1030": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1031": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1032": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1033": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1034": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1035": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1036": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1100": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1101": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1102": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1103": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1150": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1151": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1152": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1153": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1200": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1201": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx1250": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx908": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx90a": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx942": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.0-gfx950": "10.0.0~pre4-32424980240",
+      "amdrocm-solver10.1-gfx1150": "10.1.0-3",
+      "amdrocm-sparse-host10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse-host10.1": "10.1.0-3",
+      "amdrocm-sparse10.0-gfx1010": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1011": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1012": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1030": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1031": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1032": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1033": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1034": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1035": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1036": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1100": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1101": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1102": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1103": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1150": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1151": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1152": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1153": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1200": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1201": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx1250": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx908": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx90a": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx942": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.0-gfx950": "10.0.0~pre4-32424980240",
+      "amdrocm-sparse10.1-gfx1150": "10.1.0-3",
+      "amdrocm-sysdeps10.0": "10.0.0~pre4-32424980240",
+      "amdrocm-sysdeps10.1": "10.1.0-3",
+      "amdrocm10-migraphx": "2.18.0-1",
+      "amdrocm10-migraphx-dev": "2.18.0-1",
+      "amdrocm10.0": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1010": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1011": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1012": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1030": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1031": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1032": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1033": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1034": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1035": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1036": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1100": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1101": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1102": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1103": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1150": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1151": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1152": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1153": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1200": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1201": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx1250": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx908": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx90a": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx942": "10.0.0~pre4-32424980240",
+      "amdrocm10.0-gfx950": "10.0.0~pre4-32424980240"
+    },
+    "tools": {
+      "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)",
+      "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)"
+    },
+    "packages": {
+      "build-essential": "12.10ubuntu1",
+      "cmake": "3.28.3-1build7",
+      "ninja-build": "1.11.1-2",
+      "pkg-config": "1.8.1-2build1",
+      "git": "1:2.43.0-1ubuntu7.4",
+      "curl": "8.5.0-2ubuntu10.16",
+      "m4": "1.4.19-4build1",
+      "bison": "2:3.8.2+dfsg-1ubuntu0.24.04.1",
+      "flex": "2.6.4-8.2build1",
+      "python3-venv": "3.12.3-0ubuntu2.1",
+      "python3-dev": "3.12.3-0ubuntu2.1",
+      "python-gi-dev": "3.48.2-1",
+      "libglib2.0-dev": "2.80.0-6ubuntu3.9",
+      "libva-dev": "2.20.0-2ubuntu0.2",
+      "libdrm-dev": "2.4.125-1ubuntu0.1~24.04.2",
+      "libegl-dev": "1.7.0-1build1",
+      "libgles-dev": "1.7.0-1build1",
+      "libjson-glib-dev": "1.8.0-2build2",
+      "libsqlite3-dev": "3.45.1-1ubuntu2.9",
+      "libopencv-core-dev": "4.6.0+dfsg-13.1ubuntu1",
+      "libopencv-imgproc-dev": "4.6.0+dfsg-13.1ubuntu1",
+      "qt6-base-dev": "6.4.2+dfsg-21.1build5",
+      "qt6-wayland": "6.4.2-5build3",
+      "libpaho-mqtt-dev": "1.3.13-1build2",
+      "librdkafka-dev": "2.3.0-1build2",
+      "libfontconfig-dev": "2.15.0-1.1ubuntu2",
+      "libfreetype-dev": "2.13.2+dfsg-1ubuntu0.2",
+      "libpng-dev": "1.6.43-5ubuntu0.7",
+      "libbrotli-dev": "1.1.0-2ubuntu0.1",
+      "libexpat1-dev": "2.6.1-2ubuntu0.6",
+      "libssl-dev": "3.0.13-0ubuntu3.16",
+      "ffmpeg": "7:6.1.1-3ubuntu5",
+      "nlohmann-json3-dev": "3.11.3-1"
+    },
+    "os": "24.04",
+    "rocm": "10.1.0",
+    "migraphx": "2.18.0",
+    "rocm_root": "/opt/rocm/core-10.1",
+    "migraphx_root": "/opt/rocm/extras-10",
+    "npu": {
+      "ryzen_ai_venv": "/home/amd/work/rai/rai19-venv",
+      "onnxruntime": "1.30.0",
+      "xrt": "2.26.89"
+    }
+  },
+  "gpu_probe": {
+    "schema": 1,
+    "gpu": "gfx1150",
+    "h264_capability": true,
+    "linear_bgra": true,
+    "alias_observed": true,
+    "first_checksum": 12902400,
+    "second_checksum": 47232000,
+    "vpe_ns_delta": 1557910,
+    "vpe_observed": true,
+    "pipeline_zero_copy_verified": false,
+    "gate_passed": true
+  },
+  "tests": {
+    "native_contracts": {
+      "passed": 30,
+      "failed": 0
+    },
+    "setup": {
+      "passed": 18,
+      "failed": 0
+    }
+  },
+  "npu_interop": {
+    "schema": 1,
+    "application_input_copy_verified": false,
+    "ep_internal_copy_verified": false,
+    "iterations": 100,
+    "calls": 100,
+    "input_copies": 0,
+    "violations": 0,
+    "max_pixel_error": 0,
+    "reference_checked": false,
+    "min_embedding_cosine": 1,
+    "min_text_cosine": 1,
+    "buffer_reuses": 0,
+    "invalid_inputs_rejected": 4,
+    "diagnostic_input_readback_bytes": 78643200,
+    "reference_mean_call_ms": 0,
+    "mean_call_ms": 32.71486842
+  },
+  "gui_checks": {
+    "trials": [
+      {
+        "mode": "sysfs",
+        "index": 0,
+        "passed": true,
+        "duration_seconds": 64.827245605,
+        "channels": 17,
+        "selected_video_count": 15,
+        "display_fps_mean": 29.75494357123146,
+        "ai_hz": 3.000009372779283,
+        "gpu_source": "sysfs",
+        "gpu_pct_mean": 100.0,
+        "gpu_samples": [
+          {
+            "frames": 198,
+            "encoder_inputs": 198,
+            "skipped": 0,
+            "cpu_pct": 5.485232,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 68.616807,
+            "vpe_pct": 50.459623,
+            "socket_w": 28.343
+          },
+          {
+            "frames": 248,
+            "encoder_inputs": 248,
+            "skipped": 0,
+            "cpu_pct": 5.907173,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 69.191426,
+            "vpe_pct": 49.490097,
+            "socket_w": 29.552
+          },
+          {
+            "frames": 298,
+            "encoder_inputs": 298,
+            "skipped": 0,
+            "cpu_pct": 5.932203,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 66.139516,
+            "vpe_pct": 49.177153,
+            "socket_w": 29.896
+          },
+          {
+            "frames": 348,
+            "encoder_inputs": 348,
+            "skipped": 0,
+            "cpu_pct": 6.694561,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 68.810604,
+            "vpe_pct": 54.046713,
+            "socket_w": 30.101
+          },
+          {
+            "frames": 398,
+            "encoder_inputs": 398,
+            "skipped": 0,
+            "cpu_pct": 6.302521,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 66.59775,
+            "vpe_pct": 48.902294,
+            "socket_w": 30.135
+          },
+          {
+            "frames": 448,
+            "encoder_inputs": 448,
+            "skipped": 0,
+            "cpu_pct": 6.751055,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 74.093622,
+            "vpe_pct": 54.685761,
+            "socket_w": 30.681
+          },
+          {
+            "frames": 498,
+            "encoder_inputs": 498,
+            "skipped": 0,
+            "cpu_pct": 6.694561,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 68.888116,
+            "vpe_pct": 48.990627,
+            "socket_w": 30.449
+          },
+          {
+            "frames": 548,
+            "encoder_inputs": 548,
+            "skipped": 0,
+            "cpu_pct": 7.112971,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 70.688665,
+            "vpe_pct": 52.558803,
+            "socket_w": 31.477
+          },
+          {
+            "frames": 598,
+            "encoder_inputs": 598,
+            "skipped": 0,
+            "cpu_pct": 7.142857,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 71.874999,
+            "vpe_pct": 51.300453,
+            "socket_w": 31.719
+          },
+          {
+            "frames": 648,
+            "encoder_inputs": 648,
+            "skipped": 0,
+            "cpu_pct": 7.949791,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 72.308696,
+            "vpe_pct": 53.055606,
+            "socket_w": 31.591
+          }
+        ],
+        "audit_errors": 0,
+        "search": {
+          "error": "",
+          "state": "ready",
+          "stored": 1307,
+          "tracking_error": ""
+        },
+        "ai_stages": [
+          {
+            "completed": 251,
+            "mean_ms": 1.9205788151260506,
+            "p95_ms": 2.653061,
+            "stage": "Analysis DB save"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Analysis save queue"
+          },
+          {
+            "completed": 6472,
+            "mean_ms": 0.10131872467320306,
+            "p95_ms": 0.145037,
+            "stage": "Decoded frame wait"
+          },
+          {
+            "completed": 3234,
+            "mean_ms": 8.613674183660132,
+            "p95_ms": 11.07505275,
+            "stage": "Detection update"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Embedding NPU in flight"
+          },
+          {
+            "completed": 275,
+            "mean_ms": 209.2549620140846,
+            "p95_ms": 386.062406,
+            "stage": "Embedding first result"
+          },
+          {
+            "completed": 1307,
+            "mean_ms": 183.86835694453367,
+            "p95_ms": 295.591592,
+            "stage": "Embedding freshness"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Embedding queue"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Embedding replacements"
+          },
+          {
+            "completed": 859,
+            "mean_ms": 3011.8672468869477,
+            "p95_ms": 3285.770363,
+            "stage": "Embedding update interval"
+          },
+          {
+            "completed": 1307,
+            "mean_ms": 25.2118507017685,
+            "p95_ms": 25.75756,
+            "stage": "Image embedding"
+          },
+          {
+            "completed": 1307,
+            "mean_ms": 24.56388382717041,
+            "p95_ms": 24.893854,
+            "stage": "Image embedding NPU"
+          },
+          {
+            "completed": 1307,
+            "mean_ms": 0.6330775631536611,
+            "p95_ms": 0.967135,
+            "stage": "Image embedding NPU preprocess"
+          },
+          {
+            "completed": 1307,
+            "mean_ms": 25.20026973392283,
+            "p95_ms": 25.745721,
+            "stage": "Image embedding NPU total"
+          },
+          {
+            "completed": 1307,
+            "mean_ms": 3.0195856254019264,
+            "p95_ms": 4.685978,
+            "stage": "PNG + DB save"
+          },
+          {
+            "completed": 3234,
+            "mean_ms": 3.264652992156853,
+            "p95_ms": 6.210639,
+            "stage": "Person crop"
+          },
+          {
+            "completed": 2766,
+            "mean_ms": 3.087282115575967,
+            "p95_ms": 5.947395000000001,
+            "stage": "ReID inference + transfer"
+          },
+          {
+            "completed": 2766,
+            "mean_ms": 6.106449956371976,
+            "p95_ms": 13.680315818181818,
+            "stage": "ReID preprocess"
+          },
+          {
+            "completed": 1,
+            "mean_ms": 27.028617,
+            "p95_ms": 27.028617,
+            "stage": "Text query"
+          },
+          {
+            "completed": 3230,
+            "mean_ms": 0.03155237561294544,
+            "p95_ms": 0.080948,
+            "stage": "Tracking association"
+          },
+          {
+            "completed": 3234,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Tracking eligible"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Tracking queue"
+          },
+          {
+            "completed": 1,
+            "mean_ms": 2.194473,
+            "p95_ms": 2.194473,
+            "stage": "Vector search"
+          },
+          {
+            "completed": 951,
+            "mean_ms": 23.859049217777788,
+            "p95_ms": 36.533791,
+            "stage": "YOLO executor total"
+          },
+          {
+            "completed": 951,
+            "mean_ms": 5.918773689999984,
+            "p95_ms": 8.364382,
+            "stage": "YOLO inference"
+          },
+          {
+            "completed": 951,
+            "mean_ms": 17.333266333333352,
+            "p95_ms": 28.970988,
+            "stage": "YOLO postprocess"
+          },
+          {
+            "completed": 952,
+            "mean_ms": 5.428046757777773,
+            "p95_ms": 11.803984,
+            "stage": "YOLO preprocess"
+          }
+        ],
+        "recording_entries": 50
+      },
+      {
+        "mode": "window",
+        "index": 1,
+        "passed": true,
+        "duration_seconds": 64.720124693,
+        "channels": 17,
+        "selected_video_count": 15,
+        "display_fps_mean": 29.986235691317557,
+        "ai_hz": 3.0000009771753184,
+        "gpu_source": "wave",
+        "gpu_pct_mean": 22.0123232,
+        "gpu_samples": [
+          {
+            "frames": 207,
+            "encoder_inputs": 207,
+            "skipped": 0,
+            "cpu_pct": 7.949791,
+            "gpu_pct": 22.508009,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 73.90013,
+            "vpe_pct": 54.762867,
+            "socket_w": 31.418
+          },
+          {
+            "frames": 257,
+            "encoder_inputs": 257,
+            "skipped": 0,
+            "cpu_pct": 6.329114,
+            "gpu_pct": 23.098254,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 68.26353,
+            "vpe_pct": 54.078056,
+            "socket_w": 30.947
+          },
+          {
+            "frames": 307,
+            "encoder_inputs": 307,
+            "skipped": 0,
+            "cpu_pct": 7.883817,
+            "gpu_pct": 24.318752,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 73.265269,
+            "vpe_pct": 58.619325,
+            "socket_w": 32.004
+          },
+          {
+            "frames": 357,
+            "encoder_inputs": 357,
+            "skipped": 0,
+            "cpu_pct": 6.302521,
+            "gpu_pct": 25.596667,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 69.071479,
+            "vpe_pct": 55.271947,
+            "socket_w": 31.34
+          },
+          {
+            "frames": 407,
+            "encoder_inputs": 407,
+            "skipped": 0,
+            "cpu_pct": 7.46888,
+            "gpu_pct": 25.744654,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 69.565662,
+            "vpe_pct": 53.355227,
+            "socket_w": 31.719
+          },
+          {
+            "frames": 457,
+            "encoder_inputs": 457,
+            "skipped": 0,
+            "cpu_pct": 7.112971,
+            "gpu_pct": 24.173091,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 72.284068,
+            "vpe_pct": 59.787459,
+            "socket_w": 31.668
+          },
+          {
+            "frames": 507,
+            "encoder_inputs": 507,
+            "skipped": 0,
+            "cpu_pct": 7.531381,
+            "gpu_pct": 23.297195,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 71.10969,
+            "vpe_pct": 57.991374,
+            "socket_w": 32.232
+          },
+          {
+            "frames": 557,
+            "encoder_inputs": 557,
+            "skipped": 0,
+            "cpu_pct": 8.298755,
+            "gpu_pct": 23.525805,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 73.603218,
+            "vpe_pct": 55.251409,
+            "socket_w": 32.758
+          },
+          {
+            "frames": 607,
+            "encoder_inputs": 607,
+            "skipped": 0,
+            "cpu_pct": 8.298755,
+            "gpu_pct": 24.050419,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 70.091278,
+            "vpe_pct": 59.208655,
+            "socket_w": 32.934
+          },
+          {
+            "frames": 648,
+            "encoder_inputs": 648,
+            "skipped": 0,
+            "cpu_pct": 0.826446,
+            "gpu_pct": 3.810386,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 0.0,
+            "vpe_pct": 0.0,
+            "socket_w": 25.335
+          }
+        ],
+        "audit_errors": 0,
+        "search": {
+          "error": "",
+          "state": "ready",
+          "stored": 1299,
+          "tracking_error": ""
+        },
+        "ai_stages": [
+          {
+            "completed": 252,
+            "mean_ms": 2.1008652184873955,
+            "p95_ms": 3.151019,
+            "stage": "Analysis DB save"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Analysis save queue"
+          },
+          {
+            "completed": 6480,
+            "mean_ms": 0.13123672320261512,
+            "p95_ms": 0.208734,
+            "stage": "Decoded frame wait"
+          },
+          {
+            "completed": 3238,
+            "mean_ms": 8.83206888692811,
+            "p95_ms": 11.189493,
+            "stage": "Detection update"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Embedding NPU in flight"
+          },
+          {
+            "completed": 264,
+            "mean_ms": 214.6918677142856,
+            "p95_ms": 383.724347,
+            "stage": "Embedding first result"
+          },
+          {
+            "completed": 1299,
+            "mean_ms": 183.86755833549444,
+            "p95_ms": 303.403854,
+            "stage": "Embedding freshness"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Embedding queue"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Embedding replacements"
+          },
+          {
+            "completed": 849,
+            "mean_ms": 3023.0031357482335,
+            "p95_ms": 3324.646191,
+            "stage": "Embedding update interval"
+          },
+          {
+            "completed": 1299,
+            "mean_ms": 25.288880555915735,
+            "p95_ms": 25.809941,
+            "stage": "Image embedding"
+          },
+          {
+            "completed": 1299,
+            "mean_ms": 24.586167581037287,
+            "p95_ms": 24.890345,
+            "stage": "Image embedding NPU"
+          },
+          {
+            "completed": 1300,
+            "mean_ms": 0.6909622974068083,
+            "p95_ms": 1.030783,
+            "stage": "Image embedding NPU preprocess"
+          },
+          {
+            "completed": 1299,
+            "mean_ms": 25.27976246920584,
+            "p95_ms": 25.801492,
+            "stage": "Image embedding NPU total"
+          },
+          {
+            "completed": 1299,
+            "mean_ms": 3.1169647487844405,
+            "p95_ms": 4.741057,
+            "stage": "PNG + DB save"
+          },
+          {
+            "completed": 3238,
+            "mean_ms": 3.2711014941176395,
+            "p95_ms": 6.527331,
+            "stage": "Person crop"
+          },
+          {
+            "completed": 2770,
+            "mean_ms": 3.1821773130034487,
+            "p95_ms": 6.103950157894737,
+            "stage": "ReID inference + transfer"
+          },
+          {
+            "completed": 2770,
+            "mean_ms": 5.912554316455698,
+            "p95_ms": 12.729462545454547,
+            "stage": "ReID preprocess"
+          },
+          {
+            "completed": 1,
+            "mean_ms": 29.34405,
+            "p95_ms": 29.34405,
+            "stage": "Text query"
+          },
+          {
+            "completed": 3238,
+            "mean_ms": 0.03186063496732022,
+            "p95_ms": 0.080358,
+            "stage": "Tracking association"
+          },
+          {
+            "completed": 3238,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Tracking eligible"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Tracking queue"
+          },
+          {
+            "completed": 1,
+            "mean_ms": 2.753859,
+            "p95_ms": 2.753859,
+            "stage": "Vector search"
+          },
+          {
+            "completed": 952,
+            "mean_ms": 24.237101544444446,
+            "p95_ms": 36.685851,
+            "stage": "YOLO executor total"
+          },
+          {
+            "completed": 952,
+            "mean_ms": 5.925832652222224,
+            "p95_ms": 8.316745,
+            "stage": "YOLO inference"
+          },
+          {
+            "completed": 952,
+            "mean_ms": 17.693377095555565,
+            "p95_ms": 29.175626,
+            "stage": "YOLO postprocess"
+          },
+          {
+            "completed": 953,
+            "mean_ms": 5.7953503511111135,
+            "p95_ms": 11.938872,
+            "stage": "YOLO preprocess"
+          }
+        ],
+        "recording_entries": 50
+      },
+      {
+        "mode": "window",
+        "index": 2,
+        "passed": true,
+        "duration_seconds": 60.495631132,
+        "channels": 17,
+        "selected_video_count": 15,
+        "display_fps_mean": 30.090152834260998,
+        "ai_hz": 2.999970525289589,
+        "gpu_source": "wave",
+        "gpu_pct_mean": 23.578245444444445,
+        "gpu_samples": [
+          {
+            "frames": 205,
+            "encoder_inputs": 205,
+            "skipped": 0,
+            "cpu_pct": 8.75,
+            "gpu_pct": 19.995665,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 72.91402,
+            "vpe_pct": 60.155474,
+            "socket_w": 31.601
+          },
+          {
+            "frames": 255,
+            "encoder_inputs": 255,
+            "skipped": 0,
+            "cpu_pct": 8.403361,
+            "gpu_pct": 21.587341,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 77.147973,
+            "vpe_pct": 65.0847,
+            "socket_w": 32.153
+          },
+          {
+            "frames": 305,
+            "encoder_inputs": 305,
+            "skipped": 0,
+            "cpu_pct": 9.583333,
+            "gpu_pct": 22.752092,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 76.368878,
+            "vpe_pct": 62.787076,
+            "socket_w": 32.523
+          },
+          {
+            "frames": 355,
+            "encoder_inputs": 355,
+            "skipped": 0,
+            "cpu_pct": 7.983193,
+            "gpu_pct": 23.228312,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 70.638655,
+            "vpe_pct": 52.29927,
+            "socket_w": 32.799
+          },
+          {
+            "frames": 405,
+            "encoder_inputs": 405,
+            "skipped": 0,
+            "cpu_pct": 8.786611,
+            "gpu_pct": 23.937717,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 72.796987,
+            "vpe_pct": 61.189331,
+            "socket_w": 32.78
+          },
+          {
+            "frames": 455,
+            "encoder_inputs": 455,
+            "skipped": 0,
+            "cpu_pct": 7.594937,
+            "gpu_pct": 25.098037,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 74.450745,
+            "vpe_pct": 57.472674,
+            "socket_w": 32.696
+          },
+          {
+            "frames": 505,
+            "encoder_inputs": 505,
+            "skipped": 0,
+            "cpu_pct": 8.438819,
+            "gpu_pct": 23.820719,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 71.465445,
+            "vpe_pct": 56.299774,
+            "socket_w": 32.608
+          },
+          {
+            "frames": 555,
+            "encoder_inputs": 555,
+            "skipped": 0,
+            "cpu_pct": 9.623431,
+            "gpu_pct": 24.568403,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 70.338378,
+            "vpe_pct": 59.164009,
+            "socket_w": 33.285
+          },
+          {
+            "frames": 605,
+            "encoder_inputs": 605,
+            "skipped": 0,
+            "cpu_pct": 7.983193,
+            "gpu_pct": 27.215923,
+            "gpu_source": "wave",
+            "gpu_status": "ok",
+            "vcn_pct": 76.227523,
+            "vpe_pct": 62.15704,
+            "socket_w": 33.142
+          }
+        ],
+        "audit_errors": 0,
+        "search": {
+          "error": "",
+          "state": "ready",
+          "stored": 1209,
+          "tracking_error": ""
+        },
+        "ai_stages": [
+          {
+            "completed": 235,
+            "mean_ms": 2.2583120893617017,
+            "p95_ms": 3.264946,
+            "stage": "Analysis DB save"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Analysis save queue"
+          },
+          {
+            "completed": 6052,
+            "mean_ms": 0.15251750380039739,
+            "p95_ms": 0.288793,
+            "stage": "Decoded frame wait"
+          },
+          {
+            "completed": 3026,
+            "mean_ms": 8.94226636682089,
+            "p95_ms": 11.60151575,
+            "stage": "Detection update"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Embedding NPU in flight"
+          },
+          {
+            "completed": 246,
+            "mean_ms": 355.85652173577245,
+            "p95_ms": 1237.284818,
+            "stage": "Embedding first result"
+          },
+          {
+            "completed": 1209,
+            "mean_ms": 193.01939199090177,
+            "p95_ms": 329.882343,
+            "stage": "Embedding freshness"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Embedding queue"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Embedding replacements"
+          },
+          {
+            "completed": 788,
+            "mean_ms": 3033.2241644099004,
+            "p95_ms": 3333.370544,
+            "stage": "Embedding update interval"
+          },
+          {
+            "completed": 1209,
+            "mean_ms": 25.28293488420184,
+            "p95_ms": 25.791484,
+            "stage": "Image embedding"
+          },
+          {
+            "completed": 1209,
+            "mean_ms": 24.583598832919773,
+            "p95_ms": 24.924798,
+            "stage": "Image embedding NPU"
+          },
+          {
+            "completed": 1210,
+            "mean_ms": 0.686012389256199,
+            "p95_ms": 1.006034,
+            "stage": "Image embedding NPU preprocess"
+          },
+          {
+            "completed": 1209,
+            "mean_ms": 25.272099430107506,
+            "p95_ms": 25.780395,
+            "stage": "Image embedding NPU total"
+          },
+          {
+            "completed": 1209,
+            "mean_ms": 3.2225139925558315,
+            "p95_ms": 4.868725,
+            "stage": "PNG + DB save"
+          },
+          {
+            "completed": 3026,
+            "mean_ms": 3.247884942498351,
+            "p95_ms": 6.268069,
+            "stage": "Person crop"
+          },
+          {
+            "completed": 2574,
+            "mean_ms": 3.331453713286707,
+            "p95_ms": 6.546423374999999,
+            "stage": "ReID inference + transfer"
+          },
+          {
+            "completed": 2574,
+            "mean_ms": 5.818124305749807,
+            "p95_ms": 12.624629076923078,
+            "stage": "ReID preprocess"
+          },
+          {
+            "completed": 1,
+            "mean_ms": 28.385238,
+            "p95_ms": 28.385238,
+            "stage": "Text query"
+          },
+          {
+            "completed": 3026,
+            "mean_ms": 0.02967113384005288,
+            "p95_ms": 0.078938,
+            "stage": "Tracking association"
+          },
+          {
+            "completed": 3026,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Tracking eligible"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Tracking queue"
+          },
+          {
+            "completed": 1,
+            "mean_ms": 3.330424,
+            "p95_ms": 3.330424,
+            "stage": "Vector search"
+          },
+          {
+            "completed": 890,
+            "mean_ms": 24.49886051123597,
+            "p95_ms": 37.731967,
+            "stage": "YOLO executor total"
+          },
+          {
+            "completed": 890,
+            "mean_ms": 6.103203213483151,
+            "p95_ms": 8.642297,
+            "stage": "YOLO inference"
+          },
+          {
+            "completed": 890,
+            "mean_ms": 17.970066733707846,
+            "p95_ms": 30.053015,
+            "stage": "YOLO postprocess"
+          },
+          {
+            "completed": 890,
+            "mean_ms": 5.904845135955045,
+            "p95_ms": 12.648234,
+            "stage": "YOLO preprocess"
+          }
+        ],
+        "recording_entries": 50
+      },
+      {
+        "mode": "sysfs",
+        "index": 3,
+        "passed": true,
+        "duration_seconds": 60.372998286,
+        "channels": 17,
+        "selected_video_count": 15,
+        "display_fps_mean": 30.018149963603104,
+        "ai_hz": 2.9999911753759587,
+        "gpu_source": "sysfs",
+        "gpu_pct_mean": 100.0,
+        "gpu_samples": [
+          {
+            "frames": 203,
+            "encoder_inputs": 203,
+            "skipped": 0,
+            "cpu_pct": 5.439331,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 69.904731,
+            "vpe_pct": 45.488956,
+            "socket_w": 31.913
+          },
+          {
+            "frames": 253,
+            "encoder_inputs": 253,
+            "skipped": 0,
+            "cpu_pct": 4.201681,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 69.096662,
+            "vpe_pct": 41.492936,
+            "socket_w": 31.801
+          },
+          {
+            "frames": 303,
+            "encoder_inputs": 303,
+            "skipped": 0,
+            "cpu_pct": 5.833333,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 71.875899,
+            "vpe_pct": 51.218653,
+            "socket_w": 32.35
+          },
+          {
+            "frames": 353,
+            "encoder_inputs": 353,
+            "skipped": 0,
+            "cpu_pct": 5.833333,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 72.478897,
+            "vpe_pct": 51.832201,
+            "socket_w": 32.511
+          },
+          {
+            "frames": 403,
+            "encoder_inputs": 403,
+            "skipped": 0,
+            "cpu_pct": 5.882353,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 69.461916,
+            "vpe_pct": 47.586527,
+            "socket_w": 32.724
+          },
+          {
+            "frames": 453,
+            "encoder_inputs": 453,
+            "skipped": 0,
+            "cpu_pct": 5.882353,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 70.521881,
+            "vpe_pct": 45.614319,
+            "socket_w": 32.235
+          },
+          {
+            "frames": 503,
+            "encoder_inputs": 503,
+            "skipped": 0,
+            "cpu_pct": 4.621849,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 70.17324,
+            "vpe_pct": 44.812037,
+            "socket_w": 32.813
+          },
+          {
+            "frames": 553,
+            "encoder_inputs": 553,
+            "skipped": 0,
+            "cpu_pct": 7.083333,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 74.501439,
+            "vpe_pct": 50.944475,
+            "socket_w": 33.348
+          },
+          {
+            "frames": 603,
+            "encoder_inputs": 603,
+            "skipped": 0,
+            "cpu_pct": 6.666667,
+            "gpu_pct": 100.0,
+            "gpu_source": "sysfs",
+            "gpu_status": "",
+            "vcn_pct": 73.60478,
+            "vpe_pct": 55.322685,
+            "socket_w": 32.938
+          }
+        ],
+        "audit_errors": 0,
+        "search": {
+          "error": "",
+          "state": "ready",
+          "stored": 1203,
+          "tracking_error": ""
+        },
+        "ai_stages": [
+          {
+            "completed": 233,
+            "mean_ms": 2.1717799914163076,
+            "p95_ms": 3.176318,
+            "stage": "Analysis DB save"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Analysis save queue"
+          },
+          {
+            "completed": 6030,
+            "mean_ms": 0.1122386248756226,
+            "p95_ms": 0.123567,
+            "stage": "Decoded frame wait"
+          },
+          {
+            "completed": 3013,
+            "mean_ms": 8.780881099236634,
+            "p95_ms": 11.36830475,
+            "stage": "Detection update"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Embedding NPU in flight"
+          },
+          {
+            "completed": 248,
+            "mean_ms": 345.9239824596775,
+            "p95_ms": 1157.354777,
+            "stage": "Embedding first result"
+          },
+          {
+            "completed": 1203,
+            "mean_ms": 188.60644572734842,
+            "p95_ms": 311.616105,
+            "stage": "Embedding freshness"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Embedding queue"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Embedding replacements"
+          },
+          {
+            "completed": 789,
+            "mean_ms": 3016.9440661736367,
+            "p95_ms": 3301.20537,
+            "stage": "Embedding update interval"
+          },
+          {
+            "completed": 1203,
+            "mean_ms": 25.29796982294265,
+            "p95_ms": 25.819327,
+            "stage": "Image embedding"
+          },
+          {
+            "completed": 1203,
+            "mean_ms": 24.584123661679136,
+            "p95_ms": 24.899741,
+            "stage": "Image embedding NPU"
+          },
+          {
+            "completed": 1203,
+            "mean_ms": 0.7042769201995016,
+            "p95_ms": 1.068763,
+            "stage": "Image embedding NPU preprocess"
+          },
+          {
+            "completed": 1203,
+            "mean_ms": 25.291370412302577,
+            "p95_ms": 25.808907,
+            "stage": "Image embedding NPU total"
+          },
+          {
+            "completed": 1203,
+            "mean_ms": 3.063174887780549,
+            "p95_ms": 4.66515,
+            "stage": "PNG + DB save"
+          },
+          {
+            "completed": 3013,
+            "mean_ms": 3.236695537338201,
+            "p95_ms": 6.22422,
+            "stage": "Person crop"
+          },
+          {
+            "completed": 2558,
+            "mean_ms": 3.321872792415946,
+            "p95_ms": 6.395916,
+            "stage": "ReID inference + transfer"
+          },
+          {
+            "completed": 2558,
+            "mean_ms": 5.752989075449573,
+            "p95_ms": 12.397796800000002,
+            "stage": "ReID preprocess"
+          },
+          {
+            "completed": 1,
+            "mean_ms": 27.764385,
+            "p95_ms": 27.764385,
+            "stage": "Text query"
+          },
+          {
+            "completed": 3010,
+            "mean_ms": 0.030171865448505076,
+            "p95_ms": 0.076828,
+            "stage": "Tracking association"
+          },
+          {
+            "completed": 3013,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Tracking eligible"
+          },
+          {
+            "completed": 0,
+            "mean_ms": 0,
+            "p95_ms": 0,
+            "stage": "Tracking queue"
+          },
+          {
+            "completed": 1,
+            "mean_ms": 3.165059,
+            "p95_ms": 3.165059,
+            "stage": "Vector search"
+          },
+          {
+            "completed": 886,
+            "mean_ms": 24.208010919864577,
+            "p95_ms": 36.92575,
+            "stage": "YOLO executor total"
+          },
+          {
+            "completed": 886,
+            "mean_ms": 6.059833202031604,
+            "p95_ms": 8.55817,
+            "stage": "YOLO inference"
+          },
+          {
+            "completed": 886,
+            "mean_ms": 17.522327453724582,
+            "p95_ms": 28.79754,
+            "stage": "YOLO postprocess"
+          },
+          {
+            "completed": 887,
+            "mean_ms": 5.653099038331452,
+            "p95_ms": 11.894444,
+            "stage": "YOLO preprocess"
+          }
+        ],
+        "recording_entries": 50
+      }
+    ],
+    "scope": "Four 60-second GUI checks; not long-run acceptance",
+    "old_runtime_config_unchanged": true,
+    "passed": true
+  },
+  "calibration": [
+    {
+      "kind": "empty_streams",
+      "samples": [
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14705969878112 0 8 0 0 0 0 0 0 0 0",
+          "regions": 8,
+          "grbm_count": 0.0,
+          "wave_pct": null,
+          "sysfs_pct": 37
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14706972954450 1458524842 8 0 0 0 0 0 0 0 0",
+          "regions": 8,
+          "grbm_count": 1458524842.0,
+          "wave_pct": 0.0,
+          "sysfs_pct": 62
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14707976055152 1458802501 8 0 0 0 0 0 0 0 0",
+          "regions": 8,
+          "grbm_count": 1458802501.0,
+          "wave_pct": 0.0,
+          "sysfs_pct": 86
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14708978966917 1458837199 8 0 0 0 0 0 0 0 0",
+          "regions": 8,
+          "grbm_count": 1458837199.0,
+          "wave_pct": 0.0,
+          "sysfs_pct": 95
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14709981914925 1458864947 8 0 0 0 0 0 0 0 0",
+          "regions": 8,
+          "grbm_count": 1458864947.0,
+          "wave_pct": 0.0,
+          "sysfs_pct": 98
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14710984821069 1458894787 8 0 0 0 0 0 0 0 0",
+          "regions": 8,
+          "grbm_count": 1458894787.0,
+          "wave_pct": 0.0,
+          "sysfs_pct": 99
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14711987704387 1458912351 8 0 0 0 0 0 0 0 0",
+          "regions": 8,
+          "grbm_count": 1458912351.0,
+          "wave_pct": 0.0,
+          "sysfs_pct": 100
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14712990610071 1458893180 8 0 0 0 0 0 0 0 0",
+          "regions": 8,
+          "grbm_count": 1458893180.0,
+          "wave_pct": 0.0,
+          "sysfs_pct": 100
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14713993486118 1458617400 8 0 0 0 0 0 0 0 0",
+          "regions": 8,
+          "grbm_count": 1458617400.0,
+          "wave_pct": 0.0,
+          "sysfs_pct": 100
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14714996350195 1458522717 8 0 0 0 0 0 0 0 0",
+          "regions": 8,
+          "grbm_count": 1458522717.0,
+          "wave_pct": 0.0,
+          "sysfs_pct": 100
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14715999240750 1458535890 8 0 0 0 0 0 0 0 0",
+          "regions": 8,
+          "grbm_count": 1458535890.0,
+          "wave_pct": 0.0,
+          "sysfs_pct": 100
+        }
+      ],
+      "workload_output": ""
+    },
+    {
+      "kind": "fma",
+      "samples": [
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14718726454271 0 8 0 0 0 0 0 0 0 0",
+          "regions": 8,
+          "grbm_count": 0.0,
+          "wave_pct": null,
+          "sysfs_pct": 41
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14719729594863 1207968265 8 1193332621 1193579648 1193512388 1193761892 1193392146 1193479422 1193422250 1193642162",
+          "regions": 8,
+          "grbm_count": 1207968265.0,
+          "wave_pct": 98.80353240281524,
+          "sysfs_pct": 64
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14720732712409 1208379829 8 1193552477 1193390187 1193416095 1193574589 1193372508 1193591816 1193867324 1193652509",
+          "regions": 8,
+          "grbm_count": 1208379829.0,
+          "wave_pct": 98.77293210966036,
+          "sysfs_pct": 87
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14721735759758 1205547083 8 1190997753 1190785045 1191039025 1190739961 1190910225 1190651130 1191058245 1191014208",
+          "regions": 8,
+          "grbm_count": 1205547083.0,
+          "wave_pct": 98.78498034572408,
+          "sysfs_pct": 95
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14722738874266 1204606446 8 1189936103 1189896480 1190139502 1189862586 1190012939 1190127311 1189941189 1190052188",
+          "regions": 8,
+          "grbm_count": 1204606446.0,
+          "wave_pct": 98.78712181903765,
+          "sysfs_pct": 98
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14723741919776 1201964529 8 1188149187 1187997365 1187892665 1188024265 1188062107 1187773826 1188041085 1188160814",
+          "regions": 8,
+          "grbm_count": 1201964529.0,
+          "wave_pct": 98.83924488507098,
+          "sysfs_pct": 99
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14724744987597 1159197820 8 1146056848 1145931492 1146089297 1145762437 1146056242 1145801075 1145888140 1145817720",
+          "regions": 8,
+          "grbm_count": 1159197820.0,
+          "wave_pct": 98.85503462860204,
+          "sysfs_pct": 99
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14725747953691 1080971132 8 1068810358 1069091682 1068987638 1069048344 1068980121 1069190523 1068939122 1069090080",
+          "regions": 8,
+          "grbm_count": 1080971132.0,
+          "wave_pct": 98.89415192079338,
+          "sysfs_pct": 100
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14726750936576 1075258190 8 1063495185 1063359824 1063347828 1063253557 1063349362 1063455546 1063366312 1063397661",
+          "regions": 8,
+          "grbm_count": 1075258190.0,
+          "wave_pct": 98.89514623227376,
+          "sysfs_pct": 100
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14727753918461 1074677897 8 1062766237 1062929952 1062742028 1062814409 1062708903 1062563466 1062686170 1062965244",
+          "regions": 8,
+          "grbm_count": 1074677897.0,
+          "wave_pct": 98.89214750687294,
+          "sysfs_pct": 100
+        },
+        {
+          "raw": "AMDVA_WAVE_V1 0000:65:00.0 d9d178d2-469a-426c-a252-4caf713aa890 14728757020254 1062896277 8 1053138602 1053312871 1053474450 1053280763 1053347319 1053033565 1053301742 1053255188",
+          "regions": 8,
+          "grbm_count": 1062896277.0,
+          "wave_pct": 99.0941529565636,
+          "sysfs_pct": 100
+        }
+      ],
+      "workload_output": "{\"kind\":\"large\",\"calls\":1114,\"seconds\":8.004670089,\"calls_per_second\":139.168758689,\"mean_ms\":7.185434284,\"p50_ms\":7.416879000,\"p95_ms\":7.641744000}\n"
+    }
+  ],
+  "demo": {
+    "default_mode": "window",
+    "collection_ms": 500,
+    "pause_ms": 500,
+    "entrypoint": "artifacts/1440p-demo/run-demo.sh",
+    "runtime": "artifacts/1440p-demo-rocm101",
+    "preserved_display_cpu_label": "AMD Ryzen AI Embedded P185"
+  },
+  "limitations": [
+    "Four 60-second GUI checks; not 30-minute acceptance.",
+    "15 selected video views plus resource dashboard; 16 video inputs recorded.",
+    "Resident-wave cycle ratio includes memory-stalled waves; not spare compute capacity.",
+    "Other OS/GPU combinations remain unvalidated.",
+    "Standalone dashboard default remains sysfs."
+  ],
+  "logs": "/home/amd/work/rai/logs/reference-wave-setup-20261112",
+  "rollback_assets": "/home/amd/work/rai/backups/framework-pre-rocm101-20261112",
+  "automatic_commit_or_push": false
+}

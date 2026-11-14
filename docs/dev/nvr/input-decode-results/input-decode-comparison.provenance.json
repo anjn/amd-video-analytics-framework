@@ -1,0 +1,23 @@
+{
+  "inputs": [
+    {
+      "file": "baseline-01-time-series.json",
+      "sha256": "80350e3ae64c90fef1ac90fa69f99144a1305d540fd08f73d3380beda1007111"
+    },
+    {
+      "file": "latency-normal-02-time-series.json",
+      "sha256": "47c930d120f73c2be7bc4cb7a104aac9ae586cced08c01c69b84c1117b55dca7"
+    },
+    {
+      "file": "dispatch-normal-03\\timeseries.json",
+      "sha256": "202e5729ceb1fafbb73ab1e861c3ef9ae80d156afa27e7ae126aa04e4600addd"
+    },
+    {
+      "file": "dispatch-normal-04\\timeseries.json",
+      "sha256": "bcf69f87e5e67d4485e75892c1f50010b213e2e36adfc78decaa2a9b15a21036"
+    }
+  ],
+  "script_sha256": "1d589454410e5b845c55a898f11bae9197a3029343e0516d0c6db0b66110ca81",
+  "python": "3.10.7 (tags/v3.10.7:6cc6b13, Sep  5 2022, 14:08:36) [MSC v.1933 64 bit (AMD64)]",
+  "matplotlib": "3.9.4"
+}

@@ -1,4 +1,4 @@
-<!-- source: docs/dev/nvr/nvr-search.md dbb5426b01cb406529defa72fc86b3025091a695 -->
+<!-- source: docs/dev/nvr/nvr-search.md 1b508682dc381c365920e2371a1c43689745347c -->
 # NVR/VMS デモの人物検索
 
 **Search** タブには、幅を変更できる左側の条件パネルと、右側の共通の結果カードがあります。パネルの初期幅は 320 ピクセルです。3 つのモードがあります。
@@ -155,7 +155,7 @@ export PATH="$PWD/build/src/gst:$PATH"
 .deps/model-export/bin/python examples/nvr/scripts/export_reid_model.py \
   --source /path/to/torchreid/models/osnet.py \
   --weights /path/to/osnet-msmt17.pth --output artifacts/reid-model
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/examples/nvr/amdva-reid-validate \
   artifacts/reid-model/osnet-x1-msmt17.mxr /path/to/hevc.mp4
 ```

@@ -1,0 +1,17 @@
+{
+  "translations_stamped": [
+    "docs/dev/validation.ja.md",
+    "docs/dev/elements.ja.md",
+    "docs/dev/framework-validation.ja.md",
+    "docs/dev/host-build.ja.md",
+    "docs/dev/nvr/nvr-search.ja.md",
+    "docs/dev/nvr/nvr-ai-performance.ja.md",
+    "examples/mobileclip/README.md",
+    "examples/nvr/demo/1440p/README.md",
+    "docs/dev/nvr/input-decode-latency.ja.md"
+  ],
+  "translation_check_passed": true,
+  "strict_docs_build_passed": true,
+  "user_index_unchanged": true,
+  "index_sha256": "168e471cf333ad960f2a5edd6978fedc17a574041872ccc47668ac79fa9818db"
+}

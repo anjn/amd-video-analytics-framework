@@ -1,4 +1,7 @@
 #include "amdva/telemetry.hpp"
+#include "amdva/diagnostics.hpp"
+#include "diagnostic_writer.hpp"
+#include <cstdlib>
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -273,6 +276,7 @@ bool Telemetry::mark(FrameTrace &frame, TimingStage which, int64_t at) {
     for (unsigned e = 0; e < 7; e++)
         if (edges[e].second == index && frame.ns[edges[e].first])
             latency[e].add(at, at - frame.ns[edges[e].first]);
+    diagnostic_event(s.source, frame.generation, frame.sequence, timing_stage_name(which), at);
     return true;
 }
 void Telemetry::availability(TimingStage stage, bool supported, bool active) {
@@ -301,6 +305,7 @@ void Telemetry::counter(TimingCounter counter, uint64_t amount) {
     auto &s = *impl_;
     std::lock_guard<std::mutex> lock(s.mutex);
     s.counters[unsigned(counter)] += amount;
+    diagnostic_event(s.source, s.generation, 0, "counter", now(), unsigned(counter), amount);
 }
 TelemetrySnapshot Telemetry::snapshot() {
     auto &s = *impl_;
@@ -400,5 +405,37 @@ std::string TelemetrySnapshot::json() const {
     }
     out << "}}";
     return out.str();
+}
+} // namespace amdva
+
+namespace amdva {
+namespace {
+detail::DiagnosticWriter *diagnostic_writer() {
+    static auto writer = []() -> std::unique_ptr<detail::DiagnosticWriter> {
+        const char *path = std::getenv("AMDVA_DIAGNOSTICS_DIR");
+        const char *trace = std::getenv("AMDVA_DIAGNOSTICS_TRACE");
+        return path && *path && (!trace || std::string(trace)!="0") ? std::make_unique<detail::DiagnosticWriter>(path) : nullptr;
+    }();
+    return writer.get();
+}
+}
+bool diagnostics_enabled() { return diagnostic_writer() != nullptr; }
+void diagnostics_close() { if (auto *writer = diagnostic_writer()) writer->close(); }
+void diagnostic_event(const std::string &source, uint64_t generation, uint64_t sequence,
+                      const char *event, int64_t ns, int64_t value, int64_t value2, int64_t pts) {
+    auto *writer = diagnostic_writer();
+    if (!writer) return;
+    detail::DiagnosticRecord r;
+    if(source.size()>=r.source.size() || std::strlen(event)>=r.event.size()) { writer->record_loss(); return; }
+    std::strncpy(r.source.data(), source.c_str(), r.source.size()-1);
+    std::strncpy(r.event.data(), event, r.event.size()-1);
+    r.generation=generation; r.sequence=sequence; r.ns=ns; r.value=value; r.value2=value2; r.pts=pts;
+    writer->push(r);
+}
+void Telemetry::diagnostic(const FrameTrace &frame, const char *event, int64_t value,
+                           int64_t value2, int64_t pts, int64_t at_ns) {
+    if (!diagnostics_enabled()) return;
+    diagnostic_event(impl_->source, frame.generation ? frame.generation : generation(), frame.sequence,
+                     event, at_ns ? at_ns : now(), value, value2, pts);
 }
 } // namespace amdva

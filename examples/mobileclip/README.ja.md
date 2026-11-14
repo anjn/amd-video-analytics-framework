@@ -26,7 +26,7 @@ GPU用の`gpu-device-b1.mxr`と`gpu-device-b4.mxr`はFP16演算と`offload_copy=
 ## コピーなしの入力を検証する
 
 ```bash
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/examples/mobileclip/amdva-mobileclip-interop \
   artifacts/mobileclip-device gpu+npu 100 /path/to/reference/libmobileclip2.so
 ```
@@ -68,7 +68,7 @@ NVRはフレームを更新した後も、キューや非同期ジョブが参�
 RTSPのテストサーバーを起動している場合は、画面なしでNVRを検証できます。
 
 ```bash
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/examples/nvr/amdva-mobileclip-nvr-validate /path/to/nvr-config.json
 ```
 

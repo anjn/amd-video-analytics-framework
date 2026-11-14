@@ -1,4 +1,5 @@
 #include "backend/search.hpp"
+#include "amdva/diagnostics.hpp"
 #include "backend/json.hpp"
 #include "backend/controller.hpp"
 #include "backend/mobileclip_batch.hpp"
@@ -849,6 +850,13 @@ struct SearchService::Impl {
                         cv.notify_all();
                     } catch (const std::exception &e) {
                         std::lock_guard<std::mutex> l(mutex);
+                        if(status.tracking_error!=e.what() && diagnostics_enabled()) {
+                            const auto now=Telemetry::monotonic_ns();
+                            if(job.frame.timing.telemetry)
+                                job.frame.timing.telemetry->diagnostic(job.frame.timing.frame,"tracking_job_error",job.boxes.size(),0,-1,now);
+                            std::cerr << "Tracking job error ns=" << now << " camera=" << job.channel
+                                      << ": " << e.what() << '\n';
+                        }
                         status.tracking_error = e.what();
                         status.dropped += job.boxes.size();
                     }

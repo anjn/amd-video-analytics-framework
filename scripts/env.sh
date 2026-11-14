@@ -2,6 +2,7 @@
 # Source in Bash. Only the selected host SDK and framework prefix are exposed.
 AMDVA_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 export AMDVA_ROOT
+unset LD_PRELOAD
 if [[ ! -f "$AMDVA_ROOT/.deps/host.json" ]]; then
     echo 'Run python3 scripts/host.py --write before sourcing scripts/env.sh' >&2
     return 1
@@ -31,3 +32,4 @@ unset QT_QPA_PLATFORM_PLUGIN_PATH GST_PLUGIN_SYSTEM_PATH_1_0 GST_PLUGIN_PATH_1_0
 export GPU_MAX_HW_QUEUES="${GPU_MAX_HW_QUEUES:-32}"
 export QT_XCB_GL_INTEGRATION=xcb_egl
 unset _amdva_roots
+source "$AMDVA_ROOT/scripts/audit-env.sh" || return 1

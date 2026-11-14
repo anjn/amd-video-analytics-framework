@@ -1,4 +1,6 @@
 #include "backend/ai.hpp"
+#include "amdva/diagnostics.hpp"
+#include "amdva/telemetry.hpp"
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
@@ -38,6 +40,7 @@ void AiRuntime::record(const std::string &stage, const std::string &camera, doub
     }
     r.samples.push_back({now, ms, wait, batch});
     ++r.completed;
+    if (!camera.empty()) diagnostic_event(camera,0,0,"ai_done",Telemetry::monotonic_ns(),int64_t(ms*1000000),int64_t(wait*1000000));
 }
 void AiRuntime::queue(const std::string &s, const std::string &c, unsigned pending,
                       uint64_t drops) {

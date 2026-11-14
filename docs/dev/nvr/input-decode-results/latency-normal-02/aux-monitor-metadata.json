@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "started_ns": 22674545222026,
+  "main_pid": 104602,
+  "parent_pid": 104556,
+  "processes": {
+    "104574": {
+      "role": "rtsp",
+      "identity": [
+        "/home/amd/work/amd-video-analysis-framework/build/examples/rtsp-files/amdva-rtsp-files",
+        "2181582"
+      ]
+    },
+    "104575": {
+      "role": "dashboard",
+      "identity": [
+        "/home/amd/work/amd-video-analysis-framework/build/examples/resource-dashboard/amdva-dashboard",
+        "2181582"
+      ]
+    }
+  },
+  "period_seconds": 10,
+  "note": "Passive process metadata only; no GPU profiling or application changes."
+}

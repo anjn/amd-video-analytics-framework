@@ -1,0 +1,20 @@
+{
+  "audits_passed": true,
+  "copy_active_seconds": 3648.079675758,
+  "active_snapshots": 726,
+  "vpe": {
+    "schema": 1,
+    "method": "binary-syncobj-fence",
+    "scopes": 2891166,
+    "completed": 2891166,
+    "failed": 0,
+    "aborted": 0,
+    "submissions": 4395103,
+    "rejected_submissions": 0,
+    "foreign_operations": 0,
+    "active_scope": 0,
+    "observer_wait_ns": 656470605,
+    "maximum_observer_wait_ns": 1984794
+  },
+  "failures": []
+}

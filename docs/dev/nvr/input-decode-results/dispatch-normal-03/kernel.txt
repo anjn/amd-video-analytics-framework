@@ -1,0 +1,1 @@
+Nov 14 00:00:06 amd-rai370 kernel: audit: type=1400 audit(1794582006.879:165): apparmor="DENIED" operation="capable" class="cap" profile="/usr/sbin/cupsd" pid=149942 comm="cupsd" capability=12  capname="net_admin"

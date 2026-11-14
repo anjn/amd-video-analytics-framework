@@ -1,5 +1,6 @@
 #pragma once
 #include <atomic>
+#include <cstdint>
 #include <deque>
 #include <functional>
 #include <gst/gst.h>
@@ -11,6 +12,8 @@ typedef struct _GstAppSink GstAppSink; // from <gst/app/gstappsink.h>
 
 namespace amdva::streaming {
 using Sample = std::shared_ptr<GstSample>;
+// Receive order within one start/stop lifetime, independent of optional telemetry.
+uint64_t ingest_sequence(const Sample &sample);
 
 // Receives one RTSP camera as compressed access units. The video stream is
 // depayloaded and parsed to byte-stream, AU-aligned H.264/H.265 and queued without
@@ -33,6 +36,9 @@ class RtspIngest {
         std::function<void(GstElement *rtspsrc)> on_source;           // after rtspsrc creation
         std::function<void(GstPad *sink)> on_access_unit_pad;         // the byte-stream appsink
         std::function<void(uint64_t count)> on_discarded;             // queued AUs dropped
+        // Called outside the queue lock, in receive order. No storage work here.
+        // Exceptions stop the input with an explicit consumer error.
+        std::function<void(const Sample &)> on_sample;
     };
     explicit RtspIngest(Options options, Hooks hooks = {});
     ~RtspIngest();
@@ -71,5 +77,6 @@ class RtspIngest {
     std::mutex mutex_;
     std::deque<Sample> queue_;
     uint64_t queued_{};
+    std::string consumer_error_;
 };
 } // namespace amdva::streaming

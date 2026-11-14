@@ -165,6 +165,16 @@ int main() {
             o.track_id = "track-1";
             o.reid[0] = 1;
             require(index.store(o), "Active observation accepted");
+            const uint64_t observation_bytes=3+3072+512*sizeof(float)+256;
+            require(c.bytes()==7+observation_bytes,"Exact observation quota includes PNG, embedding and ReID");
+            c.with_database([&](sqlite3 *db) {
+                require(sqlite3_exec(db,"BEGIN; UPDATE observations SET png=zeroblob(8),reid=NULL;",nullptr,nullptr,nullptr)==SQLITE_OK,"Quota update fixture");
+                require(c.bytes()==7+observation_bytes+5-512*sizeof(float),"Quota index follows payload updates and nullable ReID");
+                require(sqlite3_exec(db,"ROLLBACK;",nullptr,nullptr,nullptr)==SQLITE_OK,"Quota rollback fixture");
+                require(c.bytes()==7+observation_bytes,"Quota index follows rollback");
+                require(sqlite3_exec(db,"INSERT INTO analysis_frames(channel,session,run,time_ms,valid_ms) VALUES('a','s','run',2000,1000); INSERT INTO analysis_objects(frame) SELECT id FROM analysis_frames;",nullptr,nullptr,nullptr)==SQLITE_OK,"Analysis quota fixture");
+            });
+            require(c.bytes()==7+observation_bytes+1+1+3+192+96,"Exact analysis quota includes frames and objects");
             require(index.search(o.embedding, "test").empty(), "Active recording hidden");
             c.closed("one.mkv", 10000000000LL);
             auto r = index.search(o.embedding, "test");
@@ -197,6 +207,7 @@ int main() {
             job = c.begin_delete();
             c.delete_batch(job);
             require(index.search(o.embedding, "test").empty(), "Deletion cascades");
+            require(c.bytes()==0,"Quota accounting follows recording and metadata cascades");
             require(!index.store(o), "Late completion cannot resurrect deleted recording");
             auto zero = o.embedding;
             zero.fill(0);
@@ -237,7 +248,7 @@ int main() {
             require(sqlite3_open((legacy / "catalog.sqlite").c_str(), &db) == SQLITE_OK,
                     "Open migration fixture");
             int rc = sqlite3_exec(db,
-                                  "DROP INDEX observations_person; ALTER TABLE observations DROP "
+                                  "DROP TRIGGER observations_quota_insert; DROP TRIGGER observations_quota_delete; DROP TRIGGER observations_quota_update; DROP INDEX observations_person; ALTER TABLE observations DROP "
                                   "COLUMN person_id; ALTER TABLE observations DROP COLUMN "
                                   "track_id; ALTER TABLE observations DROP COLUMN reid;",
                                   nullptr, nullptr, nullptr);
@@ -249,6 +260,39 @@ int main() {
             require(rows.size() == 1 && rows[0].person_id.empty() &&
                         migrated_index.image(rows[0].id) == old.png,
                     "Migration preserves legacy image retrieval");
+        }
+        {
+            const auto range_root=root/"range-delete";
+            Catalog catalog(range_root);SearchIndex index(catalog);
+            auto recording=[&](const char *name,const char *session,int64_t start,int64_t duration) {
+                catalog.opened(name,"a","Camera",session,0,start);
+                std::ofstream(range_root/name)<<"fixture";
+                catalog.closed(name,duration);
+            };
+            recording("first.mkv","s",1000,5000000000LL);
+            recording("next.mkv","s",6000,5000000000LL);
+            recording("other.mkv","t",1000,30000000000LL);
+            SearchObservation observation;observation.channel="a";observation.model="range";
+            observation.png={1,2,3};observation.embedding[0]=1;
+            for(const auto &entry:std::vector<std::pair<const char*,int64_t>>{{"s",1000},{"s",5999},{"s",6000},{"s",10999},{"t",2000}}) {
+                observation.session=entry.first;observation.time_ms=entry.second;
+                require(index.store(observation),"Unassociated range observation fixture");
+            }
+            catalog.with_database([&](sqlite3 *db) {
+                require(sqlite3_exec(db,"INSERT INTO analysis_frames(channel,session,run,time_ms,valid_ms) VALUES('a','s','r',1000,1),('a','s','r',5999,1),('a','s','r',6000,1),('a','s','r',10999,1),('a','t','r',2000,1); INSERT INTO analysis_objects(frame) SELECT id FROM analysis_frames;",nullptr,nullptr,nullptr)==SQLITE_OK,"Analysis range fixture");
+            });
+            auto deletion=catalog.begin_delete(6000);
+            while(!deletion.done())catalog.delete_batch(deletion);
+            require(deletion.deleted==1&&deletion.failed==0,"Delete only first expired recording");
+            catalog.with_database([&](sqlite3 *db) {
+                for(const char *table:{"observations","analysis_frames","analysis_objects"}) {
+                    sqlite3_stmt *statement{};const auto sql=std::string("SELECT count(*) FROM ")+table;
+                    require(sqlite3_prepare_v2(db,sql.c_str(),-1,&statement,nullptr)==SQLITE_OK,"Range count query");
+                    require(sqlite3_step(statement)==SQLITE_ROW&&sqlite3_column_int(statement,0)==3,"Bounded deletion preserves next boundary and another session");
+                    sqlite3_finalize(statement);
+                }
+            });
+            require(catalog.bytes()==14+3*(3+3072+256)+3*(195+96),"Quota follows bounded cascade exactly");
         }
         std::filesystem::remove_all(root);
         std::cout << "search contract passed\n";

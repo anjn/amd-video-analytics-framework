@@ -5,6 +5,7 @@
 #include <atomic>
 #include <functional>
 #include <map>
+#include <mutex>
 #include <string>
 
 namespace amdva::streaming {
@@ -17,9 +18,9 @@ enum class RateControl { CBR, VBR, QVBR };
 // With Options::frames the decoded frames are also offered on frames(), so a display
 // or analysis consumer can share the decode instead of decoding the stream again.
 //
-// Feed access units with push(), starting at a keyframe, and drain pull() from the
-// same thread, for example once per control tick. All methods must be called from
-// one thread.
+// One producer may call push() while one consumer calls pull()/poll(). Start at a
+// keyframe. The owner must quiesce the producer before destruction/reconfiguration;
+// no storage or pipeline teardown may run on the input producer.
 class Transcoder {
   public:
     struct Options {
@@ -76,6 +77,7 @@ class Transcoder {
     GstElement *output_{};
     GstElement *decoder_{};
     GstElement *frames_{};
+    std::mutex pushed_mutex_;
     std::map<GstClockTime, gint64> pushed_;
     double latency_ms_{};
     static GstPadProbeReturn throttle(GstPad *, GstPadProbeInfo *, gpointer);

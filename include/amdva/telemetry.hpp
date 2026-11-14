@@ -81,6 +81,7 @@ class Telemetry {
     void activity(TimingStage, bool active);
     void counter(TimingCounter, uint64_t amount = 1);
     TelemetrySnapshot snapshot();
+    void diagnostic(const FrameTrace &, const char *, int64_t value = 0, int64_t value2 = 0, int64_t pts = -1, int64_t at_ns = 0);
 
   private:
     struct Impl;

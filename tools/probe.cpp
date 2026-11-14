@@ -1,4 +1,5 @@
 #include "amdva/runtime.hpp"
+#include "amdva/vpe_audit.hpp"
 #include <cstring>
 #include <iostream>
 #include <iomanip>
@@ -37,7 +38,10 @@ int main(int argc,char** argv) {
             amdva::Kernel sample(source,"sample",arch);
             amdva::DeviceBuffer result(sizeof(unsigned long long));
             fill(va.display(),src,1920,1080,64);
-            const auto before=amdva::engine_time_ns("vpe");
+            const auto before=amdva::engine_time_ns("vpe"); // Informational only.
+            AmdvaVpeAuditStats proof_before{};
+            if(!amdva_vpe_audit_snapshot || !amdva_vpe_audit_snapshot(&proof_before,sizeof(proof_before)))
+                throw std::runtime_error("VPE submission auditor is required; source scripts/env.sh");
             va.scale(src,dst,1920,1080,640,360);
             auto desc=va.export_surface(dst);
             std::cerr<<"Export: "<<desc.num_objects<<" object(s), modifier=0x"<<std::hex<<desc.objects[0].drm_format_modifier<<std::dec<<"\n";
@@ -60,7 +64,10 @@ int main(int argc,char** argv) {
             const auto after=amdva::engine_time_ns("vpe");
             const uint64_t pixels=640*360;
             const bool alias=first>=55*pixels && first<=57*pixels && second>=204*pixels && second<=206*pixels;
-            const bool vpe=after>before;
+            AmdvaVpeAuditStats proof_after{};
+            const bool vpe=amdva_vpe_audit_snapshot(&proof_after,sizeof(proof_after)) &&
+                proof_after.completed>=proof_before.completed+2 &&
+                proof_after.failed==proof_before.failed && proof_after.aborted==proof_before.aborted;
             std::cout<<"{\"schema\":1,\"gpu\":\""<<arch<<"\",\"h264_capability\":"<<(va.has_h264_decode()?"true":"false")
                 <<",\"linear_bgra\":true,\"alias_observed\":"<<(alias?"true":"false")
                 <<",\"first_checksum\":"<<first<<",\"second_checksum\":"<<second

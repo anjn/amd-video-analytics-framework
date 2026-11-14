@@ -52,11 +52,10 @@ void validate(const std::array<float, 768> &v) {
 SearchIndex::SearchIndex(Catalog &catalog) : catalog_(catalog) {
     catalog_.extend({[this](sqlite3 *db) { initialize(db); },
                      [](sqlite3 *db) -> uint64_t {
-                         Query payload(db, "SELECT COALESCE(SUM(length(png)+length(embedding)+"
-                                           "COALESCE(length(reid),0)+256),0) FROM observations");
-                         return sqlite3_step(payload.p) == SQLITE_ROW
-                                    ? uint64_t(sqlite3_column_int64(payload.p, 0))
-                                    : 0;
+                         Query payload(db,"SELECT bytes FROM observations_payload_bytes WHERE id=1");
+                         if(sqlite3_step(payload.p)!=SQLITE_ROW)
+                             throw std::runtime_error("Observation quota counter is missing or unreadable");
+                         return uint64_t(sqlite3_column_int64(payload.p,0));
                      }});
 }
 void SearchIndex::initialize(sqlite3 *db) {
@@ -72,13 +71,13 @@ void SearchIndex::initialize(sqlite3 *db) {
         "CREATE INDEX IF NOT EXISTS observations_session_time ON observations(session,time_ms);"
         "CREATE INDEX IF NOT EXISTS observations_recording ON observations(recording);"
         "CREATE INDEX IF NOT EXISTS observations_model ON observations(model);"
-        "CREATE TRIGGER IF NOT EXISTS observations_delete AFTER DELETE ON recordings BEGIN "
-        "DELETE FROM observations WHERE recording=OLD.name OR "
-        "(recording='' AND session=OLD.session AND "
-        "time_ms>=COALESCE(OLD.media_started_ms,OLD.created) "
-        "AND OLD.duration_ns>=0 AND "
-        "time_ms<COALESCE(OLD.media_started_ms,OLD.created)+(OLD.duration_ns+999999)/1000000); "
-        "END;");
+        "DROP TRIGGER IF EXISTS observations_delete;"
+        "CREATE TRIGGER observations_delete AFTER DELETE ON recordings BEGIN "
+        "DELETE FROM observations WHERE recording=OLD.name;"
+        "DELETE FROM observations WHERE id IN "
+        "(SELECT id FROM observations INDEXED BY observations_session_time WHERE recording='' "
+        "AND session=OLD.session AND time_ms>=COALESCE(OLD.media_started_ms,OLD.created) "
+        "AND OLD.duration_ns>=0 AND time_ms<COALESCE(OLD.media_started_ms,OLD.created)+(OLD.duration_ns+999999)/1000000); END;");
     for (const auto *column : {"person_id", "track_id", "reid"}) {
         Query info(db, "PRAGMA table_info(observations)");
         bool found = false;
@@ -93,6 +92,21 @@ void SearchIndex::initialize(sqlite3 *db) {
     }
     exec(db, "CREATE INDEX IF NOT EXISTS observations_person ON "
              "observations(model,channel,person_id);");
+    // SQLite maintains quota bytes in the same transaction as each payload.
+    exec(db,"SAVEPOINT observations_payload_initialize;"
+            "CREATE TABLE IF NOT EXISTS observations_payload_bytes("
+            "id INTEGER PRIMARY KEY CHECK(id=1),bytes INTEGER NOT NULL CHECK(typeof(bytes)='integer' AND bytes>=0));"
+            "INSERT INTO observations_payload_bytes(id,bytes) SELECT 1,"
+            "COALESCE(SUM(length(png)+length(embedding)+COALESCE(length(reid),0)+256),0) FROM observations WHERE 1 "
+            "ON CONFLICT(id) DO UPDATE SET bytes=excluded.bytes;"
+            "CREATE TRIGGER IF NOT EXISTS observations_quota_insert AFTER INSERT ON observations BEGIN "
+            "UPDATE observations_payload_bytes SET bytes=bytes+length(NEW.png)+length(NEW.embedding)+COALESCE(length(NEW.reid),0)+256 WHERE id=1; END;"
+            "CREATE TRIGGER IF NOT EXISTS observations_quota_delete AFTER DELETE ON observations BEGIN "
+            "UPDATE observations_payload_bytes SET bytes=bytes-length(OLD.png)-length(OLD.embedding)-COALESCE(length(OLD.reid),0)-256 WHERE id=1; END;"
+            "CREATE TRIGGER IF NOT EXISTS observations_quota_update AFTER UPDATE OF png,embedding,reid ON observations BEGIN "
+            "UPDATE observations_payload_bytes SET bytes=bytes+length(NEW.png)+length(NEW.embedding)+COALESCE(length(NEW.reid),0)"
+            "-length(OLD.png)-length(OLD.embedding)-COALESCE(length(OLD.reid),0) WHERE id=1; END;"
+            "RELEASE observations_payload_initialize;");
     reconcile(db);
 }
 void SearchIndex::reconcile() {

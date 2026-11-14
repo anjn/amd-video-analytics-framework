@@ -1,4 +1,4 @@
-<!-- source: docs/dev/host-build.md 9472a651202aa7568312af2aa2aa7e7d8e4d20cc -->
+<!-- source: docs/dev/host-build.md 302190e54c2fb9342f7965c45d1f9991fde3010a -->
 # ホストでのビルドと参照パイプライン
 
 短い手順は[導入](../guide/install.ja.md)と[クイックスタート](../guide/quickstart.ja.md)にあります。
@@ -20,7 +20,7 @@ source scripts/env.sh
 mkdir -p artifacts
 build/src/gst/amdva-compile-model /path/yolov8n.onnx artifacts/yolov8n.mxr \
   > artifacts/model-compile.log 2>&1
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/src/gst/amdva-run /path/input.h264 artifacts/yolov8n.mxr \
   /path/yolov8n.json --events=artifacts/events.jsonl
 ```

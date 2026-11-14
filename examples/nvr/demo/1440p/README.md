@@ -1,4 +1,4 @@
-<!-- source: examples/nvr/demo/1440p/README.ja.md 00ecfe16113b3cdeefaaaeaa1c942f54421edc5a -->
+<!-- source: examples/nvr/demo/1440p/README.ja.md 653aa5eee1928ef788d984e7d846754df403f1c8 -->
 # Prepare the 1440p demo from Git
 
 The standard workflow generates models on the target from locked public checkpoints, without copying prepared assets from another PC. The legacy migration section below is an auxiliary export tool, not a requirement for a fresh build.
@@ -136,7 +136,7 @@ For bundled videos, use `--videos /absolute/final/path/1440p-portable-assets/vid
 `--check` verifies files, hashes and executable availability; it does not establish successful GPU/NPU inference. Before starting the destination demo, stop other pipelines and validate execution:
 
 ```bash
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/examples/mobileclip/amdva-mobileclip-interop "$bundle" npu 100
 ```
 
@@ -165,3 +165,18 @@ artifacts/1440p-demo/run-demo.sh --soak-seconds 1800
 Runs the same GUI/backend and logs channel, recording, search, RSS, FD and copy-audit metrics every five seconds to `logs/soak.jsonl`. Owned children are stopped on exit. Failure includes post-warm-up median RSS growth above the larger of 512 MiB or 25%, FD growth above 64, channel errors, audit violations, or search not exercised. Videos without people cannot establish search acceptance. Keep the desktop available; locking it or closing the app affects validation.
 
 Before a new launch, previous `logs/` are preserved under `logs.<UTC timestamp>/`. `--check` does not rotate logs or start processes.
+
+## GPU measurement mode
+
+The demo defaults to the conventional `sysfs` GPU metric. Following a report of
+instability during extended demo operation, wave collection is disabled by
+default; its involvement in the instability has not been established.
+`AMDVA_GPU_WAVE_MODE=window artifacts/1440p-demo/run-demo.sh` explicitly enables
+the diagnostic wave mode (500 ms collection / 500 ms pause), requiring
+`amdva-wave-sampler` and a hardware-validated OS/GPU pair. Wave presentation uses an exponential average with
+a 3-second time constant (about 9 seconds to follow 95% of a sustained change).
+Invalid readings hold the display for at most 2 seconds, then become unavailable;
+sysfs values are not mixed into the wave average. `gpu_source` and `gpu_status`
+report the display source and state; `gpu_raw_pct`, `gpu_raw_source` and
+`gpu_raw_status` retain the original reading. The candidate includes resident waves waiting for memory and measures
+a cycle ratio, not the fraction of additional work that can be admitted.

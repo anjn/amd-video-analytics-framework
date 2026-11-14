@@ -1,0 +1,6 @@
+Install plot-requirements.txt in an isolated environment, then run from this evidence directory:
+python plot_comparison.py baseline-01-time-series.json latency-normal-02-time-series.json dispatch-normal-03/timeseries.json dispatch-normal-04/timeseries.json --output input-decode-comparison.png
+
+The baseline and optimization-only candidate failed; the two final direct-dispatch runs are described in dispatch-final-review.json. The baseline ReID/NPU/save stopped around 880 seconds, so its later low latency is not healthy operation. Exact per-frame minute distributions are plotted; partial final minutes are included. Derived time series preserve their full-analysis SHA256. The figure provenance records all input and script hashes and plotting versions. Raw CSV, SQLite and source archives remain outside Git; archive manifests, verified local backups and relocation records retain their locations and hashes.
+
+専用環境へplot-requirements.txtを導入し、この証跡ディレクトリで上記を実行すると、Git内の時系列だけから図を再生成できます。基準試験と容量最適化だけの旧候補は不合格で、最終の直接投入2回の結果はdispatch-final-review.jsonに残します。基準試験のReID・NPU・保存は約880秒で停止したため、後半の低い遅延を正常な改善とは扱いません。各フレームから求めた1分区間の分布で、最後の部分区間も含みます。全件解析・図の入力・スクリプトのハッシュと描画版を保存しています。CSV・DB・ソース原本はGit管理外に置き、一覧・完全保全の検証・移設先の記録で追跡します。

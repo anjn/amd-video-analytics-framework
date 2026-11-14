@@ -1,4 +1,4 @@
-<!-- source: docs/dev/framework-validation.md e7f73478df2299e40382235de5c22799c2d3e142 -->
+<!-- source: docs/dev/framework-validation.md 9c613758cfc4ab8fede78b52b57f1cbf0ada1540 -->
 # フレームワークの検証
 
 フレームワークのテストは、当初の単一ストリームと NVR の確認に、タスクの検証範囲を追加します。レポートは、検証した gfx1150 / ROCm 7.2 / Mesa 25.2.8 のホストに当てはまるもので、すべての AMD APU やすべての ONNX モデルに当てはまるわけではありません。記録した結果は
@@ -49,7 +49,7 @@ VA ディスプレイと解像度を切り替え、新しいソースの識別�
 CTest でこのテストを有効にするには、`AMDVA_ANALYTICS_MODELS`、`AMDVA_DETECTION_MODELS`、`AMDVA_TEST_VIDEO` を設定します。ウォームアップの後、同じパイプラインのテストをコピー監査ツール付きで実行します。
 
 ```bash
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/src/gst/framework-pipeline-tests "$VIDEO" "$MODELS" "$NVR_MODELS"
 ```
 

@@ -14,14 +14,20 @@ if [[ $# != 1 ]]; then
     exit 2
 fi
 runtime="$(realpath -- "$1")"
+if [[ "$mode" == soak ]]; then export AMDVA_COPY_AUDIT=1; fi
 source "$repo/scripts/env.sh"
-if [[ "${AMDVA_COPY_AUDIT:-0}" == 1 || "$mode" == soak ]]; then
-    export LD_PRELOAD="$repo/build/src/gst/libamdva_copy_audit.so"
-fi
+[[ -n "$AMDVA_VPE_AUDIT_LIBRARY" ]] || { echo 'Build libamdva_vpe_audit before launching the demo.' >&2; exit 1; }
+source "$repo/scripts/audit-env.sh" --copy
 python3 "$profile/manage.py" check --runtime "$runtime"
 for binary in "$repo/build/examples/rtsp-files/amdva-rtsp-files" "$repo/build/examples/resource-dashboard/amdva-dashboard" "$repo/build/examples/nvr/amdva-nvr"; do
     [[ -x "$binary" ]] || { echo "Build required executable: $binary" >&2; exit 1; }
 done
+wave_mode="${AMDVA_GPU_WAVE_MODE:-sysfs}"
+case "$wave_mode" in sysfs|window|continuous) ;; *) echo 'Invalid AMDVA_GPU_WAVE_MODE' >&2; exit 2 ;; esac
+if [[ "$wave_mode" != sysfs && ! -x "$repo/build/amdva-wave-sampler" ]]; then
+    echo 'Build amdva-wave-sampler before starting the wave-enabled demo (or explicitly select AMDVA_GPU_WAVE_MODE=sysfs).' >&2
+    exit 1
+fi
 [[ "$mode" != check ]] || exit 0
 if [[ -z "${QT_QPA_PLATFORM:-}" ]]; then
     if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
@@ -69,7 +75,7 @@ trap 'exit 143' TERM
 pids+=("$!")
 dashboard_args=()
 if [[ -n "${options[2]}" ]]; then dashboard_args+=(--cpu-name "${options[2]}"); fi
-"$repo/build/examples/resource-dashboard/amdva-dashboard" --bind 127.0.0.1 --port "${options[1]}" "${dashboard_args[@]}" > "$runtime/logs/dashboard.log" 2>&1 &
+AMDVA_GPU_WAVE_MODE="$wave_mode" "$repo/build/examples/resource-dashboard/amdva-dashboard" --bind 127.0.0.1 --port "${options[1]}" "${dashboard_args[@]}" > "$runtime/logs/dashboard.log" 2>&1 &
 pids+=("$!")
 sleep 2
 for pid in "${pids[@]}"; do kill -0 "$pid" || { echo "Server startup failed; see $runtime/logs" >&2; exit 1; }; done

@@ -5,7 +5,7 @@ A target is not marked validated until fresh construction and hardware acceptanc
 
 | OS | GPU | Fresh build/contracts | GPU probe | Long-run demo |
 |---|---|---|---|---|
-| Ubuntu 24.04 | Strix Point gfx1150 | Pending host availability | Pending | Pending |
+| Ubuntu 24.04.5 | Strix Point gfx1150 | Fresh build and 30 contracts passed, kernel 6.17.0-1033-oem | Passed: VA/VPE/HIP aliasing | Not run; short wave checks are recorded separately |
 | Ubuntu 24.04 | Strix Halo gfx1151 | Pending host availability | Pending | Pending |
 | Ubuntu 26.04 | Strix Point gfx1150 | Pending host availability | Pending | Pending |
 | Ubuntu 26.04.1 | Strix Halo gfx1151 | Passed on x86-084-maple, kernel 7.0.0-43 | Passed: VA/VPE/HIP aliasing | Passed 20 minutes (user-approved shortened run) |

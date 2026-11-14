@@ -1,4 +1,8 @@
 #include "amdva/telemetry.hpp"
+#include "../src/diagnostic_writer.hpp"
+#include <filesystem>
+#include <fstream>
+#include <unistd.h>
 #include <iostream>
 #include <stdexcept>
 using namespace amdva;
@@ -8,6 +12,36 @@ void check(bool v, const char *s) {
 }
 int main() {
     try {
+        const auto temp=std::filesystem::temp_directory_path()/ ("amdva-diagnostics-"+std::to_string(getpid()));
+        auto read=[](const auto &p){std::ifstream in(p); return std::string(std::istreambuf_iterator<char>(in),{});};
+        {
+            detail::DiagnosticWriter writer(temp/"normal",128);
+            detail::DiagnosticRecord r;
+            std::strcpy(r.source.data(),"cam0"); std::strcpy(r.event.data(),"decode_output");
+            r.generation=7; r.sequence=9; r.ns=200; r.pts=900;
+            writer.push(r); r.ns=100; r.sequence=10; writer.push(r);
+            writer.close();
+            const auto data=read(temp/"normal/events.csv");
+            check(data.find("200,\"cam0\",7,9")!=std::string::npos && data.find("100,\"cam0\",7,10")!=std::string::npos,"Preserve identities, PTS and clock regression in raw diagnostics");
+            check(read(temp/"normal/diagnostics-summary.json").find("\"written\":2")!=std::string::npos,"Drain diagnostic queue on close");
+        }
+        bool reused=false;
+        try {detail::DiagnosticWriter writer(temp/"normal");}catch(const std::exception&){reused=true;}
+        check(reused,"Never overwrite previous diagnostic evidence");
+        {
+            detail::DiagnosticWriter writer(temp/"limit",128,0);
+            writer.push({}); writer.close();
+            const auto summary=read(temp/"limit/diagnostics-summary.json");
+            check(summary.find("\"limit_lost\":1")!=std::string::npos,"Report file capacity loss independently of frame loss");
+        }
+        {
+            detail::DiagnosticWriter writer(temp/"overflow",1,1024);
+            for(unsigned i=0;i<100000;++i)writer.push({});
+            writer.close();
+            check(read(temp/"overflow/diagnostics-summary.json").find("\"queue_lost\":0")==std::string::npos,"Report bounded queue overflow");
+        }
+        std::filesystem::remove_all(temp);
+
         int64_t at = 1000000000LL;
         auto t = std::make_shared<Telemetry>("camera\"1", TelemetryOptions{}, [&] { return at; });
         t->begin_generation(1);

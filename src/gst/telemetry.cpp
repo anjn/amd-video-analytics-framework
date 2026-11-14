@@ -77,6 +77,7 @@ struct PipelineTelemetry::Impl {
     struct Rtp {
         TraceToken trace;
         int64_t seen{};
+        bool au_matched{}, ambiguous{};
     };
     struct Input {
         TraceToken trace;
@@ -175,6 +176,7 @@ struct PipelineTelemetry::Impl {
             count(TimingCounter::AmbiguousPts);
             return;
         }
+        telemetry->diagnostic(token.frame, "decode_submit", 0, 0, pts);
         std::lock_guard<std::mutex> lock(mutex);
         epoch(token);
         auto [it, inserted] = pending.emplace(pts, Pending{token, telemetry->now(), false, false});
@@ -221,6 +223,8 @@ struct PipelineTelemetry::Impl {
             if (!it->second.ambiguous)
                 count(TimingCounter::AmbiguousPts);
             it->second.ambiguous = true;
+            if(auto old=rtp.find(it->second.rtp);old!=rtp.end()) old->second.ambiguous=true;
+            if(auto current=rtp.find(key);current!=rtp.end()) current->second.ambiguous=true;
         }
         prune(input, now);
     }
@@ -244,6 +248,7 @@ struct PipelineTelemetry::Impl {
                         now - it->second.seen <= retention) {
                         matched = it->second.trace;
                         it->second.used = true;
+                        if(auto packet=rtp.find(it->second.rtp);packet!=rtp.end()) packet->second.au_matched=true;
                     } else
                         count(TimingCounter::UnmatchedRtp);
                 }
@@ -316,6 +321,7 @@ struct PipelineTelemetry::Impl {
             token.mark(stage, now);
         if (!token.telemetry)
             return buffer;
+        if (GST_CLOCK_TIME_IS_VALID(pts)) telemetry->diagnostic(token.frame, "pts", int(mode), 0, pts, now);
         buffer = gst_buffer_make_writable(buffer);
         if (auto *old = get_frame_trace_meta(buffer);
             old && old->token &&
@@ -454,6 +460,22 @@ struct PipelineTelemetry::Impl {
             gst_object_unref(p.pad);
         }
         std::lock_guard<std::mutex> lock(mutex);
+        // Only after the receiver has stopped: distinguish an unfinished RTP
+        // packet group from a complete AU that failed decoder dispatch.
+        for(const auto &[key,packet]:rtp) {
+            if(packet.ambiguous) continue;
+            if(!packet.au_matched)
+                telemetry->diagnostic(packet.trace.frame,"rtp_assembly_retired");
+            else
+                // Receiver stopped after AU-pad observation does not imply the
+                // appsink callback ran: NULL can flush that already marked AU.
+                // This closes correspondence metadata, not a claim that every
+                // matched AU was discarded. Offline reconciliation requires a
+                // missing submission AND first input after shutdown to classify
+                // an actual shutdown cancellation.
+                telemetry->diagnostic(packet.trace.frame,"receive_au_closed");
+        }
+        rtp.clear(); input.clear();
         if (!pending.empty())
             count(TimingCounter::SubmittedWithoutOutput, pending.size());
         pending.clear();
@@ -499,6 +521,13 @@ void PipelineTelemetry::attach_stage(GstPad *pad, TimingStage stage) {
 void PipelineTelemetry::submit(GstBuffer *b) {
     if (impl_->telemetry->enabled())
         impl_->register_input(b);
+}
+size_t PipelineTelemetry::unassembled_before(int64_t cutoff_ns) const {
+    std::lock_guard<std::mutex> lock(impl_->mutex);
+    size_t count=0;
+    for(const auto &[key,packet]:impl_->rtp)
+        if(!packet.au_matched && packet.trace.frame.ns[unsigned(TimingStage::Input)]<cutoff_ns) ++count;
+    return count;
 }
 void PipelineTelemetry::background(bool value) { impl_->background = value; }
 } // namespace amdva

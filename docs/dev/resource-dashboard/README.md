@@ -195,8 +195,8 @@ The default remains `sysfs`: the clock-normalized candidate did not reproduce
 wall-time duty under varying clocks (see the acceptance results below). For example, run `AMDVA_GPU_WAVE_MODE=window build/examples/resource-dashboard/amdva-dashboard`
 after sourcing `scripts/env.sh`. The helper
 is built when the host ROCprofiler-SDK headers and library are available
-(`AMDVA_BUILD_WAVE_SAMPLER=OFF` omits it). Only Ubuntu 26.04 / gfx1151 is admitted;
-other configurations continue using sysfs without changing the GPU label.
+(`AMDVA_BUILD_WAVE_SAMPLER=OFF` omits it). Ubuntu 26.04 / gfx1151 and Ubuntu 24.04 / gfx1150 are admitted;
+other OS/GPU pairs continue using sysfs without changing the GPU label.
 
 The candidate is `100 * mean(SQ_BUSY_CYCLES) / GRBM_COUNT` over one collection
 window. Region count comes from the SDK, not a fixed GPU-specific constant.
@@ -319,3 +319,37 @@ The DRAM history is stacked: amber Read starts at zero and green Write sits abov
 it. The top edge shows Read + Write, matching the numeric GB/s value. Its vertical
 scale follows the combined peak over the displayed history (20 GB/s increments,
 minimum 20 GB/s). Missing read or write samples leave a gap in both areas.
+
+### Ubuntu 24.04 / gfx1150 demo setup
+
+The [reference-machine record](wave-validation-ubuntu2404-gfx1150.json) describes
+the fresh ROCm 10.1.0 / MIGraphX 2.18.0 build and the wave-enabled demo checks.
+Both the 1440p demo and standalone dashboard now default to `sysfs`.
+Wave collection is disabled by default after a report of instability during
+extended demo operation; causality is unconfirmed. Set `AMDVA_GPU_WAVE_MODE=window`
+or `continuous` explicitly for wave diagnostics.
+The demo preflight requires the helper executable when wave collection is requested.
+The displayed candidate remains a cycle-normalized resident-wave ratio, with
+the normalization and fallback limitations described above. Short checks do not
+constitute a new 30-minute acceptance result.
+
+### Stable wave presentation
+
+The dashboard smooths valid wave values with a time-based exponential average
+(3-second time constant, about 9 seconds to follow 95% of a sustained change).
+The number and history graph both use this display value; the normal averaging annotation has been removed.
+Real zero samples remain part of the average; values are not clamped above zero.
+The helper's counters, 500 ms window and collection duty are unchanged.
+
+The raw monitor retains its sysfs fallback. The wave-enabled dashboard keeps
+that distinct metric out of its wave average: it holds the last display value
+for at most 2 seconds after invalid data begins (`Wave / holding`), then shows
+an unavailable value. Recovery after expiry starts with the fresh wave value.
+Standalone sysfs mode remains unfiltered. The JSON log retains `gpu_pct`,
+`gpu_source` and `gpu_status` for the display and adds `gpu_raw_pct`,
+`gpu_raw_source` and `gpu_raw_status` for diagnosis. This presentation filter
+does not make the wave ratio a measure of spare compute capacity.
+
+The [display validation record](wave-display-validation-ubuntu2404-gfx1150.json)
+retains raw and filtered observations on Ubuntu 24.04 / gfx1150 and the tested
+source hashes. This short observation is separate from long-run acceptance.

@@ -1,0 +1,1356 @@
+{
+  "trial": "latency-normal-02",
+  "elapsed_s": 3664.2685009760025,
+  "start_jst": "2026-11-13T17:35:17.548457+09:00",
+  "end_jst": "2026-11-13T18:36:22.180256+09:00",
+  "normal_exit": true,
+  "automated_gates_passed": false,
+  "expected_video_sources_present": true,
+  "latency_failures": [
+    {
+      "source": "cam0",
+      "minute": 25,
+      "count": 1801,
+      "p99_growth_ms": 40.948404999999994,
+      "max_growth_ms": -0.8397250000000014,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam0",
+      "minute": 26,
+      "count": 1799,
+      "p99_growth_ms": 36.56047699999999,
+      "max_growth_ms": 17.111245999999994,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam0",
+      "minute": 27,
+      "count": 1801,
+      "p99_growth_ms": 44.456891,
+      "max_growth_ms": 43.886692,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam0",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 40.932694999999995,
+      "max_growth_ms": 30.096406,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam1",
+      "minute": 25,
+      "count": 1800,
+      "p99_growth_ms": 38.1596,
+      "max_growth_ms": -23.165509,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam1",
+      "minute": 26,
+      "count": 1800,
+      "p99_growth_ms": 33.486204,
+      "max_growth_ms": -10.77453899999999,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam1",
+      "minute": 27,
+      "count": 1800,
+      "p99_growth_ms": 49.403936,
+      "max_growth_ms": 10.730832000000007,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam1",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 45.198018000000005,
+      "max_growth_ms": -2.8616969999999924,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam1",
+      "minute": 50,
+      "count": 1800,
+      "p99_growth_ms": 34.256779,
+      "max_growth_ms": 11.815831000000003,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam10",
+      "minute": 25,
+      "count": 1800,
+      "p99_growth_ms": 37.832271000000006,
+      "max_growth_ms": 51.327326,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam10",
+      "minute": 27,
+      "count": 1800,
+      "p99_growth_ms": 39.086899,
+      "max_growth_ms": 68.127506,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam10",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 45.585753,
+      "max_growth_ms": 55.646885,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam11",
+      "minute": 25,
+      "count": 1800,
+      "p99_growth_ms": 43.249448,
+      "max_growth_ms": 16.852390999999997,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam11",
+      "minute": 26,
+      "count": 1800,
+      "p99_growth_ms": 37.915274999999994,
+      "max_growth_ms": 34.303580999999994,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam11",
+      "minute": 27,
+      "count": 1800,
+      "p99_growth_ms": 50.935008999999994,
+      "max_growth_ms": 64.65976199999999,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam11",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 44.061937,
+      "max_growth_ms": 22.043082,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam12",
+      "minute": 25,
+      "count": 1800,
+      "p99_growth_ms": 39.581182,
+      "max_growth_ms": 10.87307299999999,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam12",
+      "minute": 26,
+      "count": 1800,
+      "p99_growth_ms": 38.066229,
+      "max_growth_ms": 50.566794,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam12",
+      "minute": 27,
+      "count": 1800,
+      "p99_growth_ms": 44.396373,
+      "max_growth_ms": 56.104080999999994,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam12",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 48.584807,
+      "max_growth_ms": 43.94885099999999,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam13",
+      "minute": 25,
+      "count": 1801,
+      "p99_growth_ms": 42.361106,
+      "max_growth_ms": 7.655687999999998,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam13",
+      "minute": 26,
+      "count": 1799,
+      "p99_growth_ms": 40.387142,
+      "max_growth_ms": 32.408013999999994,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam13",
+      "minute": 27,
+      "count": 1801,
+      "p99_growth_ms": 47.646958999999995,
+      "max_growth_ms": 52.856280999999996,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam13",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 42.86089,
+      "max_growth_ms": 11.597043,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam14",
+      "minute": 25,
+      "count": 1800,
+      "p99_growth_ms": 40.776151999999996,
+      "max_growth_ms": 6.1681290000000075,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam14",
+      "minute": 26,
+      "count": 1800,
+      "p99_growth_ms": 36.370720000000006,
+      "max_growth_ms": 28.195362000000003,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam14",
+      "minute": 27,
+      "count": 1800,
+      "p99_growth_ms": 45.06366799999999,
+      "max_growth_ms": 53.263885,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam14",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 48.35807299999999,
+      "max_growth_ms": 46.11452,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam15",
+      "minute": 25,
+      "count": 1800,
+      "p99_growth_ms": 45.454454,
+      "max_growth_ms": 24.37765800000001,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam15",
+      "minute": 26,
+      "count": 1800,
+      "p99_growth_ms": 35.773371999999995,
+      "max_growth_ms": 29.877459,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam15",
+      "minute": 27,
+      "count": 1800,
+      "p99_growth_ms": 42.234103000000005,
+      "max_growth_ms": 39.891193,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam15",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 48.158119,
+      "max_growth_ms": 32.419257,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam2",
+      "minute": 25,
+      "count": 1800,
+      "p99_growth_ms": 41.72255899999999,
+      "max_growth_ms": 11.336518000000012,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam2",
+      "minute": 26,
+      "count": 1800,
+      "p99_growth_ms": 34.331603,
+      "max_growth_ms": 12.956366000000003,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam2",
+      "minute": 27,
+      "count": 1800,
+      "p99_growth_ms": 49.902794,
+      "max_growth_ms": 29.023224000000013,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam2",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 44.264516,
+      "max_growth_ms": 12.928428000000011,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam3",
+      "minute": 25,
+      "count": 1800,
+      "p99_growth_ms": 40.612639,
+      "max_growth_ms": -3.834612000000007,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam3",
+      "minute": 26,
+      "count": 1800,
+      "p99_growth_ms": 36.275089,
+      "max_growth_ms": 5.788257999999999,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam3",
+      "minute": 27,
+      "count": 1800,
+      "p99_growth_ms": 56.128939,
+      "max_growth_ms": 37.01993499999999,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam3",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 44.604901,
+      "max_growth_ms": 22.364206999999993,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam3",
+      "minute": 50,
+      "count": 1800,
+      "p99_growth_ms": 33.920363,
+      "max_growth_ms": 45.513154,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam4",
+      "minute": 25,
+      "count": 1800,
+      "p99_growth_ms": 34.710314999999994,
+      "max_growth_ms": -11.815423999999993,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam4",
+      "minute": 27,
+      "count": 1800,
+      "p99_growth_ms": 46.390866,
+      "max_growth_ms": 35.46213300000001,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam4",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 42.878845,
+      "max_growth_ms": 14.04611700000001,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam4",
+      "minute": 50,
+      "count": 1800,
+      "p99_growth_ms": 33.360136999999995,
+      "max_growth_ms": 40.306867999999994,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam5",
+      "minute": 25,
+      "count": 1800,
+      "p99_growth_ms": 42.919769,
+      "max_growth_ms": 14.373552000000004,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam5",
+      "minute": 26,
+      "count": 1800,
+      "p99_growth_ms": 35.311727,
+      "max_growth_ms": 31.085015999999996,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam5",
+      "minute": 27,
+      "count": 1800,
+      "p99_growth_ms": 42.257093,
+      "max_growth_ms": 33.779343999999995,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam5",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 46.079494999999994,
+      "max_growth_ms": 14.350217,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam5",
+      "minute": 50,
+      "count": 1800,
+      "p99_growth_ms": 32.591549,
+      "max_growth_ms": 73.74235200000001,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam6",
+      "minute": 25,
+      "count": 1800,
+      "p99_growth_ms": 44.394313,
+      "max_growth_ms": 21.338996999999992,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam6",
+      "minute": 26,
+      "count": 1800,
+      "p99_growth_ms": 35.889872999999994,
+      "max_growth_ms": 31.74390299999999,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam6",
+      "minute": 27,
+      "count": 1800,
+      "p99_growth_ms": 45.454342,
+      "max_growth_ms": 35.222528999999994,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam6",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 46.02091299999999,
+      "max_growth_ms": 16.569154999999995,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam7",
+      "minute": 25,
+      "count": 1800,
+      "p99_growth_ms": 45.462576999999996,
+      "max_growth_ms": 15.564913000000004,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam7",
+      "minute": 26,
+      "count": 1800,
+      "p99_growth_ms": 35.853607999999994,
+      "max_growth_ms": 33.45896900000001,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam7",
+      "minute": 27,
+      "count": 1800,
+      "p99_growth_ms": 46.788742,
+      "max_growth_ms": 44.79317200000001,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam7",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 45.039176,
+      "max_growth_ms": 15.664960000000008,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam7",
+      "minute": 50,
+      "count": 1800,
+      "p99_growth_ms": 33.502221000000006,
+      "max_growth_ms": 9.697676999999999,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam8",
+      "minute": 25,
+      "count": 1800,
+      "p99_growth_ms": 40.661744,
+      "max_growth_ms": 18.142360000000004,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam8",
+      "minute": 26,
+      "count": 1800,
+      "p99_growth_ms": 37.751299,
+      "max_growth_ms": 35.35744900000001,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam8",
+      "minute": 27,
+      "count": 1800,
+      "p99_growth_ms": 46.651332999999994,
+      "max_growth_ms": 67.58229400000002,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam8",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 49.76762599999999,
+      "max_growth_ms": 55.188419,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam9",
+      "minute": 25,
+      "count": 1800,
+      "p99_growth_ms": 39.052975,
+      "max_growth_ms": 20.632769999999994,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam9",
+      "minute": 26,
+      "count": 1800,
+      "p99_growth_ms": 36.325731,
+      "max_growth_ms": 34.95257599999999,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam9",
+      "minute": 27,
+      "count": 1800,
+      "p99_growth_ms": 47.558434999999996,
+      "max_growth_ms": 67.19535900000001,
+      "passed": false,
+      "reason": "latency growth"
+    },
+    {
+      "source": "cam9",
+      "minute": 28,
+      "count": 1800,
+      "p99_growth_ms": 49.198719000000004,
+      "max_growth_ms": 51.592372,
+      "passed": false,
+      "reason": "latency growth"
+    }
+  ],
+  "progress_failures": [],
+  "audit_failures": [],
+  "worst_p99_growth": {
+    "source": "cam3",
+    "minute": 27,
+    "count": 1800,
+    "p99_growth_ms": 56.128939,
+    "max_growth_ms": 37.01993499999999,
+    "passed": false
+  },
+  "worst_max_growth": {
+    "source": "cam5",
+    "minute": 50,
+    "count": 1800,
+    "p99_growth_ms": 32.591549,
+    "max_growth_ms": 73.74235200000001,
+    "passed": false
+  },
+  "sources": {
+    "cam0": {
+      "coverage_seconds": 3648.821536392,
+      "baseline": {
+        "count": 9000,
+        "mean": 6.784646525111111,
+        "p99": 22.860175,
+        "maximum": 92.50444
+      },
+      "late_worst_minute_p99_ms": 67.317066,
+      "late_maximum_ms": 140.335955
+    },
+    "cam1": {
+      "coverage_seconds": 3648.790960105,
+      "baseline": {
+        "count": 9000,
+        "mean": 6.953162685888889,
+        "p99": 21.724508,
+        "maximum": 112.887987
+      },
+      "late_worst_minute_p99_ms": 71.128444,
+      "late_maximum_ms": 124.703818
+    },
+    "cam10": {
+      "coverage_seconds": 3647.754892467,
+      "baseline": {
+        "count": 9000,
+        "mean": 6.895378816666667,
+        "p99": 22.082159,
+        "maximum": 60.31694
+      },
+      "late_worst_minute_p99_ms": 67.667912,
+      "late_maximum_ms": 128.444446
+    },
+    "cam11": {
+      "coverage_seconds": 3648.795049567,
+      "baseline": {
+        "count": 9001,
+        "mean": 6.866556731363182,
+        "p99": 21.12698,
+        "maximum": 78.212045
+      },
+      "late_worst_minute_p99_ms": 72.061989,
+      "late_maximum_ms": 142.871807
+    },
+    "cam12": {
+      "coverage_seconds": 3648.807534815,
+      "baseline": {
+        "count": 9000,
+        "mean": 7.386108113444444,
+        "p99": 21.956817,
+        "maximum": 78.011509
+      },
+      "late_worst_minute_p99_ms": 70.541624,
+      "late_maximum_ms": 134.11559
+    },
+    "cam13": {
+      "coverage_seconds": 3647.788520389,
+      "baseline": {
+        "count": 9000,
+        "mean": 6.652385874555556,
+        "p99": 20.775897,
+        "maximum": 84.596339
+      },
+      "late_worst_minute_p99_ms": 68.422856,
+      "late_maximum_ms": 139.449426
+    },
+    "cam14": {
+      "coverage_seconds": 3647.769428053,
+      "baseline": {
+        "count": 9000,
+        "mean": 7.021469112,
+        "p99": 21.957559,
+        "maximum": 80.268817
+      },
+      "late_worst_minute_p99_ms": 70.315632,
+      "late_maximum_ms": 135.734745
+    },
+    "cam15": {
+      "coverage_seconds": 3648.830466749,
+      "baseline": {
+        "count": 9000,
+        "mean": 6.666726967555555,
+        "p99": 21.033579,
+        "maximum": 74.572037
+      },
+      "late_worst_minute_p99_ms": 69.191698,
+      "late_maximum_ms": 116.830478
+    },
+    "cam2": {
+      "coverage_seconds": 3647.758665009,
+      "baseline": {
+        "count": 9000,
+        "mean": 7.263825939444445,
+        "p99": 22.552412,
+        "maximum": 93.439529
+      },
+      "late_worst_minute_p99_ms": 72.455206,
+      "late_maximum_ms": 140.338425
+    },
+    "cam3": {
+      "coverage_seconds": 3647.78077738,
+      "baseline": {
+        "count": 9000,
+        "mean": 6.807495773444445,
+        "p99": 21.220844,
+        "maximum": 93.908493
+      },
+      "late_worst_minute_p99_ms": 77.349783,
+      "late_maximum_ms": 139.421647
+    },
+    "cam4": {
+      "coverage_seconds": 3648.795483782,
+      "baseline": {
+        "count": 9000,
+        "mean": 7.135653554666667,
+        "p99": 22.812876,
+        "maximum": 94.680101
+      },
+      "late_worst_minute_p99_ms": 69.203742,
+      "late_maximum_ms": 134.986969
+    },
+    "cam5": {
+      "coverage_seconds": 3648.786805085,
+      "baseline": {
+        "count": 9000,
+        "mean": 7.402917066555555,
+        "p99": 21.730834,
+        "maximum": 92.0625
+      },
+      "late_worst_minute_p99_ms": 67.810329,
+      "late_maximum_ms": 165.804852
+    },
+    "cam6": {
+      "coverage_seconds": 3648.796112811,
+      "baseline": {
+        "count": 9000,
+        "mean": 6.938235805888889,
+        "p99": 20.750415,
+        "maximum": 83.27607
+      },
+      "late_worst_minute_p99_ms": 66.771328,
+      "late_maximum_ms": 126.572503
+    },
+    "cam7": {
+      "coverage_seconds": 3648.647915578,
+      "baseline": {
+        "count": 9000,
+        "mean": 7.261032325555555,
+        "p99": 20.970859,
+        "maximum": 92.856062
+      },
+      "late_worst_minute_p99_ms": 67.759601,
+      "late_maximum_ms": 137.649234
+    },
+    "cam8": {
+      "coverage_seconds": 3648.808675623,
+      "baseline": {
+        "count": 9000,
+        "mean": 6.815955408,
+        "p99": 19.966081,
+        "maximum": 63.023239
+      },
+      "late_worst_minute_p99_ms": 69.733707,
+      "late_maximum_ms": 130.605533
+    },
+    "cam9": {
+      "coverage_seconds": 3647.806526611,
+      "baseline": {
+        "count": 9000,
+        "mean": 7.153923471111111,
+        "p99": 20.606727,
+        "maximum": 68.128484
+      },
+      "late_worst_minute_p99_ms": 69.805446,
+      "late_maximum_ms": 135.323843
+    }
+  },
+  "diagnostic_integrity": {
+    "accepted": 45635260,
+    "written": 45635260,
+    "queue_lost": 0,
+    "limit_lost": 0,
+    "bytes": 2543916698,
+    "write_failed": false,
+    "pending": 0
+  },
+  "diagnostic_records": 45635260,
+  "frame_dispositions": [
+    {
+      "source": "cam0",
+      "kind": "latest_replaced",
+      "count": 10312
+    },
+    {
+      "source": "cam0",
+      "kind": "preview_discarded",
+      "count": 4200
+    },
+    {
+      "source": "cam0",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam0",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam1",
+      "kind": "ingest_retired",
+      "count": 1
+    },
+    {
+      "source": "cam1",
+      "kind": "latest_replaced",
+      "count": 11475
+    },
+    {
+      "source": "cam1",
+      "kind": "preview_discarded",
+      "count": 3866
+    },
+    {
+      "source": "cam1",
+      "kind": "preview_not_requested",
+      "count": 1
+    },
+    {
+      "source": "cam1",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam10",
+      "kind": "ingest_retired",
+      "count": 2
+    },
+    {
+      "source": "cam10",
+      "kind": "latest_replaced",
+      "count": 11301
+    },
+    {
+      "source": "cam10",
+      "kind": "preview_discarded",
+      "count": 4362
+    },
+    {
+      "source": "cam10",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam10",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam11",
+      "kind": "ingest_retired",
+      "count": 2
+    },
+    {
+      "source": "cam11",
+      "kind": "latest_replaced",
+      "count": 11080
+    },
+    {
+      "source": "cam11",
+      "kind": "preview_discarded",
+      "count": 3881
+    },
+    {
+      "source": "cam11",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam11",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam12",
+      "kind": "ingest_retired",
+      "count": 2
+    },
+    {
+      "source": "cam12",
+      "kind": "latest_replaced",
+      "count": 14004
+    },
+    {
+      "source": "cam12",
+      "kind": "preview_discarded",
+      "count": 4557
+    },
+    {
+      "source": "cam12",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam12",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam13",
+      "kind": "ingest_retired",
+      "count": 2
+    },
+    {
+      "source": "cam13",
+      "kind": "latest_replaced",
+      "count": 11917
+    },
+    {
+      "source": "cam13",
+      "kind": "preview_discarded",
+      "count": 4352
+    },
+    {
+      "source": "cam13",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam13",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam14",
+      "kind": "ingest_retired",
+      "count": 2
+    },
+    {
+      "source": "cam14",
+      "kind": "latest_replaced",
+      "count": 13193
+    },
+    {
+      "source": "cam14",
+      "kind": "preview_discarded",
+      "count": 4800
+    },
+    {
+      "source": "cam14",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam14",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam15",
+      "kind": "ingest_retired",
+      "count": 3
+    },
+    {
+      "source": "cam15",
+      "kind": "latest_replaced",
+      "count": 109466
+    },
+    {
+      "source": "cam15",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam2",
+      "kind": "ingest_retired",
+      "count": 1
+    },
+    {
+      "source": "cam2",
+      "kind": "latest_replaced",
+      "count": 12089
+    },
+    {
+      "source": "cam2",
+      "kind": "preview_discarded",
+      "count": 4592
+    },
+    {
+      "source": "cam2",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam3",
+      "kind": "latest_replaced",
+      "count": 9827
+    },
+    {
+      "source": "cam3",
+      "kind": "preview_discarded",
+      "count": 3821
+    },
+    {
+      "source": "cam3",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam3",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam4",
+      "kind": "ingest_retired",
+      "count": 1
+    },
+    {
+      "source": "cam4",
+      "kind": "latest_replaced",
+      "count": 10280
+    },
+    {
+      "source": "cam4",
+      "kind": "preview_discarded",
+      "count": 3585
+    },
+    {
+      "source": "cam4",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam4",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam5",
+      "kind": "ingest_retired",
+      "count": 1
+    },
+    {
+      "source": "cam5",
+      "kind": "latest_replaced",
+      "count": 10349
+    },
+    {
+      "source": "cam5",
+      "kind": "preview_discarded",
+      "count": 3472
+    },
+    {
+      "source": "cam5",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam5",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam6",
+      "kind": "ingest_retired",
+      "count": 1
+    },
+    {
+      "source": "cam6",
+      "kind": "latest_replaced",
+      "count": 11570
+    },
+    {
+      "source": "cam6",
+      "kind": "preview_discarded",
+      "count": 3759
+    },
+    {
+      "source": "cam6",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam6",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam7",
+      "kind": "ingest_retired",
+      "count": 2
+    },
+    {
+      "source": "cam7",
+      "kind": "latest_replaced",
+      "count": 10679
+    },
+    {
+      "source": "cam7",
+      "kind": "preview_discarded",
+      "count": 3570
+    },
+    {
+      "source": "cam7",
+      "kind": "preview_not_requested",
+      "count": 2
+    },
+    {
+      "source": "cam7",
+      "kind": "shutdown_retired",
+      "count": 1
+    },
+    {
+      "source": "cam8",
+      "kind": "ingest_retired",
+      "count": 1
+    },
+    {
+      "source": "cam8",
+      "kind": "latest_replaced",
+      "count": 11603
+    },
+    {
+      "source": "cam8",
+      "kind": "preview_discarded",
+      "count": 4374
+    },
+    {
+      "source": "cam8",
+      "kind": "preview_not_requested",
+      "count": 3
+    },
+    {
+      "source": "cam9",
+      "kind": "ingest_retired",
+      "count": 1
+    },
+    {
+      "source": "cam9",
+      "kind": "latest_replaced",
+      "count": 14001
+    },
+    {
+      "source": "cam9",
+      "kind": "preview_discarded",
+      "count": 5020
+    },
+    {
+      "source": "cam9",
+      "kind": "preview_not_requested",
+      "count": 3
+    },
+    {
+      "source": "resource-monitor",
+      "kind": "ingest_retired",
+      "count": 1
+    },
+    {
+      "source": "resource-monitor",
+      "kind": "latest_replaced",
+      "count": 650
+    },
+    {
+      "source": "resource-monitor",
+      "kind": "preview_discarded",
+      "count": 21
+    },
+    {
+      "source": "resource-monitor",
+      "kind": "preview_not_requested",
+      "count": 1
+    }
+  ],
+  "visible_sources": [
+    "cam0",
+    "cam1",
+    "cam10",
+    "cam11",
+    "cam12",
+    "cam13",
+    "cam14",
+    "cam2",
+    "cam3",
+    "cam4",
+    "cam5",
+    "cam6",
+    "cam7",
+    "cam8",
+    "cam9",
+    "resource-monitor"
+  ],
+  "ai_last_progress": {
+    "Analysis DB save": {
+      "elapsed_s": 3660.994052143,
+      "completed": 13998
+    },
+    "Decoded frame wait": {
+      "elapsed_s": 3660.994052143,
+      "completed": 495680
+    },
+    "Detection update": {
+      "elapsed_s": 3660.994052143,
+      "completed": 247842
+    },
+    "Embedding first result": {
+      "elapsed_s": 3660.994052143,
+      "completed": 11393
+    },
+    "Embedding freshness": {
+      "elapsed_s": 3660.994052143,
+      "completed": 99432
+    },
+    "Embedding update interval": {
+      "elapsed_s": 3660.994052143,
+      "completed": 76347
+    },
+    "Image embedding": {
+      "elapsed_s": 3660.994052143,
+      "completed": 99432
+    },
+    "Image embedding NPU": {
+      "elapsed_s": 3660.994052143,
+      "completed": 99432
+    },
+    "Image embedding NPU preprocess": {
+      "elapsed_s": 3660.994052143,
+      "completed": 99433
+    },
+    "Image embedding NPU total": {
+      "elapsed_s": 3660.994052143,
+      "completed": 99432
+    },
+    "PNG + DB save": {
+      "elapsed_s": 3660.994052143,
+      "completed": 99432
+    },
+    "Person crop": {
+      "elapsed_s": 3660.994052143,
+      "completed": 247838
+    },
+    "ReID inference + transfer": {
+      "elapsed_s": 3660.994052143,
+      "completed": 209917
+    },
+    "ReID preprocess": {
+      "elapsed_s": 3660.994052143,
+      "completed": 209917
+    },
+    "Tracking association": {
+      "elapsed_s": 3660.994052143,
+      "completed": 247835
+    },
+    "Tracking eligible": {
+      "elapsed_s": 3660.994052143,
+      "completed": 247842
+    },
+    "YOLO executor total": {
+      "elapsed_s": 3660.994052143,
+      "completed": 72476
+    },
+    "YOLO inference": {
+      "elapsed_s": 3660.994052143,
+      "completed": 72476
+    },
+    "YOLO postprocess": {
+      "elapsed_s": 3660.994052143,
+      "completed": 72476
+    },
+    "YOLO preprocess": {
+      "elapsed_s": 3660.994052143,
+      "completed": 72476
+    }
+  },
+  "ai_largest_progress_gap_s": {
+    "Analysis DB save": 5.037590485999772,
+    "Decoded frame wait": 5.037590485999772,
+    "Detection update": 5.037590485999772,
+    "Embedding first result": 5.037590485999772,
+    "Embedding freshness": 5.037590485999772,
+    "Embedding update interval": 5.037590485999772,
+    "Image embedding": 5.037590485999772,
+    "Image embedding NPU": 5.037590485999772,
+    "Image embedding NPU preprocess": 5.037590485999772,
+    "Image embedding NPU total": 5.037590485999772,
+    "PNG + DB save": 5.037590485999772,
+    "Person crop": 5.037590485999772,
+    "ReID inference + transfer": 5.037590485999772,
+    "ReID preprocess": 5.037590485999772,
+    "Tracking association": 5.037590485999772,
+    "Tracking eligible": 5.037590485999772,
+    "YOLO executor total": 5.037590485999772,
+    "YOLO inference": 5.037590485999772,
+    "YOLO postprocess": 5.037590485999772,
+    "YOLO preprocess": 5.037590485999772
+  },
+  "copy_active_seconds": 3648.079675758,
+  "vpe": {
+    "schema": 1,
+    "method": "binary-syncobj-fence",
+    "scopes": 2891166,
+    "completed": 2891166,
+    "failed": 0,
+    "aborted": 0,
+    "submissions": 4395103,
+    "rejected_submissions": 0,
+    "foreign_operations": 0,
+    "active_scope": 0,
+    "observer_wait_ns": 656470605,
+    "maximum_observer_wait_ns": 1984794
+  },
+  "binary_sha256": "f3943b49aa1f1e4ed039e9ae6d720754bd078165e3adba34f6a3fa269c80d166",
+  "runtime_inputs": {
+    "config.json": "9dc0ee34000e7bfba566b7272ce379336faecaf7ef8b272b9ee6342b0f1466e4",
+    "config.json.ui.json": "0e65c1db14d78c6c50a3224e70ded0c1bac62877d9cf8d4e6ad9bd9621b293f0",
+    "preparation.json": "4c91935213644eda238a018e039cde056115ab618fb6bf68425c3da35cd4658b",
+    "demo.json": "9eb1da1c181668362e60464db0cb87c78340639f39fdb06b3b64750adb2396d8",
+    "videos.txt": "dffccaf939e0c80d1cc4e4300cd741343ec7c53567c90f8848037dd0a116a864",
+    "model-info.json": "c7d6ac3ed9f0335995ac9383cbe0a3f5247304a17a013213df90f188ca382729",
+    "coco80.txt": "bd17f1ee35d5f3c862a4894605855abbb9dda4b0621fdb0ac4c2c8c7bb7e730a"
+  },
+  "source_patch_sha256": "e9a1a854b75d48eaa9aff83f1fe2c288a8d16888ad641cb461d8647030094097",
+  "note": "Review kernel warnings, resource trends, existing presentation discards and owned-process cleanup separately. This is not certification of lossless presentation."
+}

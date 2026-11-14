@@ -1,4 +1,4 @@
-<!-- source: docs/dev/elements.md e8ba8a2fae43bf9ddefacd6a59bd7ec1e5897da9 -->
+<!-- source: docs/dev/elements.md 237e6a910d6b877f0701596db0bf41be0e3a202b -->
 # 要素リファレンス
 
 同梱のDL Streamer要素と独立した`amdnpu`を除き、すべての要素は `amdanalytics` プラグイン（`libgstamdanalytics.so`）に含まれます。ランクは NONE のため、自動で接続されることはありません。*READY* と記したプロパティは NULL/READY 状態でのみ変更できます。正確な一覧は、お使いのビルドで
@@ -112,7 +112,7 @@ NVRのReIDは常設の`appsrc → amdpreproc → appsink`を使い、`roi-meta=t
 
 ```bash
 source scripts/env.sh
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/examples/nvr/amdva-reid-validate /path/to/osnet.mxr /path/to/hevc.mp4
 ```
 

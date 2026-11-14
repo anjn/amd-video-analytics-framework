@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "integrity": {
+    "accepted": 1559585,
+    "written": 1559585,
+    "queue_lost": 0,
+    "limit_lost": 0,
+    "bytes": 86107903,
+    "write_failed": false,
+    "pending": 0
+  },
+  "incomplete_failures": [],
+  "errors": {},
+  "retirements_before_shutdown": 0,
+  "progress_failures": [],
+  "audit_failures": [],
+  "input_decode_p99_ms": {
+    "cam1": 1.635111,
+    "cam14": 1.455165,
+    "cam5": 1.313758,
+    "cam4": 1.359418,
+    "cam13": 1.160702,
+    "cam6": 1.690829,
+    "cam7": 1.563872,
+    "cam9": 1.329108,
+    "cam11": 1.278959,
+    "cam10": 1.447725,
+    "cam3": 1.174202,
+    "cam15": 1.385347,
+    "cam12": 1.358187,
+    "cam2": 1.502484,
+    "cam8": 1.378577,
+    "cam0": 1.516684
+  }
+}

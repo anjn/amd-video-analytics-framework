@@ -1,4 +1,5 @@
 #include "window.hpp"
+#include "diagnostic_slot_lock.hpp"
 #include "amdva/overlay.hpp"
 #include <QApplication>
 #include <QColor>
@@ -611,7 +612,7 @@ void Tiles::paintGL() {
     const unsigned side = active.empty() ? 1 : unsigned(std::ceil(std::sqrt(active.size())));
     for (unsigned i = 0; i < slot_count(); ++i) {
         auto &s = slot(i);
-        std::lock_guard<std::mutex> l(s.mutex);
+        DiagnosticSlotLock l(s.mutex,i,"ui_select_lock");
         for (unsigned j = 0; j < 3; ++j) {
             auto &p = s.preview[j];
             auto &t = textures_[i][j];
@@ -639,8 +640,10 @@ void Tiles::paintGL() {
         for (unsigned j = 0; j < 3; ++j)
             if (s.preview[j].state == 1) {
                 if (s.preview[j].generation != s.generation) {
-                    if (s.preview[j].timing.telemetry)
+                    if (s.preview[j].timing.telemetry) {
+                        s.preview[j].timing.telemetry->diagnostic(s.preview[j].timing.frame,"preview_discarded");
                         s.preview[j].timing.telemetry->counter(TimingCounter::PreviewDiscarded);
+                    }
                     s.preview[j].state = 0;
                     continue;
                 }
@@ -654,8 +657,10 @@ void Tiles::paintGL() {
             presented_++;
             for (unsigned j = 0; j < 3; ++j)
                 if (s.preview[j].state == 1) {
-                    if (s.preview[j].timing.telemetry)
+                    if (s.preview[j].timing.telemetry) {
+                        s.preview[j].timing.telemetry->diagnostic(s.preview[j].timing.frame,"preview_discarded");
                         s.preview[j].timing.telemetry->counter(TimingCounter::PreviewDiscarded);
+                    }
                     s.preview[j].state = 0;
                 }
         }
@@ -669,7 +674,7 @@ void Tiles::paintGL() {
             continue;
         const unsigned index = active[tile];
         auto &s = slot(index);
-        std::lock_guard<std::mutex> l(s.mutex);
+        DiagnosticSlotLock l(s.mutex,index,"ui_draw_lock");
         s.target_width = std::max(2u, unsigned(width() * devicePixelRatio() / side));
         s.target_height = std::max(2u, unsigned(height() * devicePixelRatio() / side));
         if (!playback_ && cell_count_ && s.channel != cells_[focus_ >= 0 ? unsigned(focus_) : tile])

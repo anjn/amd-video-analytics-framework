@@ -1,4 +1,4 @@
-<!-- source: examples/mobileclip/README.ja.md c369f5bc45a0c7f6b53eb231312045e43012f4cb -->
+<!-- source: examples/mobileclip/README.ja.md c5263fbddad4b3bcb5c6e18169bfafed525da9fe -->
 # MobileCLIP GPU and NPU in one process
 
 This sample and the NVR share `amdva_mobileclip`. GPU preprocessing writes
@@ -46,7 +46,7 @@ kept for reference and are never loaded by this runtime.
 ## Run the proof
 
 ```bash
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/examples/mobileclip/amdva-mobileclip-interop \
   artifacts/mobileclip-device gpu+npu 100 /path/to/reference/libmobileclip2.so
 ```
@@ -120,7 +120,7 @@ See [recorded validation](../../docs/dev/mobileclip-native-results.json) and
 For a headless NVR integration check with an already running RTSP fixture server:
 
 ```bash
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/examples/nvr/amdva-mobileclip-nvr-validate /path/to/nvr-config.json
 ```
 

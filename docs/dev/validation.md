@@ -62,7 +62,7 @@ validation; it is outside the audited pipeline.
 uv pip install --python .deps/venv/bin/python onnxruntime==1.24.4
 build/src/gst/amdva-dump-tensor artifacts/bus.h264 artifacts/input.f32 \
   > artifacts/input-geometry.json
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/src/gst/amdva-run artifacts/bus.h264 artifacts/yolov8n.mxr \
   /path/yolov8n.json --events=artifacts/events.jsonl
 .deps/venv/bin/python tools/compare_reference.py /path/yolov8n.onnx \

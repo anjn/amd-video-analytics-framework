@@ -162,8 +162,11 @@ class SetupContracts(unittest.TestCase):
             def executable(name,text):
                 path=root/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text(text);path.chmod(0o755)
             executable("scripts/env.sh","#!/bin/bash\n")
+            executable("scripts/audit-env.sh","#!/bin/bash\n")
             for name in ["build/examples/rtsp-files/amdva-rtsp-files","build/examples/resource-dashboard/amdva-dashboard"]:
                 executable(name,"#!/usr/bin/python3\nimport time\ntime.sleep(60)\n")
+            executable("build/examples/resource-dashboard/amdva-dashboard",
+                       "#!/usr/bin/python3\nimport os,time\nprint(os.environ.get('AMDVA_GPU_WAVE_MODE'),flush=True)\ntime.sleep(60)\n")
             executable("build/examples/nvr/amdva-nvr","#!/bin/bash\nexit 0\n")
             executable("examples/nvr/scripts/run.sh","#!/bin/bash\necho new-run\n")
             runtime=root/"runtime";logs=runtime/"logs";logs.mkdir(parents=True);(logs/"previous.log").write_text("previous evidence")
@@ -173,6 +176,12 @@ class SetupContracts(unittest.TestCase):
             for sock in sockets:sock.close()
             (runtime/"demo.json").write_text(json.dumps({"rtsp_port":ports[0],"dashboard_port":ports[1],"cpu_name":""}))
             env=dict(os.environ,QT_QPA_PLATFORM="offscreen");env.pop("LD_PRELOAD",None);env.pop("AMDVA_COPY_AUDIT",None)
+            env.pop("AMDVA_GPU_WAVE_MODE",None)
+            subprocess.run(["bash",str(profile/"run.sh"),"--check",str(runtime)],check=True,env=env,capture_output=True,timeout=15)
+            missing=subprocess.run(["bash",str(profile/"run.sh"),"--check",str(runtime)],env=dict(env,AMDVA_GPU_WAVE_MODE="window"),capture_output=True,text=True,timeout=15)
+            self.assertNotEqual(missing.returncode,0)
+            self.assertIn("amdva-wave-sampler",missing.stderr)
+            executable("build/amdva-wave-sampler","#!/bin/bash\nexit 0\n")
             subprocess.run(["bash",str(profile/"run.sh"),"--check",str(runtime)],check=True,env=env,capture_output=True,timeout=15)
             self.assertEqual((logs/"previous.log").read_text(),"previous evidence")
             self.assertEqual(list(runtime.glob("logs.*")),[])
@@ -180,6 +189,7 @@ class SetupContracts(unittest.TestCase):
             archived=list(runtime.glob("logs.*"));self.assertEqual(len(archived),1)
             self.assertEqual((archived[0]/"previous.log").read_text(),"previous evidence")
             self.assertIn("new-run",(logs/"nvr.log").read_text())
+            self.assertIn("sysfs",(logs/"dashboard.log").read_text())
 
     def test_video_count_rejected_before_probe(self):
         with tempfile.TemporaryDirectory() as d,patch("subprocess.check_output") as probe:

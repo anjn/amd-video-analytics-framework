@@ -31,7 +31,7 @@ source scripts/env.sh
 mkdir -p artifacts
 build/src/gst/amdva-compile-model /path/yolov8n.onnx artifacts/yolov8n.mxr \
   > artifacts/model-compile.log 2>&1
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/src/gst/amdva-run /path/input.h264 artifacts/yolov8n.mxr \
   /path/yolov8n.json --events=artifacts/events.jsonl
 ```

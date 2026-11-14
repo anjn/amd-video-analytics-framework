@@ -134,7 +134,7 @@ examples/nvr/demo/1440p/run.sh artifacts/1440p-demo-local
 `--check`はファイル・チェックサム・実行ファイルの存在を確認するもので、GPU／NPUでの推論の成功を保証するものではありません。移行先でデモを起動する前に、他のパイプラインを止めて実行検証します。
 
 ```bash
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/examples/mobileclip/amdva-mobileclip-interop "$bundle" npu 100
 ```
 
@@ -163,3 +163,9 @@ artifacts/1440p-demo/run-demo.sh --soak-seconds 1800
 通常と同じGUI／バックエンドを起動し、5秒ごとに映像・録画・検索・RSS・FD・監査結果を `logs/soak.jsonl` へ記録します。終了時は子プロセスを停止します。ウォームアップ後のRSS中央値が512MiBまたは25%の大きい方を超えて増加、FDが64超増加、入力エラー、監査違反、検索未実施などの場合は失敗します。人物のいない動画では検索を検証できず、受入未完了となります。画面ロックや手動終了も検証に影響するため、実行中はデスクトップを利用可能にしておきます。
 
 再起動時は前回の `logs/` を `logs.<UTC時刻>/` に退避して保持します。`--check` はログの移動やプロセス起動を行いません。
+
+## GPU表示の計測方式
+
+デモのGPU計測の既定値を従来の`sysfs`に戻しました。継続実行中の不安定化の報告を受け、wave収集は既定で無効にします。wave収集が原因であると確定したわけではありません。
+`AMDVA_GPU_WAVE_MODE=window artifacts/1440p-demo/run-demo.sh`で診断用wave方式（500ms収集・500ms休止）を明示的に選べます。`amdva-wave-sampler`のビルドと検証済みOS・GPUが必要です。wave表示は時定数3秒の指数移動平均で安定化します（持続する変化の95%まで約9秒）。取得失敗時は最大2秒保持し、その後は取得不可を表示します。sysfs値はwaveの平均には混ぜません。ダッシュボードログの`gpu_source`と`gpu_status`に表示の取得元と状態を残し、`gpu_raw_pct`、`gpu_raw_source`、`gpu_raw_status`で元の値も確認できます。
+wave値はメモリ待ちのwaveも含むサイクル比であり、追加処理可能量の割合ではありません。

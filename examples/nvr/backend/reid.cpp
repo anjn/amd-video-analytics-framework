@@ -1,4 +1,7 @@
 #include "backend/reid.hpp"
+#include "amdva/diagnostics.hpp"
+#include "amdva/telemetry.hpp"
+#include <iostream>
 #include "amdva/npu_meta.hpp"
 #include "amdva/tensor_meta.hpp"
 #include <algorithm>
@@ -22,6 +25,13 @@ struct ReIdModel::Preprocessor {
         if (pipeline)
             gst_object_unref(pipeline);
     }
+    [[noreturn]] void fail(const std::string &text) {
+        failed=true;failure=text;
+        if(diagnostics_enabled())
+            std::cerr << "ReID first failure ns=" << Telemetry::monotonic_ns()
+                      << " sequence=" << sequence << ": " << failure << '\n';
+        throw std::runtime_error(failure);
+    }
     void check_bus() {
         auto *message =
             gst_bus_pop_filtered(bus, GstMessageType(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
@@ -39,9 +49,7 @@ struct ReIdModel::Preprocessor {
             g_free(debug);
         }
         gst_message_unref(message);
-        failed = true;
-        failure = text;
-        throw std::runtime_error(text);
+        fail(text);
     }
     void start(unsigned width, unsigned height, unsigned device) {
         pipeline = gst_pipeline_new(nullptr);
@@ -100,9 +108,8 @@ struct ReIdModel::Preprocessor {
         auto flow = gst_app_src_push_sample(GST_APP_SRC(source), sample);
         gst_sample_unref(sample);
         if (flow != GST_FLOW_OK) {
-            failed = true;
             check_bus();
-            throw std::runtime_error("ReID preprocessing rejected input");
+            fail(std::string("ReID preprocessing rejected input: ")+gst_flow_get_name(flow));
         }
         auto deadline = Clock::now() + std::chrono::seconds(30);
         while (Clock::now() < deadline) {
@@ -110,21 +117,21 @@ struct ReIdModel::Preprocessor {
             if (out) {
                 auto *b = gst_sample_get_buffer(out);
                 auto *meta = get_tensor_meta(b);
+                const auto actual_offset=GST_BUFFER_OFFSET(b);
                 std::shared_ptr<Tensor> tensor;
                 if (GST_BUFFER_OFFSET(b) == seq && meta && meta->tensor)
                     tensor = *meta->tensor;
                 gst_sample_unref(out);
                 if (!tensor) {
-                    failed = true;
-                    throw std::runtime_error("ReID preprocessing result missing or mismatched");
+                    fail("ReID preprocessing result missing or mismatched: expected="+
+                         std::to_string(seq)+" actual="+std::to_string(actual_offset));
                 }
                 hip_check(hipEventSynchronize(tensor->ready), "ReID tensor readiness");
                 return tensor;
             }
             check_bus();
         }
-        failed = true;
-        throw std::runtime_error("ReID preprocessing timed out");
+        fail("ReID preprocessing timed out");
     }
 };
 ReIdModel::ReIdModel(const std::string &path, unsigned device)

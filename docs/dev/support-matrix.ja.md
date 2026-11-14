@@ -1,11 +1,11 @@
-<!-- source: docs/dev/support-matrix.md 05d6eb72230e2940f87d7347cdc1582ff59f2045 -->
+<!-- source: docs/dev/support-matrix.md fd4f37e3c36b4e5e4352d6564c31a1ee077e1dcf -->
 # ホストSDKの検証状況
 
 対応目標はROCm 10.1.0／MIGraphX 2.18.0とホストのMesa／libva／libdrmです。新規構築と実機受入が通るまで検証済みとは表示しません。
 
 | OS | GPU | 新規ビルド・契約テスト | GPU probe | 長時間デモ |
 |---|---|---|---|---|
-| Ubuntu 24.04 | Strix Point gfx1150 | 検証機待ち | 未検証 | 未検証 |
+| Ubuntu 24.04.5 | Strix Point gfx1150 | kernel 6.17.0-1033-oemで新規ビルド・契約30件成功 | VA／VPE／HIPの共有を確認 | 未実施。短時間wave検査は別記録 |
 | Ubuntu 24.04 | Strix Halo gfx1151 | 検証機待ち | 未検証 | 未検証 |
 | Ubuntu 26.04 | Strix Point gfx1150 | 検証機待ち | 未検証 | 未検証 |
 | Ubuntu 26.04.1 | Strix Halo gfx1151 | x86-084-maple、kernel 7.0.0-43で成功 | VA／VPE／HIPの共有を確認 | 20分成功（ユーザー承認で短縮） |

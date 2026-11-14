@@ -326,7 +326,7 @@ misses. For the backend verifier, initialize Ryzen AI before running the binary:
 ```bash
 source scripts/env.sh
 source examples/nvr/scripts/mobileclip-env.sh "$AMDVA_RYZEN_AI_VENV"
-LD_PRELOAD="$PWD/build/src/gst/libamdva_copy_audit.so" \
+LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD:}$PWD/build/src/gst/libamdva_copy_audit.so" \
   build/examples/nvr/amdva-scheduling-validate examples/nvr/config/nvr-frequency-17.json
 ```
 

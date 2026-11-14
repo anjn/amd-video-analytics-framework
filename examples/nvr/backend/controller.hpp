@@ -135,6 +135,7 @@ class Controller {
     std::string fatal() const;
     bool status_ready() const { return status_ready_.load(); }
     bool inference_ready() const { return inference_ready_.load(); }
+    int64_t copy_audit_started_ns() const { return copy_audit_started_ns_.load(); }
     unsigned last_batch() const { return last_batch_.load(); }
     double batch_ms() const { return batch_ms_.load(); }
     PublicationStatus publication_status() const;
@@ -174,6 +175,7 @@ class Controller {
     double transcode_fps_limit_{};
     Clock::time_point transcode_rate_at_{};
     void pace_transcoding();
+    std::atomic<int64_t> copy_audit_started_ns_{0};
     std::atomic<bool> inference_ready_{false}, status_ready_{false};
     std::atomic<unsigned> last_batch_{0};
     std::atomic<double> batch_ms_{0};
