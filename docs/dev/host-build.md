@@ -19,6 +19,16 @@ Model manifests use schema 3 and record the GPU, ROCm, MIGraphX, input ONNX hash
 precision, batch and generated artifact hash. Legacy schema 1/2 models require
 regeneration. No serialized MIGraphX artifact is assumed compatible across SDKs.
 
+
+
+The default NVR GUI build also needs the host-native `qt6-base-private-dev`,
+`libwayland-dev` and `wayland-protocols` listed by `scripts/host.py --packages`.
+Private QPA headers must match the installed Qt libraries; do not copy Qt
+libraries from another Ubuntu release. The experimental live presentation FIFO
+uses Wayland `wp_presentation` feedback and Qt's normal paint/resolve/swap path.
+Its 24.04/gfx1150 comparison results and the still-unvalidated platforms are
+recorded in the [presentation investigation](nvr/input-decode-latency.md).
+
 ## Prepare a model and run
 
 Use a static YOLOv8 COCO ONNX with `[1,3,640,640]` RGB input and

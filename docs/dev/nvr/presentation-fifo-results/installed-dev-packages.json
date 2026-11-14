@@ -1,0 +1,17 @@
+{
+  "machine": "amd-rai370",
+  "packages": [
+    "gir1.2-gudev-1.0 1:238-5ubuntu1 installed",
+    "libevdev-dev 1.13.1+dfsg-1build1 installed",
+    "libgudev-1.0-dev 1:238-5ubuntu1 installed",
+    "libinput-dev 1.25.0-1ubuntu3.7 installed",
+    "libmtdev-dev 1.1.6-1.1build1 installed",
+    "libwacom-dev 2.10.0-2 installed",
+    "libxkbcommon-dev 1.6.0-1build1 installed",
+    "qt6-base-private-dev 6.4.2+dfsg-21.1build5 installed",
+    "wayland-protocols 1.45-1~ubuntu0.24.04.2 installed"
+  ],
+  "framework_commit": "1c38061f653cc98ba7be500cc027fe7379624106",
+  "branch": "codex/pts-presentation-fifo",
+  "nvr_running": false
+}

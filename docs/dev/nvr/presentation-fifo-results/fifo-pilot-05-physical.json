@@ -1,0 +1,902 @@
+{
+  "physical_frames_passed": false,
+  "records_read": 2252136,
+  "failures": {
+    "decoded_frame_not_presented": 93
+  },
+  "examples": [
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "resource-monitor",
+        32,
+        1129
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam9",
+        25,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam6",
+        22,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam5",
+        21,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam11",
+        27,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam1",
+        17,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam9",
+        25,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam14",
+        30,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam6",
+        22,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "resource-monitor",
+        32,
+        1130
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam5",
+        21,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam11",
+        27,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam1",
+        17,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam9",
+        25,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam4",
+        20,
+        3359
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam14",
+        30,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam3",
+        19,
+        3359
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam0",
+        33,
+        3359
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam6",
+        22,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam2",
+        18,
+        3384
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam7",
+        23,
+        3359
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam5",
+        21,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam11",
+        27,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam1",
+        17,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam9",
+        25,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam4",
+        20,
+        3360
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam14",
+        30,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam3",
+        19,
+        3360
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam0",
+        33,
+        3360
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam6",
+        22,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam2",
+        18,
+        3385
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam7",
+        23,
+        3360
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam5",
+        21,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam11",
+        27,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam1",
+        17,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam9",
+        25,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam4",
+        20,
+        3361
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam14",
+        30,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam3",
+        19,
+        3361
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam0",
+        33,
+        3361
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam6",
+        22,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "resource-monitor",
+        32,
+        1131
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam2",
+        18,
+        3386
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam7",
+        23,
+        3361
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam5",
+        21,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam11",
+        27,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam1",
+        17,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam9",
+        25,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam4",
+        20,
+        3362
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam14",
+        30,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam3",
+        19,
+        3362
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam0",
+        33,
+        3362
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam6",
+        22,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam2",
+        18,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam7",
+        23,
+        3362
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam5",
+        21,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam11",
+        27,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam1",
+        17,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam9",
+        25,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam4",
+        20,
+        3363
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam14",
+        30,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam3",
+        19,
+        3363
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam0",
+        33,
+        3363
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam6",
+        22,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3394
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam2",
+        18,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam7",
+        23,
+        3363
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3394
+      ]
+    }
+  ],
+  "sources": {
+    "cam0": {
+      "decoded": 3363,
+      "presented": 3357,
+      "shutdown_retired": 1
+    },
+    "cam1": {
+      "decoded": 3394,
+      "presented": 3386,
+      "shutdown_retired": 2
+    },
+    "cam10": {
+      "decoded": 3395,
+      "presented": 3387,
+      "shutdown_retired": 2
+    },
+    "cam11": {
+      "decoded": 3394,
+      "presented": 3386,
+      "shutdown_retired": 2
+    },
+    "cam12": {
+      "decoded": 3394,
+      "presented": 3386,
+      "shutdown_retired": 2
+    },
+    "cam13": {
+      "decoded": 3395,
+      "presented": 3385,
+      "shutdown_retired": 2
+    },
+    "cam14": {
+      "decoded": 3394,
+      "presented": 3386,
+      "shutdown_retired": 2
+    },
+    "cam2": {
+      "decoded": 3388,
+      "presented": 3382,
+      "shutdown_retired": 1
+    },
+    "cam3": {
+      "decoded": 3363,
+      "presented": 3357,
+      "shutdown_retired": 1
+    },
+    "cam4": {
+      "decoded": 3364,
+      "presented": 3357,
+      "shutdown_retired": 2
+    },
+    "cam5": {
+      "decoded": 3394,
+      "presented": 3386,
+      "shutdown_retired": 2
+    },
+    "cam6": {
+      "decoded": 3393,
+      "presented": 3385,
+      "shutdown_retired": 1
+    },
+    "cam7": {
+      "decoded": 3363,
+      "presented": 3357,
+      "shutdown_retired": 1
+    },
+    "cam8": {
+      "decoded": 3394,
+      "presented": 3385,
+      "shutdown_retired": 2
+    },
+    "cam9": {
+      "decoded": 3394,
+      "presented": 3385,
+      "shutdown_retired": 2
+    },
+    "resource-monitor": {
+      "decoded": 1132,
+      "presented": 1127,
+      "shutdown_retired": 2
+    }
+  },
+  "events": {
+    "catalog_enforce_lock": 113,
+    "catalog_bytes_lock": 228,
+    "catalog_file_sizes": 228,
+    "catalog_extension_sizes": 228,
+    "catalog_analysis_sizes": 228,
+    "control_loop": 10340,
+    "control_tick": 2112,
+    "presentation_mode": 1,
+    "ui_select_lock": 112352,
+    "ui_draw_lock": 112352,
+    "input": 55310,
+    "access_unit": 55309,
+    "pts": 165927,
+    "decode_dispatch_wait": 55309,
+    "decode_dispatch_queue": 55309,
+    "decode_dispatch_oldest": 55309,
+    "ingest_queue": 55288,
+    "ingest_oldest_age": 55288,
+    "appsrc_queue": 55309,
+    "appsrc_time": 55309,
+    "decode_submit": 110618,
+    "decode_input": 55309,
+    "decode_output": 55309,
+    "decoded_lock": 55309,
+    "handoff": 55309,
+    "decoder_pool": 16,
+    "decoder_pool_bytes": 16,
+    "fifo_enter": 51852,
+    "fifo_wait": 51852,
+    "fifo_oldest": 51852,
+    "latest_replaced": 3394,
+    "counter": 83918,
+    "fifo_exit": 51810,
+    "preview_lock": 51810,
+    "control_status_slot": 1657,
+    "preview_scale": 51810,
+    "preview_ready": 51810,
+    "draw": 51794,
+    "presentation_commit_submit": 104275,
+    "swap": 51794,
+    "presentation_commit_discarded": 5317,
+    "presentation_feedback_received": 104275,
+    "presentation_commit_presented": 98958,
+    "presented": 51794,
+    "ai_done": 67887,
+    "ai_submit": 7607,
+    "ai_complete": 7607,
+    "control_malloc_trim": 1,
+    "presentation_stale_feedback": 35,
+    "control_quota": 18,
+    "preview_full": 1,
+    "preview_not_requested": 155,
+    "shutdown_requested": 1,
+    "shutdown_fifo_retired": 11,
+    "receive_au_closed": 15057,
+    "ingest_retired": 12,
+    "rtp_assembly_retired": 1,
+    "decoder_drain": 17,
+    "shutdown_latest_retired": 1,
+    "shutdown_preview_retired": 16,
+    "copy_audit_result": 1,
+    "shutdown_drained": 1
+  },
+  "shutdown_ns": 91852404719356,
+  "scope": "Fixed-layout normal trial; startup and <=1s shutdown dispositions are separate from physical presentation.",
+  "diagnostic_integrity_valid": true
+}

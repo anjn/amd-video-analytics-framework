@@ -16,3 +16,15 @@ AMD's Ryzen AI Linux OS support remains Ubuntu 24.04; 26.04 results are framewor
 No CPU fallback is accepted as hardware validation. Probe success is not full-pipeline copy-audit proof.
 
 The user shortened acceptance to 20 minutes before a network disconnect. An external monitor evaluated 1204.9 seconds of samples and stopped the launcher: zero copy-audit errors, median RSS 1956→1976 MiB, FD227 stable, search/recording/all 17 inputs and catalog integrity passed. The VCN capacity correction is checked in a subsequent short run; loaded libraries were not replaced during the long run.
+
+
+## Presentation FIFO comparison scope (2026-11-14)
+
+The Ubuntu 24.04/gfx1150 input-to-decode investigation later passed two 61-minute
+normal runs at `1c38061`. This is separate from the uncommitted presentation FIFO:
+its Qt scheduling comparison passed 15 minutes, all-frame Wayland reconciliation,
+copy/VPE audits, and interactive recovery checks on that reference host only.
+Current 47 CPU contracts are not a new fresh-checkout validation. The new physical
+feedback path is unvalidated on the other three OS/GPU combinations and X11;
+previous rows must not be read as validating this new path. See the
+[per-trial evidence and limits](nvr/input-decode-latency.md#experimental-decoded-presentation-fifo-2026-11-14).

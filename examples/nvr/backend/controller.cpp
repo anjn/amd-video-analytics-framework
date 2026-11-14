@@ -99,8 +99,18 @@ Slot::~Slot() {
     if (va)
         va->destroy_surface(ai_surface);
 }
+namespace {
+void retire_presentation(std::vector<PresentationFifo<Frame>::Entry> entries,
+                         const char *event,int reason=0) {
+    for(const auto &entry:entries)
+        if(entry.frame.timing.telemetry)
+            entry.frame.timing.telemetry->diagnostic(entry.frame.timing.frame,event,reason);
+}
+}
 struct Controller::Channel {
     Controller &controller;
+    uint64_t decoded_serial{};
+    bool pool_reported{};
     Status state;
     std::shared_ptr<Telemetry> timing;
     std::unique_ptr<PipelineTelemetry> receive_timing, decode_timing;
@@ -248,6 +258,14 @@ struct Controller::Channel {
         stop_decode();
         recordings.clear();
     }
+    void reset_presentation() {
+        if(state.slot<0)return;
+        auto &slot=controller.slots_[state.slot];
+        retire_presentation(slot.presentation.reset(state.generation,
+            controller.options_.preview_enabled && controller.presentation_observed_.load() &&
+            slot.preview_visible.load()),"preview_not_requested",8);
+        pool_reported=false;
+    }
     static GstFlowReturn decoded(GstAppSink *sink, gpointer data) {
         auto &c = *static_cast<Channel *>(data);
         auto s = own(gst_app_sink_pull_sample(sink));
@@ -274,7 +292,7 @@ struct Controller::Channel {
             return GST_FLOW_NOT_NEGOTIATED;
         auto &slot = c.controller.ai_slot(index);
         const auto lock_start = Telemetry::monotonic_ns();
-        std::lock_guard<std::mutex> l(slot.mutex);
+        std::unique_lock<std::mutex> l(slot.mutex);
         const auto acquired = Telemetry::monotonic_ns();
         const auto diagnostic_trace = frame_trace(gst_sample_get_buffer(s.get()));
         c.timing->diagnostic(diagnostic_trace.frame, "decoded_lock", acquired-lock_start, 0,
@@ -282,7 +300,7 @@ struct Controller::Channel {
         if (slot.latest.sample && (slot.latest.width != unsigned(info.width) ||
                                    slot.latest.height != unsigned(info.height)))
             slot.detections.clear();
-        if (slot.latest.sample && !slot.latest.preview_consumed) {
+        if (index>=16 && slot.latest.sample && !slot.latest.preview_consumed) {
             c.timing->diagnostic(slot.latest.timing.frame,"latest_replaced");
             c.timing->counter(TimingCounter::LatestReplaced);
         }
@@ -304,7 +322,54 @@ struct Controller::Channel {
                 c.search_stamps.erase(it);
             }
         }
+        auto presentation_frame=slot.latest;
+        // AI retains the newest reference independently. Presentation owns each
+        // admitted frame in FIFO order; replacing the AI pointer is not a drop.
+        if(index<16)slot.latest.preview_consumed=true;
         c.timing->diagnostic(diagnostic_trace.frame, "handoff", Telemetry::monotonic_ns()-acquired);
+        l.unlock();
+        if(index<16) {
+            if(!c.pool_reported) {
+                auto *element=c.transcoder?GST_ELEMENT(gst_object_ref(c.transcoder->decoder())):
+                    gst_bin_get_by_name(GST_BIN(c.decoder),"decode");
+                auto *pool=gst_video_decoder_get_buffer_pool(GST_VIDEO_DECODER(element));
+                if(pool) {
+                    auto *config=gst_buffer_pool_get_config(pool);
+                    guint size=0,minimum=0,maximum=0;GstCaps *caps=nullptr;
+                    gst_buffer_pool_config_get_params(config,&caps,&size,&minimum,&maximum);
+                    c.timing->diagnostic(diagnostic_trace.frame,"decoder_pool",minimum,maximum);
+                    c.timing->diagnostic(diagnostic_trace.frame,"decoder_pool_bytes",size,4);
+                    gst_structure_free(config);gst_object_unref(pool);
+                }
+                gst_object_unref(element);c.pool_reported=true;
+            }
+            const auto serial=++c.decoded_serial;
+            const auto presentation_pts=GST_BUFFER_PTS(gst_sample_get_buffer(presentation_frame.sample.get()));
+            const auto period=info.fps_n>0 && info.fps_d>0 ?
+                int64_t(GST_SECOND)*info.fps_d/info.fps_n:0;
+            const auto before=Telemetry::monotonic_ns();
+            try {
+                auto result=PresentationFifo<Frame>::Result::Inactive;
+                if(c.controller.options_.preview_enabled &&
+                   c.controller.presentation_observed_.load() && slot.preview_visible.load())
+                    result=slot.presentation.push(std::move(presentation_frame),c.state.generation,
+                        serial,presentation_pts,period);
+                const auto snapshot=slot.presentation.snapshot();
+                if(result==PresentationFifo<Frame>::Result::Queued) {
+                    c.timing->diagnostic(diagnostic_trace.frame,"fifo_enter",snapshot.frames,period);
+                    c.timing->diagnostic(diagnostic_trace.frame,"fifo_wait",Telemetry::monotonic_ns()-before);
+                    c.timing->diagnostic(diagnostic_trace.frame,"fifo_oldest",snapshot.oldest_ns);
+                } else {
+                    c.timing->diagnostic(diagnostic_trace.frame,
+                        c.controller.stopping_.load()?"shutdown_fifo_retired":"preview_not_requested",
+                        result==PresentationFifo<Frame>::Result::Retired?8:0);
+                }
+            } catch(const std::exception &e) {
+                c.timing->diagnostic(diagnostic_trace.frame,"presentation_fifo_error",1);
+                std::lock_guard<std::mutex> lock(slot.mutex);slot.error=e.what();
+                return GST_FLOW_ERROR;
+            }
+        }
         return GST_FLOW_OK;
     }
     void start_receive() {
@@ -512,6 +577,8 @@ struct Controller::Channel {
         state.background_state = "waiting for capacity";
     }
     void stop_decode() {
+        if(state.slot>=0)retire_presentation(controller.slots_[state.slot].presentation.close(),
+            controller.stopping_.load()?"shutdown_fifo_retired":"preview_not_requested",8);
         // The transcoder owns the decode while it runs; see end_record().
         if (transcoder)
             return;
@@ -590,12 +657,27 @@ struct Controller::Channel {
         const double jitter = 0.9 + (g_random_int() % 201) / 1000.0;
         reconnect = Clock::now() + std::chrono::milliseconds(unsigned(backoff * 1000 * jitter));
     }
-    static GstPadProbeReturn allocation(GstPad *, GstPadProbeInfo *info, gpointer) {
+    static GstPadProbeReturn allocation(GstPad *, GstPadProbeInfo *info, gpointer data) {
         auto *query = GST_PAD_PROBE_INFO_QUERY(info);
         if (GST_QUERY_TYPE(query) != GST_QUERY_ALLOCATION)
             return GST_PAD_PROBE_OK;
         gst_query_add_allocation_meta(query, GST_VIDEO_META_API_TYPE, nullptr);
         gst_query_add_allocation_meta(query, GST_VIDEO_CROP_META_API_TYPE, nullptr);
+        auto &channel=*static_cast<Channel*>(data);
+        if(channel.state.slot>=0) {
+            // GstVaBaseDec adds this downstream minimum to its DPB minimum.
+            // Preserve its VA allocator and unbounded allocator maximum; only
+            // reserve FIFO(3) + one producer surface above the existing minimum.
+            if(gst_query_get_n_allocation_pools(query)==0)
+                gst_query_add_allocation_pool(query,nullptr,0,4,0);
+            else {
+                GstBufferPool *pool=nullptr;guint size=0,minimum=0,maximum=0;
+                gst_query_parse_nth_allocation_pool(query,0,&pool,&size,&minimum,&maximum);
+                gst_query_set_nth_allocation_pool(query,0,pool,size,minimum+4,
+                    maximum?maximum+4:0);
+                if(pool)gst_object_unref(pool);
+            }
+        }
         return GST_PAD_PROBE_HANDLED;
     }
     void start_decoder(GstCaps *caps, bool live = false, const Sample *seed = nullptr) {
@@ -603,10 +685,10 @@ struct Controller::Channel {
             codec_id() == 1
                 ? "appsrc name=input is-live=true format=time block=false ! h264parse ! "
                   "vah264dec name=decode ! video/x-raw(memory:VAMemory),format=NV12 ! appsink "
-                  "name=frames sync=false max-buffers=1 drop=true"
+                  "name=frames sync=false max-buffers=1 drop=false"
                 : "appsrc name=input is-live=true format=time block=false ! h265parse ! "
                   "vah265dec name=decode ! video/x-raw(memory:VAMemory),format=NV12 ! appsink "
-                  "name=frames sync=false max-buffers=1 drop=true";
+                  "name=frames sync=false max-buffers=1 drop=false";
         decoder = parse(decode);
         decode_timing = std::make_unique<PipelineTelemetry>(timing);
         decode_timing->background(background_slot >= 0);
@@ -622,12 +704,13 @@ struct Controller::Channel {
         g_object_set(decode_input, "max-bytes", guint64(compressed_limit), nullptr);
         auto *sink = gst_bin_get_by_name(GST_BIN(decoder), "frames");
         auto *pad = gst_element_get_static_pad(sink, "sink");
-        gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_QUERY_DOWNSTREAM, allocation, nullptr, nullptr);
+        gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_QUERY_DOWNSTREAM, allocation, this, nullptr);
         gst_object_unref(pad);
         GstAppSinkCallbacks cb{};
         cb.new_sample = decoded;
         gst_app_sink_set_callbacks(GST_APP_SINK(sink), &cb, this, nullptr);
         gst_object_unref(sink);
+        reset_presentation();
         if (gst_element_set_state(decoder, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
             throw std::runtime_error("Cannot start VA decoder");
         decode_wait = false;
@@ -659,12 +742,13 @@ struct Controller::Channel {
         decode_timing->attach_decoder(transcoder->decoder());
         transcoder->max_fps(controller.transcode_fps_limit_);
         auto *pad = gst_element_get_static_pad(transcoder->frames(), "sink");
-        gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_QUERY_DOWNSTREAM, allocation, nullptr, nullptr);
+        gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_QUERY_DOWNSTREAM, allocation, this, nullptr);
         gst_object_unref(pad);
         GstAppSinkCallbacks cb{};
         cb.new_sample = decoded;
         gst_app_sink_set_callbacks(GST_APP_SINK(transcoder->frames()), &cb, this, nullptr);
         state.recording = "encoding";
+        reset_presentation();
         activate_dispatch(true,seed);
     }
     // Moves re-encoded access units into the recorder.
@@ -768,6 +852,10 @@ struct Controller::Channel {
         return gst_app_src_push_buffer(GST_APP_SRC(input), b) == GST_FLOW_OK;
     }
     void tick(bool space) {
+        if(state.slot>=0) {
+            const auto failure=controller.slots_[state.slot].presentation.snapshot().error;
+            if(!failure.empty())throw std::runtime_error("Presentation "+state.source.id+": "+failure);
+        }
         DiagnosticControlSpan tick_span(state.source.id,"control_tick");
         if (receive_timing)
             receive_timing->background(state.slot < 0);
@@ -1054,11 +1142,16 @@ Controller::~Controller() {
     if (display_)
         gst_object_unref(display_);
 }
-void Controller::shutdown() {
+void Controller::request_shutdown() {
     const auto requested=Telemetry::monotonic_ns();
-    if (stopping_.exchange(true))
-        return;
+    if(stopping_.exchange(true))return;
     diagnostic_event("controller",0,0,"shutdown_requested",requested);
+    for(auto &slot:slots_)
+        retire_presentation(slot.presentation.close(),"shutdown_fifo_retired");
+}
+void Controller::shutdown() {
+    if(shutdown_started_.exchange(true))return;
+    request_shutdown();
     if (control_.joinable())
         control_.join();
     if (gpu_.joinable())
@@ -1222,6 +1315,7 @@ void Controller::assign(Channel &c, bool value) {
                     c.state.error.clear();
                 c.state.generation = ++next_generation_;
                 s.channel = c.state.source.id;
+                s.preview_visible=preview_selection_.contains(s.channel);
                 s.generation = c.state.generation;
                 s.detections.clear();
                 s.latest = {};
@@ -1471,12 +1565,15 @@ void Controller::preview_loop() {
                     previous[index].reset();
                     continue;
                 }
-                if (s.latest.sample == previous[index])
-                    continue;
                 auto it = std::find_if(s.preview.begin(), s.preview.end(),
                                        [](const auto &p) { return p.state == 0; });
                 const bool preview = options_.preview_enabled && presentation_observed_.load() &&
                                      s.preview_visible.load();
+                auto entry=preview?s.presentation.peek():
+                    std::optional<PresentationFifo<Frame>::Entry>{};
+                if(preview && (!entry || Telemetry::monotonic_ns()<entry->due_ns-entry->period_ns))
+                    continue;
+                if(!preview && s.latest.sample==previous[index])continue;
                 if (preview && it == s.preview.end()) {
                     if (s.latest.timing.telemetry && blocked[index] != s.latest.timing.frame.sequence) {
                         blocked[index]=s.latest.timing.frame.sequence;
@@ -1484,7 +1581,13 @@ void Controller::preview_loop() {
                     }
                     continue;
                 }
-                auto frame = s.latest;
+                if(preview) {
+                    entry=s.presentation.pop(entry->generation,entry->serial);
+                    if(!entry)continue;
+                    if(entry->frame.timing.telemetry)
+                        entry->frame.timing.telemetry->diagnostic(entry->frame.timing.frame,"fifo_exit");
+                }
+                auto frame = preview?entry->frame:s.latest;
                 auto *buffer = gst_sample_get_buffer(frame.sample.get());
                 if (gst_va_buffer_peek_display(buffer) != display_)
                     throw std::runtime_error("Decoder did not use the shared VA display");
@@ -1547,15 +1650,18 @@ void Controller::preview_loop() {
                     frame.timing.mark(TimingStage::PreviewReady);prepared.timing=frame.timing;
                     prepared.original_width=frame.width;prepared.original_height=frame.height;
                     prepared.time=frame.received;
-                },[&]{return s.generation==generation;});
+                    prepared.presentation_due_ns=entry->due_ns;
+                    prepared.presentation_period_ns=entry->period_ns;
+                    prepared.presentation_confirmed=false;
+                },[&]{return s.generation==generation && !stopping_.load() &&
+                    presentation_observed_.load() && s.preview_visible.load();});
                 if(published) {
                     if(s.latest.sample==frame.sample)s.latest.timing=frame.timing;
                     s.sequence=sequence;++s.processed;
                 }else if(frame.timing.telemetry) {
-                    // Same stale-generation discard as the display consumer;
-                    // no valid-generation frame is newly dropped.
-                    frame.timing.telemetry->diagnostic(frame.timing.frame,"preview_discarded");
-                    frame.timing.telemetry->counter(TimingCounter::PreviewDiscarded);
+                    frame.timing.telemetry->diagnostic(frame.timing.frame,
+                        stopping_.load()?"shutdown_preview_retired":
+                        s.generation==generation?"presentation_suspended_retired":"presentation_generation_retired");
                 }
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(2));
@@ -1962,6 +2068,24 @@ namespace amdva::nvr {
 using namespace amdva::streaming;
 void Controller::presentation_active(bool active) {
     presentation_observed_ = active;
+    for(auto &slot:slots_) {
+        const bool requested=options_.preview_enabled && active && slot.preview_visible.load() && !stopping_.load();
+        retire_presentation(slot.presentation.active(requested),
+            stopping_.load()?"shutdown_fifo_retired":"preview_not_requested",16);
+        if(!requested) {
+            std::lock_guard<std::mutex> lock(slot.mutex);
+            for(auto &plane:slot.preview) {
+                if(plane.state!=1 && plane.state!=2 && plane.state!=3 && plane.state!=5)continue;
+                if(!plane.presentation_confirmed && !plane.presentation_retired && plane.timing.telemetry)
+                    plane.timing.telemetry->diagnostic(plane.timing.frame,
+                        stopping_.load()?"shutdown_present_retired":"presentation_suspended_retired");
+                plane.presentation_retired=true;
+                // Only ready, never sampled surfaces may be freed here. The UI
+                // retains current/fenced planes and releases them after its fence.
+                if(plane.state==1)plane.state=0;
+            }
+        }
+    }
     const auto states = status();
     std::lock_guard<std::mutex> lock(telemetry_mutex_);
     for (const auto &state : states) {
@@ -1982,11 +2106,11 @@ void Controller::presentation_active(bool active) {
 }
 
 void Controller::preview_sources(const std::vector<std::string> &ids) {
-    const auto states = status();
-    for (const auto &state : states)
-        if (state.slot >= 0)
-            slots_[state.slot].preview_visible =
-                std::find(ids.begin(), ids.end(), state.source.id) != ids.end();
+    preview_selection_.set(ids);
+    for(auto &slot:slots_) {
+        std::lock_guard<std::mutex> lock(slot.mutex);
+        slot.preview_visible=preview_selection_.contains(slot.channel);
+    }
     presentation_active(presentation_observed_.load());
 }
 std::vector<Recording> Controller::recordings(const RecordingQuery &q) const {

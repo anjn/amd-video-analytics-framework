@@ -938,11 +938,18 @@ Window::Window(Controller &c, Options options, std::string config)
     : controller_(c), options_(std::move(options)), config_(std::move(config)),
       vms_(std::make_unique<Vms>(*this)) {
     vms_->build();
+    connect(QCoreApplication::instance(),&QCoreApplication::aboutToQuit,this,
+            [this]{controller_.request_shutdown();});
+}
+void Window::closeEvent(QCloseEvent *event) {
+    controller_.request_shutdown();
+    QMainWindow::closeEvent(event);
 }
 KeyframePreviewStatus Window::keyframe_preview_status() const { return vms_->preview->status(); }
 TimelinePlaybackStatus Window::timeline_status() const { return vms_->player->status(); }
 Tiles *Window::recording_view() const { return vms_->play_tiles; }
 Window::~Window() {
+    controller_.request_shutdown();
     if (vms_->query.valid())
         vms_->query.wait();
     vms_->preview.reset();

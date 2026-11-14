@@ -1,0 +1,100 @@
+Internal ctest changing into directory: /home/amd/work/amd-video-analysis-framework/build
+Test project /home/amd/work/amd-video-analysis-framework/build
+      Start  1: vpe-audit-general-contract
+ 1/47 Test  #1: vpe-audit-general-contract .........   Passed    0.00 sec
+      Start  2: vpe-audit-first-compute-contract
+ 2/47 Test  #2: vpe-audit-first-compute-contract ...   Passed    0.00 sec
+      Start  3: vpe-audit-foreign-va-contract
+ 3/47 Test  #3: vpe-audit-foreign-va-contract ......   Passed    0.00 sec
+      Start  4: vpe-audit-foreign-cs-contract
+ 4/47 Test  #4: vpe-audit-foreign-cs-contract ......   Passed    0.00 sec
+      Start  5: vpe-audit-alias-context-contract
+ 5/47 Test  #5: vpe-audit-alias-context-contract ...   Passed    0.00 sec
+      Start  6: vpe-audit-auxiliary-va-contract
+ 6/47 Test  #6: vpe-audit-auxiliary-va-contract ....   Passed    0.00 sec
+      Start  7: audit-validation-contract
+ 7/47 Test  #7: audit-validation-contract ..........   Passed    0.06 sec
+      Start  8: audit-env-contract
+ 8/47 Test  #8: audit-env-contract .................   Passed    0.05 sec
+      Start  9: host-setup-contract
+ 9/47 Test  #9: host-setup-contract ................   Passed    2.18 sec
+      Start 10: resource-monitor-contract
+10/47 Test #10: resource-monitor-contract ..........   Passed    0.04 sec
+      Start 11: latency-analysis-contract
+11/47 Test #11: latency-analysis-contract ..........   Passed    0.06 sec
+      Start 12: presentation-analysis-contract
+12/47 Test #12: presentation-analysis-contract .....   Passed    0.06 sec
+      Start 13: fifo-sizing-contract
+13/47 Test #13: fifo-sizing-contract ...............   Passed    0.05 sec
+      Start 14: resource-summary-contract
+14/47 Test #14: resource-summary-contract ..........   Passed    0.06 sec
+      Start 15: telemetry-contract
+15/47 Test #15: telemetry-contract .................   Passed    0.03 sec
+      Start 16: runtime-contract
+16/47 Test #16: runtime-contract ...................   Passed    0.02 sec
+      Start 17: vui-contract
+17/47 Test #17: vui-contract .......................   Passed    0.01 sec
+      Start 18: npu-meta-contract
+18/47 Test #18: npu-meta-contract ..................   Passed    0.03 sec
+      Start 19: gst-telemetry-contract
+19/47 Test #19: gst-telemetry-contract .............   Passed    0.08 sec
+      Start 20: gst-contract
+20/47 Test #20: gst-contract .......................   Passed    0.04 sec
+      Start 21: python-metadata-contract
+21/47 Test #21: python-metadata-contract ...........   Passed    0.07 sec
+      Start 22: publication-contract
+22/47 Test #22: publication-contract ...............   Passed    3.75 sec
+      Start 23: dlstreamer-metadata-stress
+23/47 Test #23: dlstreamer-metadata-stress .........   Passed    0.23 sec
+      Start 24: timeline-catalog-contract
+24/47 Test #24: timeline-catalog-contract ..........   Passed   27.23 sec
+      Start 25: recording-management-contract
+25/47 Test #25: recording-management-contract ......   Passed    0.65 sec
+      Start 26: recording-catalog-contract
+26/47 Test #26: recording-catalog-contract .........   Passed    0.22 sec
+      Start 27: recorded-analysis-contract
+27/47 Test #27: recorded-analysis-contract .........   Passed    0.15 sec
+      Start 28: dashboard-help
+28/47 Test #28: dashboard-help .....................   Passed    0.03 sec
+      Start 29: dashboard-invalid-fps
+29/47 Test #29: dashboard-invalid-fps ..............   Passed    0.03 sec
+      Start 30: dashboard-invalid-power
+30/47 Test #30: dashboard-invalid-power ............   Passed    0.03 sec
+      Start 31: dashboard-invalid-mount
+31/47 Test #31: dashboard-invalid-mount ............   Passed    0.03 sec
+      Start 32: rtsp-files-help
+32/47 Test #32: rtsp-files-help ....................   Passed    0.00 sec
+      Start 33: rtsp-files-invalid-port
+33/47 Test #33: rtsp-files-invalid-port ............   Passed    0.00 sec
+      Start 34: rtsp-files-missing-input
+34/47 Test #34: rtsp-files-missing-input ...........   Passed    0.00 sec
+      Start 35: preview-selection-contract
+35/47 Test #35: preview-selection-contract .........   Passed    0.00 sec
+      Start 36: live-preview-policy-contract
+36/47 Test #36: live-preview-policy-contract .......   Passed    0.00 sec
+      Start 37: presentation-fifo-contract
+37/47 Test #37: presentation-fifo-contract .........   Passed    0.05 sec
+      Start 38: encoded-dispatch-contract
+38/47 Test #38: encoded-dispatch-contract ..........   Passed    0.09 sec
+      Start 39: preview-publication-contract
+39/47 Test #39: preview-publication-contract .......   Passed    0.00 sec
+      Start 40: demo-portability-contract
+40/47 Test #40: demo-portability-contract ..........   Passed    0.71 sec
+      Start 41: search-contract
+41/47 Test #41: search-contract ....................   Passed    0.34 sec
+      Start 42: ai-runtime-contract
+42/47 Test #42: ai-runtime-contract ................   Passed    0.04 sec
+      Start 43: nvr-config-contract
+43/47 Test #43: nvr-config-contract ................   Passed    0.06 sec
+      Start 44: timeline-widget-contract
+44/47 Test #44: timeline-widget-contract ...........   Passed    0.02 sec
+      Start 45: nvr-vector-text-contract
+45/47 Test #45: nvr-vector-text-contract ...........   Passed    0.03 sec
+      Start 46: nvr-ai-overview-contract
+46/47 Test #46: nvr-ai-overview-contract ...........   Passed    0.03 sec
+      Start 47: search-conditions-contract
+47/47 Test #47: search-conditions-contract .........   Passed    2.72 sec
+
+100% tests passed, 0 tests failed out of 47
+
+Total Test time (real) =  39.30 sec

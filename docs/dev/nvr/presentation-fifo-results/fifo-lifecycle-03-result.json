@@ -1,0 +1,11 @@
+{
+    "copy_audit_active": false,
+    "copy_audit_passed": false,
+    "error": "AI: Copy audit requested but auditor hooks are missing",
+    "passed": false,
+    "phases": [
+    ],
+    "scope": "Declared interactive lifecycle trial; not a fixed-layout physical-frame acceptance run",
+    "vpe_audit_complete": true,
+    "vpe_scopes": 689
+}

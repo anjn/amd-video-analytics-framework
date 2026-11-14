@@ -1,0 +1,153 @@
+{
+  "physical_frames_passed": true,
+  "records_read": 2260644,
+  "failures": {},
+  "examples": [],
+  "sources": {
+    "cam0": {
+      "decoded": 3379,
+      "presented": 3374,
+      "shutdown_retired": 5
+    },
+    "cam1": {
+      "decoded": 3348,
+      "presented": 3344,
+      "shutdown_retired": 4
+    },
+    "cam10": {
+      "decoded": 3380,
+      "presented": 3375,
+      "shutdown_retired": 5
+    },
+    "cam11": {
+      "decoded": 3380,
+      "presented": 3375,
+      "shutdown_retired": 5
+    },
+    "cam12": {
+      "decoded": 3380,
+      "presented": 3374,
+      "shutdown_retired": 6
+    },
+    "cam13": {
+      "decoded": 3380,
+      "presented": 3374,
+      "shutdown_retired": 6
+    },
+    "cam14": {
+      "decoded": 3350,
+      "presented": 3345,
+      "shutdown_retired": 5
+    },
+    "cam2": {
+      "decoded": 3380,
+      "presented": 3374,
+      "shutdown_retired": 6
+    },
+    "cam3": {
+      "decoded": 3379,
+      "presented": 3375,
+      "shutdown_retired": 4
+    },
+    "cam4": {
+      "decoded": 3379,
+      "presented": 3374,
+      "shutdown_retired": 5
+    },
+    "cam5": {
+      "decoded": 3349,
+      "presented": 3344,
+      "shutdown_retired": 5
+    },
+    "cam6": {
+      "decoded": 3380,
+      "presented": 3374,
+      "shutdown_retired": 6
+    },
+    "cam7": {
+      "decoded": 3374,
+      "presented": 3370,
+      "shutdown_retired": 4
+    },
+    "cam8": {
+      "decoded": 3349,
+      "presented": 3345,
+      "shutdown_retired": 4
+    },
+    "cam9": {
+      "decoded": 3349,
+      "presented": 3345,
+      "shutdown_retired": 4
+    },
+    "resource-monitor": {
+      "decoded": 1127,
+      "presented": 1124,
+      "shutdown_retired": 3
+    }
+  },
+  "events": {
+    "catalog_enforce_lock": 112,
+    "catalog_bytes_lock": 226,
+    "catalog_file_sizes": 226,
+    "catalog_extension_sizes": 226,
+    "catalog_analysis_sizes": 226,
+    "control_loop": 10333,
+    "control_tick": 2175,
+    "presentation_mode": 1,
+    "ui_select_lock": 116656,
+    "ui_draw_lock": 116656,
+    "input": 55013,
+    "access_unit": 55013,
+    "pts": 165039,
+    "decode_dispatch_wait": 55013,
+    "decode_dispatch_queue": 55013,
+    "decode_dispatch_oldest": 55013,
+    "ingest_queue": 54987,
+    "ingest_oldest_age": 54987,
+    "appsrc_queue": 55013,
+    "appsrc_time": 55013,
+    "decode_submit": 110026,
+    "decode_input": 55013,
+    "decode_output": 55013,
+    "decoded_lock": 55013,
+    "handoff": 55013,
+    "decoder_pool": 16,
+    "decoder_pool_bytes": 16,
+    "fifo_enter": 51646,
+    "fifo_wait": 51646,
+    "fifo_oldest": 51646,
+    "fifo_exit": 51606,
+    "preview_lock": 51606,
+    "control_status_slot": 1671,
+    "preview_scale": 51606,
+    "preview_ready": 51606,
+    "draw": 51599,
+    "presentation_commit_submit": 106945,
+    "swap": 51599,
+    "presentation_commit_discarded": 9570,
+    "presentation_feedback_received": 106930,
+    "presentation_commit_presented": 97360,
+    "presented": 51586,
+    "latest_replaced": 3349,
+    "counter": 83741,
+    "ai_done": 67687,
+    "ai_submit": 7581,
+    "ai_complete": 7581,
+    "presentation_stale_feedback": 38,
+    "control_malloc_trim": 1,
+    "control_quota": 22,
+    "shutdown_requested": 1,
+    "shutdown_fifo_retired": 57,
+    "shutdown_present_retired": 33,
+    "ingest_retired": 18,
+    "receive_au_closed": 14827,
+    "decoder_drain": 17,
+    "presentation_feedback_retired": 15,
+    "shutdown_latest_retired": 1,
+    "copy_audit_result": 1,
+    "shutdown_drained": 1
+  },
+  "shutdown_ns": 94156305528377,
+  "scope": "Fixed-layout normal trial; startup and <=1s shutdown dispositions are separate from physical presentation.",
+  "diagnostic_integrity_valid": true
+}

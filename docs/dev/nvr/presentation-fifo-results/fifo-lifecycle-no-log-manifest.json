@@ -1,0 +1,10 @@
+{
+  "scope": "interactive lifecycle, not normal-demo acceptance",
+  "commit": "1c38061f653cc98ba7be500cc027fe7379624106",
+  "binary_sha256": "085a722a0dd91424fc206b6b8f77a22059af953a7cc4d17eb4bd8d8e7ef9e5ab",
+  "config_sha256": "9dc0ee34000e7bfba566b7272ce379336faecaf7ef8b272b9ee6342b0f1466e4",
+  "source_archive_sha256": "b75cd8cd885b05f5864cf734091e688f2da4b75b838ce014abe3ba183da14375",
+  "helper_sha256": "a93dae0221360c9626fa5e45c9ca905dcc3ee69d72ba4c7706e8d296372278a8",
+  "diagnostics_enabled": false,
+  "returncode": 0
+}

@@ -1,0 +1,160 @@
+{
+  "physical_frames_passed": true,
+  "records_read": 18077384,
+  "failures": {},
+  "examples": [],
+  "sources": {
+    "cam0": {
+      "decoded": 26894,
+      "presented": 26890,
+      "shutdown_retired": 4
+    },
+    "cam1": {
+      "decoded": 26895,
+      "presented": 26891,
+      "shutdown_retired": 4
+    },
+    "cam10": {
+      "decoded": 26896,
+      "presented": 26891,
+      "shutdown_retired": 5
+    },
+    "cam11": {
+      "decoded": 26890,
+      "presented": 26887,
+      "shutdown_retired": 3
+    },
+    "cam12": {
+      "decoded": 26895,
+      "presented": 26891,
+      "shutdown_retired": 4
+    },
+    "cam13": {
+      "decoded": 26896,
+      "presented": 26890,
+      "shutdown_retired": 6
+    },
+    "cam14": {
+      "decoded": 26896,
+      "presented": 26890,
+      "shutdown_retired": 6
+    },
+    "cam2": {
+      "decoded": 26894,
+      "presented": 26890,
+      "shutdown_retired": 4
+    },
+    "cam3": {
+      "decoded": 26894,
+      "presented": 26890,
+      "shutdown_retired": 4
+    },
+    "cam4": {
+      "decoded": 26895,
+      "presented": 26890,
+      "shutdown_retired": 5
+    },
+    "cam5": {
+      "decoded": 26895,
+      "presented": 26891,
+      "shutdown_retired": 4
+    },
+    "cam6": {
+      "decoded": 26894,
+      "presented": 26890,
+      "shutdown_retired": 4
+    },
+    "cam7": {
+      "decoded": 26894,
+      "presented": 26890,
+      "shutdown_retired": 4
+    },
+    "cam8": {
+      "decoded": 26895,
+      "presented": 26890,
+      "shutdown_retired": 5
+    },
+    "cam9": {
+      "decoded": 26865,
+      "presented": 26862,
+      "shutdown_retired": 3
+    },
+    "resource-monitor": {
+      "decoded": 8965,
+      "presented": 8963,
+      "shutdown_retired": 2
+    }
+  },
+  "events": {
+    "catalog_enforce_lock": 879,
+    "catalog_bytes_lock": 3105,
+    "catalog_file_sizes": 3105,
+    "catalog_extension_sizes": 3105,
+    "catalog_analysis_sizes": 3105,
+    "control_loop": 80366,
+    "control_tick": 17089,
+    "presentation_mode": 1,
+    "ui_select_lock": 913552,
+    "ui_draw_lock": 913552,
+    "input": 439249,
+    "access_unit": 439249,
+    "pts": 1317747,
+    "decode_dispatch_wait": 439249,
+    "decode_dispatch_queue": 439249,
+    "decode_dispatch_oldest": 439249,
+    "ingest_queue": 436808,
+    "ingest_oldest_age": 436808,
+    "appsrc_queue": 439249,
+    "appsrc_time": 439249,
+    "decode_submit": 878498,
+    "decode_input": 439249,
+    "decode_output": 439249,
+    "decoded_lock": 439249,
+    "handoff": 439249,
+    "decoder_pool": 16,
+    "decoder_pool_bytes": 16,
+    "fifo_enter": 412342,
+    "fifo_wait": 412342,
+    "fifo_oldest": 412342,
+    "fifo_exit": 412299,
+    "latest_replaced": 26895,
+    "counter": 875615,
+    "preview_lock": 412299,
+    "control_status_slot": 13188,
+    "preview_scale": 412299,
+    "preview_ready": 412299,
+    "draw": 412286,
+    "presentation_commit_submit": 839141,
+    "swap": 412286,
+    "presentation_commit_presented": 781986,
+    "presentation_feedback_received": 839141,
+    "presented": 412286,
+    "presentation_commit_discarded": 57155,
+    "preview_full": 25,
+    "presentation_stale_feedback": 309,
+    "ai_done": 539358,
+    "ai_submit": 60876,
+    "ai_complete": 60876,
+    "control_malloc_trim": 1,
+    "control_quota": 771,
+    "retention_delete_attempt": 1036,
+    "retention_deleted": 1036,
+    "catalog_delete_sql": 1036,
+    "catalog_delete_vacuum": 1036,
+    "catalog_quota_commit": 292,
+    "shutdown_requested": 1,
+    "shutdown_fifo_retired": 54,
+    "shutdown_present_retired": 18,
+    "shutdown_preview_retired": 1,
+    "preview_not_requested": 12,
+    "receive_au_closed": 14920,
+    "ingest_retired": 14,
+    "decoder_drain": 17,
+    "shutdown_latest_retired": 1,
+    "copy_audit_result": 1,
+    "shutdown_drained": 1
+  },
+  "shutdown_ns": 93283600204161,
+  "scope": "Fixed-layout normal trial; startup and <=1s shutdown dispositions are separate from physical presentation.",
+  "diagnostic_integrity_valid": true
+}

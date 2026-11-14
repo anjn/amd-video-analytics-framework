@@ -6,8 +6,9 @@ EDGES={'input_au':('input','access_unit'),'au_decoder':('access_unit','decode_in
        'decoder':('decode_input','decode_output'),'input_decode':('input','decode_output'),
        'decode_handoff':('decode_output','handoff'),'decode_preview':('decode_output','preview_ready'),
        'preview_draw':('preview_ready','draw'),'draw_swap':('draw','swap'),
-       'input_swap':('input','swap'),'ai_total':('ai_submit','ai_complete')}
-STAGE_EVENTS={s for pair in EDGES.values() for s in pair}|{'decode_submit','latest_replaced','preview_discarded','preview_not_requested','background_latest_released','ingest_retired','ingest_discarded','shutdown_latest_retired','shutdown_preview_retired','decode_preroll','decode_dispatch_retired','rtp_assembly_retired','receive_au_closed'}
+       'input_swap':('input','swap'),'input_present':('input','presented'),
+       'decode_present':('decode_output','presented'),'fifo_dwell':('fifo_enter','fifo_exit'),'ai_total':('ai_submit','ai_complete')}
+STAGE_EVENTS={s for pair in EDGES.values() for s in pair}|{'decode_submit','latest_replaced','preview_discarded','preview_not_requested','background_latest_released','ingest_retired','ingest_discarded','shutdown_latest_retired','shutdown_preview_retired','decode_preroll','decode_dispatch_retired','rtp_assembly_retired','receive_au_closed','shutdown_fifo_retired','shutdown_present_retired','presentation_suspended_retired','presentation_generation_retired'}
 EDGES_BY_TARGET=collections.defaultdict(list)
 for name,(a,b) in EDGES.items():EDGES_BY_TARGET[b].append((name,a))
 def distribution(values):
@@ -32,7 +33,7 @@ def analyze(directory):
         if 'ai_submit' in frame and 'ai_complete' not in frame:incomplete[(source,'ai_submitted_no_completion')]+=1
         if 'decode_submit' in frame and 'decode_output' not in frame:incomplete[(source,'submitted_no_output')]+=1
         if 'decode_output' in frame and 'draw' not in frame:
-            reason='shutdown_retired' if 'shutdown_latest_retired' in frame or 'shutdown_preview_retired' in frame else 'latest_replaced' if 'latest_replaced' in frame else 'preview_discarded' if 'preview_discarded' in frame else 'preview_not_requested' if 'preview_not_requested' in frame else 'background_latest_released' if 'background_latest_released' in frame else 'unclassified_not_drawn'
+            reason='shutdown_retired' if any(e in frame for e in ['shutdown_latest_retired','shutdown_preview_retired','shutdown_fifo_retired','shutdown_present_retired']) else 'latest_replaced' if 'latest_replaced' in frame else 'preview_discarded' if 'preview_discarded' in frame else 'preview_not_requested' if 'preview_not_requested' in frame else 'background_latest_released' if 'background_latest_released' in frame else 'unclassified_not_drawn'
             incomplete[(source,reason)]+=1
             if reason=='unclassified_not_drawn' and len(unclassified_examples)<128:
                 unclassified_examples.append(dict(source=source,generation=gen,sequence=seq,stages=dict(frame)))
@@ -49,7 +50,7 @@ def analyze(directory):
             counts[event]+=1
             if event=='decoder_drain' and v2:counts['decoder_drain_failed']+=1
             if event=='shutdown_requested':shutdown_ns=ns
-            if event in ['ingest_retired','shutdown_latest_retired','shutdown_preview_retired','decode_dispatch_retired','rtp_assembly_retired']:
+            if event in ['ingest_retired','shutdown_latest_retired','shutdown_preview_retired','shutdown_fifo_retired','shutdown_present_retired','decode_dispatch_retired','rtp_assembly_retired']:
                 retired_ns.append(ns)
             if event=='pts' and int(row['pts'])>=0:
                 pts=int(row['pts']);stream=(source,gen,v)
@@ -82,7 +83,7 @@ def analyze(directory):
                             else:counts['negative_'+name]+=1
             if event.startswith(('control_','catalog_')) and v>=0:
                 bucket[event+'_ms'].append(v/1e6)
-            if event in ['decoded_lock','handoff','preview_scale','appsrc_time','ingest_oldest_age','decode_dispatch_wait','decode_dispatch_oldest'] and v>=0:
+            if event in ['decoded_lock','handoff','preview_scale','appsrc_time','fifo_wait','fifo_oldest','ingest_oldest_age','decode_dispatch_wait','decode_dispatch_oldest'] and v>=0:
                 bucket[event+'_ms'].append(v/1e6)
             if event in ['preview_lock','ui_select_lock','ui_draw_lock']:
                 bucket[event+'_wait_ms'].append(v/1e6);bucket[event+'_hold_ms'].append(v2/1e6)

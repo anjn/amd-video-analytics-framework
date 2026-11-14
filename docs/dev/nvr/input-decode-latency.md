@@ -1,6 +1,6 @@
 # Input-to-decode latency investigation
 
-Direct decoder dispatch independent of recording/database waits passed two full normal runs on Ubuntu 24.04/gfx1150. The observed input-to-decode growth was caused by storage/control-path coupling. Existing presentation discards and anonymous RSS growth remain; a presentation FIFO is planned below, not implemented. See the [final review](input-decode-results/dispatch-final-review.json).
+Direct decoder dispatch independent of recording/database waits passed two full normal runs on Ubuntu 24.04/gfx1150. The observed input-to-decode growth was caused by storage/control-path coupling. Presentation discards at that checkpoint and anonymous RSS growth are recorded separately; the experimental FIFO and Qt comparison below are later work. See the [final review](input-decode-results/dispatch-final-review.json).
 
 The investigation separates receive/assembly delay, input queueing, decoder pad
 transit, decoded-frame handoff and presentation. A decoder output timestamp does
@@ -365,3 +365,112 @@ need separate hardware validation. No FIFO runtime or automatic commit/push is i
 
 This is a proposal for the next implementation, not authorization to change the
 display policy or a claim that a 3-frame queue alone fixes presentation.
+
+
+## Experimental decoded presentation FIFO (2026-11-14)
+
+The Qt scheduling comparison passed on Ubuntu 24.04/gfx1150, but this is **not
+long-duration FIFO acceptance**. The earlier two full input-to-decode acceptance
+runs apply to `1c38061`, before the FIFO. Later work remains uncommitted on
+`codex/pts-presentation-fifo`; no push or release was made.
+
+The live path holds three decoded VA samples per visible source and prefills two
+frame periods. It consumes PTS order without overwriting admitted frames.
+Allocation asks for four extra decoder surfaces (three retained plus producer);
+observed HEVC pool minimum is 12, resource H.264 minimum 10 (maximum remains the
+existing dynamic allocator policy). Ready BGRA images are consumed oldest first.
+A surface cannot be reused until its existing GL fence and physical presentation
+acknowledgement, or an explicitly recorded lifecycle retirement, allow it.
+FIFO-full waiting is bounded at 100 ms. Admission more than four frame periods
+behind its PTS deadline is also an explicit error, catching sustained backlog
+which could otherwise grow while each full wait stays below 100 ms.
+
+A swap or a discarded Wayland commit is not a unique displayed/lost video frame.
+`presented` records one source/generation/sequence confirmed by Wayland
+`wp_presentation` v1. Several commits may contain that same picture. Ordinary
+unpresented frames, unavailable feedback or FIFO failure produce explicit errors.
+No decoded pixel readback, new per-frame GPU synchronization, AI frequency cut,
+SDK replacement or host/compositor setting change was added. Playback keeps its
+previous policy; user suspension is separate from lossless normal live operation.
+
+| Trial | Observation | Result |
+| --- | --- | --- |
+| fifo-pilot-01 | Current-picture ACK plus Qt refresh waits serialized rendering; cam0 input-to-decode reached 23.5 s | Failed |
+| fifo-pilot-02 | Pipelining restored most latency P99 values to 1–2 ms, but cam13 generation 29 sequence 1423 was never shown and retained a plane | Failed |
+| fifo-pilot-03 | Two submitted refreshes reduced throughput to 29.78 fps; growing delay and startup FIFO timeout | Failed |
+| fifo-pilot-04 | Nonblocking swap alone retained Qt's separate update-delivery wait; delay grew to about 1.5 s | Failed |
+| fifo-pilot-05 | Immediate Qt update delivery removed growing delay; 93 shutdown-tail frames remained unclassified | Failed reconciliation |
+| fifo-pilot-06 | 52,134 decoded = 52,061 actually presented + 73 explicitly retired at shutdown | Passed 120-second comparison |
+| fifo-normal-01 | 412,353 decoded = 412,286 actually presented + 67 explicitly retired at shutdown | Passed 15-minute comparison |
+
+The user approved changing application-side presentation scheduling. Live windows
+request nonblocking swaps. When a due image is ready and its predecessor is
+confirmed, a 4 ms precise timer queues GUI-thread delivery of Qt's ordinary update
+request through `QPlatformWindow::deliverUpdateRequest`. This preserves Qt's
+framebuffer/resolve/swap path while removing its additional Wayland frame-callback
+wait. The next image still requires actual presentation acknowledgement.
+See the official [Qt swap interval documentation](https://doc.qt.io/qt-6/qsurfaceformat.html#setSwapInterval),
+[Qt 6.4.2 Wayland update delivery](https://github.com/qt/qtwayland/blob/v6.4.2/src/client/qwaylandwindow.cpp)
+and [Qt platform delivery](https://github.com/qt/qtbase/blob/v6.4.2/src/gui/kernel/qplatformwindow.cpp).
+
+Shutdown is marked before window hiding/teardown. Retired frames are not counted
+as shown. `scripts/latency/validate_presentations.py` requires physical-feedback
+mode, every visible source, matching per-frame submission timestamps, complete
+diagnostics and explicit fresh shutdown dispositions. A stale lost picture cannot
+be excused by retirement at shutdown. Fixed-layout validation does not accept
+unannounced mid-run suspension as successful presentation.
+
+During the 15-minute run, compared with minutes 5–10, the largest later per-minute
+input-to-decode P99 growth was **0.752219 ms** and maximum-value growth was
+**3.903067 ms**, within the provisional 33.33/66.67 ms growth bounds. The run
+included **1,036 retention deletions**. All four AI stages progressed; copy/VPE
+completion audits passed, with zero copy violations. No diagnostic records were
+lost and no ordinary visible-frame loss was excused. Hidden cam15 retains its
+existing AI/latest policy and is excluded from visible-frame presentation claims.
+See [growth evidence](presentation-fifo-results/fifo-comparison-growth.json) and
+[physical reconciliation](presentation-fifo-results/fifo-normal-01-physical.json).
+These results do not replace a 60-minute trial, two-run acceptance or a claim that
+anonymous RSS growth has been fixed.
+
+A separate `amdva-presentation-lifecycle CONFIG.json RESULT.json` hardware tool
+checks hold/resume, hide/show, focus/grid and camera switch/restore using the
+normal backend and per-slot actual presentation counts. The first lifecycle run
+found a source-intent race: layout arrived before asynchronous camera assignment,
+so the new camera inherited the old slot's hidden state. Requested source IDs
+are now retained independently and reapplied under the slot lock when binding.
+Old-generation surfaces retire explicitly, without reuse before their GL fence.
+The second functional run passed, but its harness had not enabled copy-audit
+startup; it is not copy-audit evidence. The next run correctly failed on missing
+preloaded auditor hooks. The hardware tool now requires active copy auditing and
+complete VPE scopes; the corrected harness exports `AMDVA_COPY_AUDIT=1` before
+sourcing `scripts/audit-env.sh --copy`, so hooks are loaded before process start.
+The subsequent audited run passed. Its declared pauses are not a fixed-layout
+lossless acceptance trial. The hardware tool needs the same prepared models,
+RTSP/dashboard services and host/NPU environment as the normal demo; it does not
+install those or change the normal launcher.
+
+The approved OS-native development additions were nine packages, with no
+upgrades/removals; [installed versions](presentation-fifo-results/installed-dev-packages.json)
+include Qt private headers matching 6.4.2 and `wayland-protocols`. The dependency
+lock now lists `qt6-base-private-dev`, `libwayland-dev` and `wayland-protocols` as
+host build prerequisites. Private QPA headers must match the installed Qt. Never
+extract Ubuntu 24.04 Qt libraries onto 26.04. The reference compositor exposes
+`wp_presentation` v1 but no FIFO/commit-timing manager; this is capability evidence,
+not an impossibility proof. X11 and Ubuntu 26.04/gfx1151 remain unvalidated for
+this new physical-feedback path. CPU contracts, normal-run evidence and
+interactive evidence are separate; none alone proves all supported environments.
+
+Raw source/config/binary hashes and diagnostics remain under
+`/home/amd/work/rai/logs/presentation-fifo-20261114/`. Compact evidence and analyzer
+provenance are in `presentation-fifo-results/`. No automatic commit/push was made.
+
+The final 120-second normal regression after source-selection fixes also passed:
+51,663 decoded = 51,586 physically presented + 77 fresh shutdown retirements;
+copy auditing and all 95,372 VPE scopes completed without violations/failures.
+The final CPU suite passed all 47 contracts. The optional diagnostic logging path
+and the interactive lifecycle tool are validated separately.
+
+With `AMDVA_DIAGNOSTICS_DIR` unset, the separate lifecycle run also passed using
+in-memory per-slot physical-presentation counters. Diagnostic logging is not
+required for FIFO operation. This is a functionality check, not a quantified
+instrumentation-overhead comparison.

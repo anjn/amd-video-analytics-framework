@@ -1,0 +1,274 @@
+{
+  "validation_schema": 2,
+  "validator_sha256": "4e39a5d6b19554d32e1b17fc1a0655278aca7375647cbd8d40eae5270423b7d5",
+  "progress_passed": true,
+  "snapshots": 23,
+  "duration_s": 119.414901036,
+  "largest_snapshot_gap_s": 5.024058401,
+  "channel_progress": {
+    "cam0": {
+      "previous": 3308,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    },
+    "cam1": {
+      "previous": 3277,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    },
+    "cam2": {
+      "previous": 3307,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    },
+    "cam3": {
+      "previous": 3308,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    },
+    "cam4": {
+      "previous": 3307,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    },
+    "cam5": {
+      "previous": 3277,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    },
+    "cam6": {
+      "previous": 3308,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    },
+    "cam7": {
+      "previous": 3304,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    },
+    "cam8": {
+      "previous": 3278,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    },
+    "cam9": {
+      "previous": 3278,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    },
+    "cam10": {
+      "previous": 3308,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    },
+    "cam11": {
+      "previous": 3308,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    },
+    "cam12": {
+      "previous": 3308,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    },
+    "cam13": {
+      "previous": 3308,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    },
+    "cam14": {
+      "previous": 3278,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    },
+    "cam15": {
+      "previous": 0,
+      "first": null,
+      "last": null,
+      "gap": 0,
+      "last_display": null
+    },
+    "resource-monitor": {
+      "previous": 1102,
+      "first": 14.044217311,
+      "last": 119.414901036,
+      "gap": 5.024058401000005,
+      "last_display": 119.414901036
+    }
+  },
+  "visible_sources": [
+    "cam0",
+    "cam1",
+    "cam10",
+    "cam11",
+    "cam12",
+    "cam13",
+    "cam14",
+    "cam2",
+    "cam3",
+    "cam4",
+    "cam5",
+    "cam6",
+    "cam7",
+    "cam8",
+    "cam9",
+    "resource-monitor"
+  ],
+  "first_progress": {
+    "Analysis DB save": 14.044217311,
+    "Decoded frame wait": 14.044217311,
+    "Detection update": 14.044217311,
+    "Embedding first result": 14.044217311,
+    "Embedding freshness": 14.044217311,
+    "Embedding update interval": 14.044217311,
+    "Image embedding": 14.044217311,
+    "Image embedding NPU": 14.044217311,
+    "Image embedding NPU preprocess": 14.044217311,
+    "Image embedding NPU total": 14.044217311,
+    "PNG + DB save": 14.044217311,
+    "Person crop": 14.044217311,
+    "ReID inference + transfer": 14.044217311,
+    "ReID preprocess": 14.044217311,
+    "Tracking association": 14.044217311,
+    "Tracking eligible": 14.044217311,
+    "YOLO executor total": 14.044217311,
+    "YOLO inference": 14.044217311,
+    "YOLO postprocess": 14.044217311,
+    "YOLO preprocess": 14.044217311
+  },
+  "last_progress": {
+    "Analysis DB save": {
+      "elapsed_s": 119.414901036,
+      "completed": 431
+    },
+    "Decoded frame wait": {
+      "elapsed_s": 119.414901036,
+      "completed": 14852
+    },
+    "Detection update": {
+      "elapsed_s": 119.414901036,
+      "completed": 7428
+    },
+    "Embedding first result": {
+      "elapsed_s": 119.414901036,
+      "completed": 399
+    },
+    "Embedding freshness": {
+      "elapsed_s": 119.414901036,
+      "completed": 3147
+    },
+    "Embedding update interval": {
+      "elapsed_s": 119.414901036,
+      "completed": 2387
+    },
+    "Image embedding": {
+      "elapsed_s": 119.414901036,
+      "completed": 3147
+    },
+    "Image embedding NPU": {
+      "elapsed_s": 119.414901036,
+      "completed": 3147
+    },
+    "Image embedding NPU preprocess": {
+      "elapsed_s": 119.414901036,
+      "completed": 3148
+    },
+    "Image embedding NPU total": {
+      "elapsed_s": 119.414901036,
+      "completed": 3147
+    },
+    "PNG + DB save": {
+      "elapsed_s": 119.414901036,
+      "completed": 3147
+    },
+    "Person crop": {
+      "elapsed_s": 119.414901036,
+      "completed": 7424
+    },
+    "ReID inference + transfer": {
+      "elapsed_s": 119.414901036,
+      "completed": 6348
+    },
+    "ReID preprocess": {
+      "elapsed_s": 119.414901036,
+      "completed": 6348
+    },
+    "Tracking association": {
+      "elapsed_s": 119.414901036,
+      "completed": 7422
+    },
+    "Tracking eligible": {
+      "elapsed_s": 119.414901036,
+      "completed": 7428
+    },
+    "YOLO executor total": {
+      "elapsed_s": 119.414901036,
+      "completed": 2184
+    },
+    "YOLO inference": {
+      "elapsed_s": 119.414901036,
+      "completed": 2184
+    },
+    "YOLO postprocess": {
+      "elapsed_s": 119.414901036,
+      "completed": 2184
+    },
+    "YOLO preprocess": {
+      "elapsed_s": 119.414901036,
+      "completed": 2184
+    }
+  },
+  "largest_progress_gap_s": {
+    "Analysis DB save": 5.024058401000005,
+    "Decoded frame wait": 5.024058401000005,
+    "Detection update": 5.024058401000005,
+    "Embedding first result": 5.024058401000005,
+    "Embedding freshness": 5.024058401000005,
+    "Embedding update interval": 5.024058401000005,
+    "Image embedding": 5.024058401000005,
+    "Image embedding NPU": 5.024058401000005,
+    "Image embedding NPU preprocess": 5.024058401000005,
+    "Image embedding NPU total": 5.024058401000005,
+    "PNG + DB save": 5.024058401000005,
+    "Person crop": 5.024058401000005,
+    "ReID inference + transfer": 5.024058401000005,
+    "ReID preprocess": 5.024058401000005,
+    "Tracking association": 5.024058401000005,
+    "Tracking eligible": 5.024058401000005,
+    "YOLO executor total": 5.024058401000005,
+    "YOLO inference": 5.024058401000005,
+    "YOLO postprocess": 5.024058401000005,
+    "YOLO preprocess": 5.024058401000005
+  },
+  "failures": []
+}

@@ -22,12 +22,16 @@ using Sample = std::shared_ptr<GstSample>;
 struct Plane {
     TraceToken timing;
     VASurfaceID surface{VA_INVALID_SURFACE};
-    // 0 free; 1 complete; 2 displayed; 3 fence pending; 4 producer reserved.
+    // 0 free; 1 complete; 2 submitted; 3 GL fence pending; 4 producer reserved;
+    // 5 GPU sampling finished but actual presentation feedback still pending.
     // GL objects belong exclusively to the UI thread. A producer may reserve a
     // free plane while scaling without the slot lock; consumers skip state 4.
     int state{};
     unsigned width{}, height{}, original_width{}, original_height{};
     uint64_t generation{}, sequence{};
+    int64_t presentation_due_ns{}, presentation_period_ns{};
+    bool presentation_confirmed{}, presentation_retired{};
+    unsigned presentation_swaps{};
     std::string recording_channel, recording_session;
     int64_t recording_start_ms{}, recording_end_ms{};
     int64_t wall_time_ms{}; // Receiver-based recording datetime for this playback frame.

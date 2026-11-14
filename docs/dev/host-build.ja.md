@@ -1,4 +1,4 @@
-<!-- source: docs/dev/host-build.md 302190e54c2fb9342f7965c45d1f9991fde3010a -->
+<!-- source: docs/dev/host-build.md 9f7960a76c8391e4d19602c503d363e3532a842e -->
 # ホストでのビルドと参照パイプライン
 
 短い手順は[導入](../guide/install.ja.md)と[クイックスタート](../guide/quickstart.ja.md)にあります。
@@ -10,6 +10,16 @@ Ubuntu 24.04／26.04上にROCm **10.1.0**とMIGraphX **2.18.0**を事前導入�
 [導入手順](../guide/install.ja.md)に従い `python3 scripts/host.py --write`、`python3 scripts/bootstrap.py --jobs 8` を実行します。NPUでは準備済みの `--ryzen-ai-venv` を指定します。bootstrapはsudoやホストSDKの導入を実行しません。`scripts/env.sh` は記録したホストSDKとframeworkのprefixを参照します。
 
 検証済みと未検証の構成は[対応表](support-matrix.ja.md)を参照してください。モデルmanifestはschema 3で、GPU、ROCm、MIGraphX、元ONNXのハッシュ、精度、バッチと生成物のハッシュを記録します。旧schema 1／2は再生成が必要です。SDK間でMIGraphXのシリアライズ済みモデルの互換性を仮定しません。
+
+
+
+既定のNVR GUIビルドには、ホストOS標準の`qt6-base-private-dev`、
+`libwayland-dev`、`wayland-protocols`も必要です。
+`scripts/host.py --packages`の一覧に含めています。非公開QPAヘッダーは導入済みQtと
+版を合わせ、別UbuntuリリースのQtライブラリをコピーしないでください。
+実験中のライブ表示FIFOはWaylandの`wp_presentation`通知とQt標準の描画・MSAA解決・
+swapを使います。24.04/gfx1150の比較結果と未検証環境は
+[表示経路の調査](nvr/input-decode-latency.md)に記録しています。
 
 ## モデルを準備して実行する
 

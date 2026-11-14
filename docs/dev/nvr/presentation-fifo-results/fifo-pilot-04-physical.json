@@ -1,0 +1,1180 @@
+{
+  "physical_frames_passed": false,
+  "records_read": 2305530,
+  "failures": {
+    "decoded_frame_not_presented": 162
+  },
+  "examples": [
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3384
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3384
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam9",
+        25,
+        3384
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam11",
+        27,
+        3385
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3385
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3384
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam0",
+        33,
+        3385
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3385
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam2",
+        18,
+        3385
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam3",
+        19,
+        3385
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam5",
+        21,
+        3385
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam9",
+        25,
+        3385
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam11",
+        27,
+        3386
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3385
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3386
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3385
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam0",
+        33,
+        3386
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam1",
+        17,
+        3385
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3386
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam2",
+        18,
+        3386
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam3",
+        19,
+        3386
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam5",
+        21,
+        3386
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam9",
+        25,
+        3386
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam11",
+        27,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam14",
+        30,
+        3356
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3386
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3386
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam0",
+        33,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam1",
+        17,
+        3386
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam2",
+        18,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam3",
+        19,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam5",
+        21,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam4",
+        20,
+        3357
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam9",
+        25,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam11",
+        27,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam14",
+        30,
+        3357
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam7",
+        23,
+        3382
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam6",
+        22,
+        3357
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam0",
+        33,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam1",
+        17,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam2",
+        18,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam3",
+        19,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam5",
+        21,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam4",
+        20,
+        3358
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam9",
+        25,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam11",
+        27,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam14",
+        30,
+        3358
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam7",
+        23,
+        3383
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam6",
+        22,
+        3358
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam0",
+        33,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam1",
+        17,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam2",
+        18,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam3",
+        19,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam5",
+        21,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam4",
+        20,
+        3359
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam9",
+        25,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam11",
+        27,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam14",
+        30,
+        3359
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam7",
+        23,
+        3384
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam6",
+        22,
+        3359
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam0",
+        33,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam1",
+        17,
+        3389
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam2",
+        18,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam3",
+        19,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam5",
+        21,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam4",
+        20,
+        3360
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam9",
+        25,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam11",
+        27,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam14",
+        30,
+        3360
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam7",
+        23,
+        3385
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam6",
+        22,
+        3360
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam0",
+        33,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam1",
+        17,
+        3390
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam2",
+        18,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam3",
+        19,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam5",
+        21,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam4",
+        20,
+        3361
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam9",
+        25,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam11",
+        27,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam14",
+        30,
+        3361
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam7",
+        23,
+        3386
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam6",
+        22,
+        3361
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam0",
+        33,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam1",
+        17,
+        3391
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam2",
+        18,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam3",
+        19,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam5",
+        21,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam4",
+        20,
+        3362
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam11",
+        27,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam14",
+        30,
+        3362
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam7",
+        23,
+        3387
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam12",
+        28,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam6",
+        22,
+        3362
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam13",
+        29,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam0",
+        33,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam1",
+        17,
+        3392
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam10",
+        26,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam2",
+        18,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam3",
+        19,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam5",
+        21,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam4",
+        20,
+        3363
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam14",
+        30,
+        3363
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam8",
+        24,
+        3393
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam7",
+        23,
+        3388
+      ]
+    },
+    {
+      "reason": "decoded_frame_not_presented",
+      "frame": [
+        "cam6",
+        22,
+        3363
+      ]
+    }
+  ],
+  "sources": {
+    "cam0": {
+      "decoded": 3435,
+      "presented": 3384,
+      "shutdown_retired": 38
+    },
+    "cam1": {
+      "decoded": 3434,
+      "presented": 3384,
+      "shutdown_retired": 40
+    },
+    "cam10": {
+      "decoded": 3435,
+      "presented": 3383,
+      "shutdown_retired": 40
+    },
+    "cam11": {
+      "decoded": 3436,
+      "presented": 3384,
+      "shutdown_retired": 43
+    },
+    "cam12": {
+      "decoded": 3436,
+      "presented": 3383,
+      "shutdown_retired": 43
+    },
+    "cam13": {
+      "decoded": 3435,
+      "presented": 3383,
+      "shutdown_retired": 42
+    },
+    "cam14": {
+      "decoded": 3405,
+      "presented": 3355,
+      "shutdown_retired": 41
+    },
+    "cam2": {
+      "decoded": 3435,
+      "presented": 3384,
+      "shutdown_retired": 41
+    },
+    "cam3": {
+      "decoded": 3435,
+      "presented": 3384,
+      "shutdown_retired": 39
+    },
+    "cam4": {
+      "decoded": 3405,
+      "presented": 3356,
+      "shutdown_retired": 39
+    },
+    "cam5": {
+      "decoded": 3435,
+      "presented": 3384,
+      "shutdown_retired": 41
+    },
+    "cam6": {
+      "decoded": 3404,
+      "presented": 3356,
+      "shutdown_retired": 37
+    },
+    "cam7": {
+      "decoded": 3430,
+      "presented": 3381,
+      "shutdown_retired": 38
+    },
+    "cam8": {
+      "decoded": 3435,
+      "presented": 3384,
+      "shutdown_retired": 37
+    },
+    "cam9": {
+      "decoded": 3435,
+      "presented": 3383,
+      "shutdown_retired": 44
+    },
+    "resource-monitor": {
+      "decoded": 1145,
+      "presented": 1142
+    }
+  },
+  "events": {
+    "catalog_enforce_lock": 114,
+    "catalog_bytes_lock": 230,
+    "catalog_file_sizes": 230,
+    "catalog_extension_sizes": 230,
+    "catalog_analysis_sizes": 230,
+    "control_loop": 10581,
+    "control_tick": 1977,
+    "presentation_mode": 1,
+    "ui_select_lock": 108416,
+    "ui_draw_lock": 108416,
+    "input": 55980,
+    "access_unit": 55980,
+    "pts": 167940,
+    "decode_dispatch_wait": 55980,
+    "decode_dispatch_queue": 55980,
+    "decode_dispatch_oldest": 55980,
+    "ingest_queue": 55954,
+    "ingest_oldest_age": 55954,
+    "appsrc_queue": 55980,
+    "appsrc_time": 55980,
+    "decode_submit": 111960,
+    "decode_input": 55980,
+    "decode_output": 55980,
+    "decoded_lock": 55980,
+    "handoff": 55980,
+    "decoder_pool": 16,
+    "decoder_pool_bytes": 16,
+    "fifo_enter": 51880,
+    "fifo_wait": 51880,
+    "fifo_oldest": 51880,
+    "fifo_exit": 51834,
+    "preview_lock": 51834,
+    "control_status_slot": 1498,
+    "preview_scale": 51834,
+    "preview_ready": 51834,
+    "draw": 51810,
+    "presentation_commit_submit": 103601,
+    "swap": 51810,
+    "presentation_commit_presented": 103555,
+    "presentation_feedback_received": 103601,
+    "presented": 51810,
+    "preview_full": 48326,
+    "latest_replaced": 3404,
+    "counter": 85712,
+    "ai_done": 68239,
+    "ai_submit": 7701,
+    "ai_complete": 7701,
+    "control_malloc_trim": 1,
+    "presentation_commit_discarded": 46,
+    "presentation_stale_feedback": 4,
+    "control_quota": 9,
+    "preview_not_requested": 213,
+    "shutdown_requested": 1,
+    "shutdown_fifo_retired": 603,
+    "receive_au_closed": 14807,
+    "ingest_retired": 13,
+    "decoder_drain": 17,
+    "shutdown_latest_retired": 1,
+    "shutdown_preview_retired": 24,
+    "copy_audit_result": 1,
+    "shutdown_drained": 1
+  },
+  "shutdown_ns": 91664472986194,
+  "scope": "Fixed-layout normal trial; startup and <=1s shutdown dispositions are separate from physical presentation.",
+  "diagnostic_integrity_valid": true
+}

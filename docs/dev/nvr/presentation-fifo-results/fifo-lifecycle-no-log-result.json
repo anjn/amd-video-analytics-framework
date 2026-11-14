@@ -1,0 +1,1798 @@
+{
+    "error": "",
+    "passed": true,
+    "phases": [
+        {
+            "ns": 94320600719221,
+            "phase": "warmup",
+            "presented": 8929,
+            "slots": [
+                {
+                    "generation": 33,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 564,
+                    "sequence": 565,
+                    "source": "cam0",
+                    "visible": true
+                },
+                {
+                    "generation": 17,
+                    "planes": [
+                        1,
+                        0,
+                        2
+                    ],
+                    "presented": 595,
+                    "sequence": 596,
+                    "source": "cam1",
+                    "visible": true
+                },
+                {
+                    "generation": 18,
+                    "planes": [
+                        1,
+                        0,
+                        2
+                    ],
+                    "presented": 595,
+                    "sequence": 596,
+                    "source": "cam2",
+                    "visible": true
+                },
+                {
+                    "generation": 19,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 590,
+                    "sequence": 591,
+                    "source": "cam3",
+                    "visible": true
+                },
+                {
+                    "generation": 20,
+                    "planes": [
+                        1,
+                        0,
+                        2
+                    ],
+                    "presented": 595,
+                    "sequence": 596,
+                    "source": "cam4",
+                    "visible": true
+                },
+                {
+                    "generation": 21,
+                    "planes": [
+                        1,
+                        0,
+                        2
+                    ],
+                    "presented": 565,
+                    "sequence": 566,
+                    "source": "cam5",
+                    "visible": true
+                },
+                {
+                    "generation": 22,
+                    "planes": [
+                        3,
+                        2,
+                        1
+                    ],
+                    "presented": 564,
+                    "sequence": 566,
+                    "source": "cam6",
+                    "visible": true
+                },
+                {
+                    "generation": 23,
+                    "planes": [
+                        3,
+                        2,
+                        1
+                    ],
+                    "presented": 564,
+                    "sequence": 566,
+                    "source": "cam7",
+                    "visible": true
+                },
+                {
+                    "generation": 24,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 596,
+                    "sequence": 597,
+                    "source": "cam8",
+                    "visible": true
+                },
+                {
+                    "generation": 25,
+                    "planes": [
+                        1,
+                        2,
+                        3
+                    ],
+                    "presented": 564,
+                    "sequence": 566,
+                    "source": "cam9",
+                    "visible": true
+                },
+                {
+                    "generation": 26,
+                    "planes": [
+                        4,
+                        2,
+                        3
+                    ],
+                    "presented": 595,
+                    "sequence": 596,
+                    "source": "cam10",
+                    "visible": true
+                },
+                {
+                    "generation": 27,
+                    "planes": [
+                        2,
+                        0,
+                        3
+                    ],
+                    "presented": 595,
+                    "sequence": 596,
+                    "source": "cam11",
+                    "visible": true
+                },
+                {
+                    "generation": 28,
+                    "planes": [
+                        2,
+                        0,
+                        0
+                    ],
+                    "presented": 591,
+                    "sequence": 591,
+                    "source": "cam12",
+                    "visible": true
+                },
+                {
+                    "generation": 29,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 595,
+                    "sequence": 596,
+                    "source": "cam13",
+                    "visible": true
+                },
+                {
+                    "generation": 30,
+                    "planes": [
+                        2,
+                        3,
+                        0
+                    ],
+                    "presented": 564,
+                    "sequence": 565,
+                    "source": "cam14",
+                    "visible": true
+                },
+                {
+                    "generation": 32,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 197,
+                    "sequence": 198,
+                    "source": "resource-monitor",
+                    "visible": true
+                }
+            ]
+        },
+        {
+            "ns": 94323700206766,
+            "phase": "held",
+            "presented": 8939,
+            "slots": [
+                {
+                    "generation": 33,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 565,
+                    "sequence": 566,
+                    "source": "cam0",
+                    "visible": true
+                },
+                {
+                    "generation": 17,
+                    "planes": [
+                        0,
+                        0,
+                        2
+                    ],
+                    "presented": 595,
+                    "sequence": 596,
+                    "source": "cam1",
+                    "visible": true
+                },
+                {
+                    "generation": 18,
+                    "planes": [
+                        0,
+                        0,
+                        2
+                    ],
+                    "presented": 595,
+                    "sequence": 596,
+                    "source": "cam2",
+                    "visible": true
+                },
+                {
+                    "generation": 19,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 591,
+                    "sequence": 592,
+                    "source": "cam3",
+                    "visible": true
+                },
+                {
+                    "generation": 20,
+                    "planes": [
+                        0,
+                        0,
+                        2
+                    ],
+                    "presented": 595,
+                    "sequence": 596,
+                    "source": "cam4",
+                    "visible": true
+                },
+                {
+                    "generation": 21,
+                    "planes": [
+                        0,
+                        0,
+                        2
+                    ],
+                    "presented": 565,
+                    "sequence": 566,
+                    "source": "cam5",
+                    "visible": true
+                },
+                {
+                    "generation": 22,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 565,
+                    "sequence": 566,
+                    "source": "cam6",
+                    "visible": true
+                },
+                {
+                    "generation": 23,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 565,
+                    "sequence": 566,
+                    "source": "cam7",
+                    "visible": true
+                },
+                {
+                    "generation": 24,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 597,
+                    "sequence": 598,
+                    "source": "cam8",
+                    "visible": true
+                },
+                {
+                    "generation": 25,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 565,
+                    "sequence": 566,
+                    "source": "cam9",
+                    "visible": true
+                },
+                {
+                    "generation": 26,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 596,
+                    "sequence": 597,
+                    "source": "cam10",
+                    "visible": true
+                },
+                {
+                    "generation": 27,
+                    "planes": [
+                        2,
+                        0,
+                        0
+                    ],
+                    "presented": 596,
+                    "sequence": 597,
+                    "source": "cam11",
+                    "visible": true
+                },
+                {
+                    "generation": 28,
+                    "planes": [
+                        2,
+                        0,
+                        0
+                    ],
+                    "presented": 591,
+                    "sequence": 592,
+                    "source": "cam12",
+                    "visible": true
+                },
+                {
+                    "generation": 29,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 596,
+                    "sequence": 597,
+                    "source": "cam13",
+                    "visible": true
+                },
+                {
+                    "generation": 30,
+                    "planes": [
+                        2,
+                        0,
+                        0
+                    ],
+                    "presented": 565,
+                    "sequence": 566,
+                    "source": "cam14",
+                    "visible": true
+                },
+                {
+                    "generation": 32,
+                    "planes": [
+                        2,
+                        0,
+                        0
+                    ],
+                    "presented": 197,
+                    "sequence": 198,
+                    "source": "resource-monitor",
+                    "visible": true
+                }
+            ]
+        },
+        {
+            "ns": 94338701090681,
+            "phase": "hold-resumed",
+            "presented": 15798,
+            "slots": [
+                {
+                    "generation": 33,
+                    "planes": [
+                        1,
+                        0,
+                        2
+                    ],
+                    "presented": 1012,
+                    "sequence": 1015,
+                    "source": "cam0",
+                    "visible": true
+                },
+                {
+                    "generation": 17,
+                    "planes": [
+                        1,
+                        0,
+                        2
+                    ],
+                    "presented": 1042,
+                    "sequence": 1045,
+                    "source": "cam1",
+                    "visible": true
+                },
+                {
+                    "generation": 18,
+                    "planes": [
+                        2,
+                        0,
+                        3
+                    ],
+                    "presented": 1043,
+                    "sequence": 1045,
+                    "source": "cam2",
+                    "visible": true
+                },
+                {
+                    "generation": 19,
+                    "planes": [
+                        2,
+                        0,
+                        3
+                    ],
+                    "presented": 1039,
+                    "sequence": 1041,
+                    "source": "cam3",
+                    "visible": true
+                },
+                {
+                    "generation": 20,
+                    "planes": [
+                        3,
+                        2,
+                        1
+                    ],
+                    "presented": 1042,
+                    "sequence": 1045,
+                    "source": "cam4",
+                    "visible": true
+                },
+                {
+                    "generation": 21,
+                    "planes": [
+                        1,
+                        0,
+                        2
+                    ],
+                    "presented": 1012,
+                    "sequence": 1015,
+                    "source": "cam5",
+                    "visible": true
+                },
+                {
+                    "generation": 22,
+                    "planes": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "presented": 1012,
+                    "sequence": 1015,
+                    "source": "cam6",
+                    "visible": true
+                },
+                {
+                    "generation": 23,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 1013,
+                    "sequence": 1015,
+                    "source": "cam7",
+                    "visible": true
+                },
+                {
+                    "generation": 24,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 1045,
+                    "sequence": 1047,
+                    "source": "cam8",
+                    "visible": true
+                },
+                {
+                    "generation": 25,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 1013,
+                    "sequence": 1015,
+                    "source": "cam9",
+                    "visible": true
+                },
+                {
+                    "generation": 26,
+                    "planes": [
+                        1,
+                        3,
+                        2
+                    ],
+                    "presented": 1043,
+                    "sequence": 1046,
+                    "source": "cam10",
+                    "visible": true
+                },
+                {
+                    "generation": 27,
+                    "planes": [
+                        1,
+                        2,
+                        0
+                    ],
+                    "presented": 1043,
+                    "sequence": 1046,
+                    "source": "cam11",
+                    "visible": true
+                },
+                {
+                    "generation": 28,
+                    "planes": [
+                        1,
+                        2,
+                        0
+                    ],
+                    "presented": 1038,
+                    "sequence": 1041,
+                    "source": "cam12",
+                    "visible": true
+                },
+                {
+                    "generation": 29,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 1043,
+                    "sequence": 1046,
+                    "source": "cam13",
+                    "visible": true
+                },
+                {
+                    "generation": 30,
+                    "planes": [
+                        2,
+                        0,
+                        3
+                    ],
+                    "presented": 1013,
+                    "sequence": 1015,
+                    "source": "cam14",
+                    "visible": true
+                },
+                {
+                    "generation": 32,
+                    "planes": [
+                        1,
+                        2,
+                        0
+                    ],
+                    "presented": 345,
+                    "sequence": 347,
+                    "source": "resource-monitor",
+                    "visible": true
+                }
+            ]
+        },
+        {
+            "ns": 94341801139751,
+            "phase": "hidden",
+            "presented": 15813,
+            "slots": [
+                {
+                    "generation": 33,
+                    "planes": [
+                        0,
+                        0,
+                        2
+                    ],
+                    "presented": 1013,
+                    "sequence": 1015,
+                    "source": "cam0",
+                    "visible": true
+                },
+                {
+                    "generation": 17,
+                    "planes": [
+                        0,
+                        0,
+                        2
+                    ],
+                    "presented": 1043,
+                    "sequence": 1045,
+                    "source": "cam1",
+                    "visible": true
+                },
+                {
+                    "generation": 18,
+                    "planes": [
+                        2,
+                        0,
+                        3
+                    ],
+                    "presented": 1044,
+                    "sequence": 1045,
+                    "source": "cam2",
+                    "visible": true
+                },
+                {
+                    "generation": 19,
+                    "planes": [
+                        2,
+                        0,
+                        3
+                    ],
+                    "presented": 1040,
+                    "sequence": 1041,
+                    "source": "cam3",
+                    "visible": true
+                },
+                {
+                    "generation": 20,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 1043,
+                    "sequence": 1045,
+                    "source": "cam4",
+                    "visible": true
+                },
+                {
+                    "generation": 21,
+                    "planes": [
+                        0,
+                        0,
+                        2
+                    ],
+                    "presented": 1013,
+                    "sequence": 1015,
+                    "source": "cam5",
+                    "visible": true
+                },
+                {
+                    "generation": 22,
+                    "planes": [
+                        0,
+                        0,
+                        2
+                    ],
+                    "presented": 1013,
+                    "sequence": 1015,
+                    "source": "cam6",
+                    "visible": true
+                },
+                {
+                    "generation": 23,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 1014,
+                    "sequence": 1015,
+                    "source": "cam7",
+                    "visible": true
+                },
+                {
+                    "generation": 24,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 1046,
+                    "sequence": 1047,
+                    "source": "cam8",
+                    "visible": true
+                },
+                {
+                    "generation": 25,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 1014,
+                    "sequence": 1015,
+                    "source": "cam9",
+                    "visible": true
+                },
+                {
+                    "generation": 26,
+                    "planes": [
+                        0,
+                        3,
+                        2
+                    ],
+                    "presented": 1044,
+                    "sequence": 1046,
+                    "source": "cam10",
+                    "visible": true
+                },
+                {
+                    "generation": 27,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 1044,
+                    "sequence": 1046,
+                    "source": "cam11",
+                    "visible": true
+                },
+                {
+                    "generation": 28,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 1039,
+                    "sequence": 1041,
+                    "source": "cam12",
+                    "visible": true
+                },
+                {
+                    "generation": 29,
+                    "planes": [
+                        2,
+                        0,
+                        0
+                    ],
+                    "presented": 1044,
+                    "sequence": 1046,
+                    "source": "cam13",
+                    "visible": true
+                },
+                {
+                    "generation": 30,
+                    "planes": [
+                        2,
+                        0,
+                        3
+                    ],
+                    "presented": 1014,
+                    "sequence": 1015,
+                    "source": "cam14",
+                    "visible": true
+                },
+                {
+                    "generation": 32,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 345,
+                    "sequence": 347,
+                    "source": "resource-monitor",
+                    "visible": true
+                }
+            ]
+        },
+        {
+            "ns": 94356902414620,
+            "phase": "hide-resumed",
+            "presented": 22725,
+            "slots": [
+                {
+                    "generation": 33,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 1464,
+                    "sequence": 1467,
+                    "source": "cam0",
+                    "visible": true
+                },
+                {
+                    "generation": 17,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 1494,
+                    "sequence": 1497,
+                    "source": "cam1",
+                    "visible": true
+                },
+                {
+                    "generation": 18,
+                    "planes": [
+                        2,
+                        3,
+                        0
+                    ],
+                    "presented": 1494,
+                    "sequence": 1496,
+                    "source": "cam2",
+                    "visible": true
+                },
+                {
+                    "generation": 19,
+                    "planes": [
+                        2,
+                        0,
+                        3
+                    ],
+                    "presented": 1491,
+                    "sequence": 1493,
+                    "source": "cam3",
+                    "visible": true
+                },
+                {
+                    "generation": 20,
+                    "planes": [
+                        1,
+                        2,
+                        0
+                    ],
+                    "presented": 1494,
+                    "sequence": 1497,
+                    "source": "cam4",
+                    "visible": true
+                },
+                {
+                    "generation": 21,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 1464,
+                    "sequence": 1467,
+                    "source": "cam5",
+                    "visible": true
+                },
+                {
+                    "generation": 22,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 1464,
+                    "sequence": 1467,
+                    "source": "cam6",
+                    "visible": true
+                },
+                {
+                    "generation": 23,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 1465,
+                    "sequence": 1467,
+                    "source": "cam7",
+                    "visible": true
+                },
+                {
+                    "generation": 24,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 1497,
+                    "sequence": 1499,
+                    "source": "cam8",
+                    "visible": true
+                },
+                {
+                    "generation": 25,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 1465,
+                    "sequence": 1467,
+                    "source": "cam9",
+                    "visible": true
+                },
+                {
+                    "generation": 26,
+                    "planes": [
+                        0,
+                        2,
+                        1
+                    ],
+                    "presented": 1495,
+                    "sequence": 1498,
+                    "source": "cam10",
+                    "visible": true
+                },
+                {
+                    "generation": 27,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 1495,
+                    "sequence": 1498,
+                    "source": "cam11",
+                    "visible": true
+                },
+                {
+                    "generation": 28,
+                    "planes": [
+                        0,
+                        2,
+                        1
+                    ],
+                    "presented": 1490,
+                    "sequence": 1493,
+                    "source": "cam12",
+                    "visible": true
+                },
+                {
+                    "generation": 29,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 1495,
+                    "sequence": 1498,
+                    "source": "cam13",
+                    "visible": true
+                },
+                {
+                    "generation": 30,
+                    "planes": [
+                        2,
+                        4,
+                        3
+                    ],
+                    "presented": 1464,
+                    "sequence": 1466,
+                    "source": "cam14",
+                    "visible": true
+                },
+                {
+                    "generation": 32,
+                    "planes": [
+                        2,
+                        0,
+                        1
+                    ],
+                    "presented": 494,
+                    "sequence": 497,
+                    "source": "resource-monitor",
+                    "visible": true
+                }
+            ]
+        },
+        {
+            "ns": 94360000408887,
+            "phase": "focused",
+            "presented": 22825,
+            "slots": [
+                {
+                    "generation": 33,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 1556,
+                    "sequence": 1560,
+                    "source": "cam0",
+                    "visible": true
+                },
+                {
+                    "generation": 17,
+                    "planes": [
+                        2,
+                        0,
+                        0
+                    ],
+                    "presented": 1494,
+                    "sequence": 1497,
+                    "source": "cam1",
+                    "visible": false
+                },
+                {
+                    "generation": 18,
+                    "planes": [
+                        2,
+                        0,
+                        0
+                    ],
+                    "presented": 1495,
+                    "sequence": 1496,
+                    "source": "cam2",
+                    "visible": false
+                },
+                {
+                    "generation": 19,
+                    "planes": [
+                        2,
+                        0,
+                        0
+                    ],
+                    "presented": 1492,
+                    "sequence": 1493,
+                    "source": "cam3",
+                    "visible": false
+                },
+                {
+                    "generation": 20,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 1494,
+                    "sequence": 1497,
+                    "source": "cam4",
+                    "visible": false
+                },
+                {
+                    "generation": 21,
+                    "planes": [
+                        2,
+                        0,
+                        0
+                    ],
+                    "presented": 1464,
+                    "sequence": 1467,
+                    "source": "cam5",
+                    "visible": false
+                },
+                {
+                    "generation": 22,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 1465,
+                    "sequence": 1467,
+                    "source": "cam6",
+                    "visible": false
+                },
+                {
+                    "generation": 23,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 1466,
+                    "sequence": 1467,
+                    "source": "cam7",
+                    "visible": false
+                },
+                {
+                    "generation": 24,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 1498,
+                    "sequence": 1499,
+                    "source": "cam8",
+                    "visible": false
+                },
+                {
+                    "generation": 25,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 1466,
+                    "sequence": 1467,
+                    "source": "cam9",
+                    "visible": false
+                },
+                {
+                    "generation": 26,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 1495,
+                    "sequence": 1498,
+                    "source": "cam10",
+                    "visible": false
+                },
+                {
+                    "generation": 27,
+                    "planes": [
+                        2,
+                        0,
+                        0
+                    ],
+                    "presented": 1495,
+                    "sequence": 1498,
+                    "source": "cam11",
+                    "visible": false
+                },
+                {
+                    "generation": 28,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 1490,
+                    "sequence": 1493,
+                    "source": "cam12",
+                    "visible": false
+                },
+                {
+                    "generation": 29,
+                    "planes": [
+                        0,
+                        2,
+                        0
+                    ],
+                    "presented": 1496,
+                    "sequence": 1498,
+                    "source": "cam13",
+                    "visible": false
+                },
+                {
+                    "generation": 30,
+                    "planes": [
+                        2,
+                        0,
+                        0
+                    ],
+                    "presented": 1465,
+                    "sequence": 1466,
+                    "source": "cam14",
+                    "visible": false
+                },
+                {
+                    "generation": 32,
+                    "planes": [
+                        2,
+                        0,
+                        0
+                    ],
+                    "presented": 494,
+                    "sequence": 497,
+                    "source": "resource-monitor",
+                    "visible": false
+                }
+            ]
+        },
+        {
+            "ns": 94375004073553,
+            "phase": "grid-resumed",
+            "presented": 29695,
+            "slots": [
+                {
+                    "generation": 33,
+                    "planes": [
+                        0,
+                        2,
+                        1
+                    ],
+                    "presented": 2007,
+                    "sequence": 2010,
+                    "source": "cam0",
+                    "visible": true
+                },
+                {
+                    "generation": 17,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 1942,
+                    "sequence": 1946,
+                    "source": "cam1",
+                    "visible": true
+                },
+                {
+                    "generation": 18,
+                    "planes": [
+                        3,
+                        2,
+                        1
+                    ],
+                    "presented": 1943,
+                    "sequence": 1946,
+                    "source": "cam2",
+                    "visible": true
+                },
+                {
+                    "generation": 19,
+                    "planes": [
+                        2,
+                        0,
+                        3
+                    ],
+                    "presented": 1940,
+                    "sequence": 1942,
+                    "source": "cam3",
+                    "visible": true
+                },
+                {
+                    "generation": 20,
+                    "planes": [
+                        2,
+                        4,
+                        3
+                    ],
+                    "presented": 1941,
+                    "sequence": 1945,
+                    "source": "cam4",
+                    "visible": true
+                },
+                {
+                    "generation": 21,
+                    "planes": [
+                        2,
+                        0,
+                        1
+                    ],
+                    "presented": 1912,
+                    "sequence": 1916,
+                    "source": "cam5",
+                    "visible": true
+                },
+                {
+                    "generation": 22,
+                    "planes": [
+                        2,
+                        3,
+                        0
+                    ],
+                    "presented": 1913,
+                    "sequence": 1916,
+                    "source": "cam6",
+                    "visible": true
+                },
+                {
+                    "generation": 23,
+                    "planes": [
+                        0,
+                        3,
+                        2
+                    ],
+                    "presented": 1914,
+                    "sequence": 1916,
+                    "source": "cam7",
+                    "visible": true
+                },
+                {
+                    "generation": 24,
+                    "planes": [
+                        0,
+                        3,
+                        2
+                    ],
+                    "presented": 1946,
+                    "sequence": 1948,
+                    "source": "cam8",
+                    "visible": true
+                },
+                {
+                    "generation": 25,
+                    "planes": [
+                        3,
+                        0,
+                        2
+                    ],
+                    "presented": 1914,
+                    "sequence": 1916,
+                    "source": "cam9",
+                    "visible": true
+                },
+                {
+                    "generation": 26,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 1943,
+                    "sequence": 1947,
+                    "source": "cam10",
+                    "visible": true
+                },
+                {
+                    "generation": 27,
+                    "planes": [
+                        0,
+                        2,
+                        1
+                    ],
+                    "presented": 1943,
+                    "sequence": 1947,
+                    "source": "cam11",
+                    "visible": true
+                },
+                {
+                    "generation": 28,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 1938,
+                    "sequence": 1942,
+                    "source": "cam12",
+                    "visible": true
+                },
+                {
+                    "generation": 29,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 1944,
+                    "sequence": 1947,
+                    "source": "cam13",
+                    "visible": true
+                },
+                {
+                    "generation": 30,
+                    "planes": [
+                        0,
+                        2,
+                        3
+                    ],
+                    "presented": 1913,
+                    "sequence": 1915,
+                    "source": "cam14",
+                    "visible": true
+                },
+                {
+                    "generation": 32,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 642,
+                    "sequence": 646,
+                    "source": "resource-monitor",
+                    "visible": true
+                }
+            ]
+        },
+        {
+            "ns": 94390100561729,
+            "phase": "camera-switched",
+            "presented": 36616,
+            "slots": [
+                {
+                    "generation": 36,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 2437,
+                    "sequence": 2441,
+                    "source": "cam15",
+                    "visible": true
+                },
+                {
+                    "generation": 17,
+                    "planes": [
+                        1,
+                        0,
+                        2
+                    ],
+                    "presented": 2395,
+                    "sequence": 2399,
+                    "source": "cam1",
+                    "visible": true
+                },
+                {
+                    "generation": 18,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 2396,
+                    "sequence": 2398,
+                    "source": "cam2",
+                    "visible": true
+                },
+                {
+                    "generation": 19,
+                    "planes": [
+                        0,
+                        3,
+                        2
+                    ],
+                    "presented": 2393,
+                    "sequence": 2395,
+                    "source": "cam3",
+                    "visible": true
+                },
+                {
+                    "generation": 20,
+                    "planes": [
+                        3,
+                        0,
+                        2
+                    ],
+                    "presented": 2394,
+                    "sequence": 2398,
+                    "source": "cam4",
+                    "visible": true
+                },
+                {
+                    "generation": 21,
+                    "planes": [
+                        1,
+                        0,
+                        2
+                    ],
+                    "presented": 2365,
+                    "sequence": 2369,
+                    "source": "cam5",
+                    "visible": true
+                },
+                {
+                    "generation": 22,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 2366,
+                    "sequence": 2369,
+                    "source": "cam6",
+                    "visible": true
+                },
+                {
+                    "generation": 23,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 2367,
+                    "sequence": 2369,
+                    "source": "cam7",
+                    "visible": true
+                },
+                {
+                    "generation": 24,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 2399,
+                    "sequence": 2401,
+                    "source": "cam8",
+                    "visible": true
+                },
+                {
+                    "generation": 25,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 2367,
+                    "sequence": 2369,
+                    "source": "cam9",
+                    "visible": true
+                },
+                {
+                    "generation": 26,
+                    "planes": [
+                        1,
+                        3,
+                        2
+                    ],
+                    "presented": 2395,
+                    "sequence": 2400,
+                    "source": "cam10",
+                    "visible": true
+                },
+                {
+                    "generation": 27,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 2396,
+                    "sequence": 2400,
+                    "source": "cam11",
+                    "visible": true
+                },
+                {
+                    "generation": 28,
+                    "planes": [
+                        1,
+                        3,
+                        2
+                    ],
+                    "presented": 2390,
+                    "sequence": 2395,
+                    "source": "cam12",
+                    "visible": true
+                },
+                {
+                    "generation": 29,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 2397,
+                    "sequence": 2400,
+                    "source": "cam13",
+                    "visible": true
+                },
+                {
+                    "generation": 30,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 2366,
+                    "sequence": 2368,
+                    "source": "cam14",
+                    "visible": true
+                },
+                {
+                    "generation": 32,
+                    "planes": [
+                        2,
+                        0,
+                        1
+                    ],
+                    "presented": 793,
+                    "sequence": 797,
+                    "source": "resource-monitor",
+                    "visible": true
+                }
+            ]
+        },
+        {
+            "ns": 94405201092967,
+            "phase": "camera-restored",
+            "presented": 43543,
+            "slots": [
+                {
+                    "generation": 39,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 2871,
+                    "sequence": 2875,
+                    "source": "cam0",
+                    "visible": true
+                },
+                {
+                    "generation": 17,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 2848,
+                    "sequence": 2852,
+                    "source": "cam1",
+                    "visible": true
+                },
+                {
+                    "generation": 18,
+                    "planes": [
+                        3,
+                        0,
+                        2
+                    ],
+                    "presented": 2849,
+                    "sequence": 2851,
+                    "source": "cam2",
+                    "visible": true
+                },
+                {
+                    "generation": 19,
+                    "planes": [
+                        2,
+                        3,
+                        0
+                    ],
+                    "presented": 2846,
+                    "sequence": 2848,
+                    "source": "cam3",
+                    "visible": true
+                },
+                {
+                    "generation": 20,
+                    "planes": [
+                        3,
+                        1,
+                        2
+                    ],
+                    "presented": 2847,
+                    "sequence": 2852,
+                    "source": "cam4",
+                    "visible": true
+                },
+                {
+                    "generation": 21,
+                    "planes": [
+                        1,
+                        0,
+                        2
+                    ],
+                    "presented": 2818,
+                    "sequence": 2822,
+                    "source": "cam5",
+                    "visible": true
+                },
+                {
+                    "generation": 22,
+                    "planes": [
+                        1,
+                        2,
+                        0
+                    ],
+                    "presented": 2819,
+                    "sequence": 2822,
+                    "source": "cam6",
+                    "visible": true
+                },
+                {
+                    "generation": 23,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 2820,
+                    "sequence": 2822,
+                    "source": "cam7",
+                    "visible": true
+                },
+                {
+                    "generation": 24,
+                    "planes": [
+                        3,
+                        0,
+                        2
+                    ],
+                    "presented": 2852,
+                    "sequence": 2854,
+                    "source": "cam8",
+                    "visible": true
+                },
+                {
+                    "generation": 25,
+                    "planes": [
+                        3,
+                        2,
+                        0
+                    ],
+                    "presented": 2820,
+                    "sequence": 2822,
+                    "source": "cam9",
+                    "visible": true
+                },
+                {
+                    "generation": 26,
+                    "planes": [
+                        1,
+                        3,
+                        2
+                    ],
+                    "presented": 2848,
+                    "sequence": 2853,
+                    "source": "cam10",
+                    "visible": true
+                },
+                {
+                    "generation": 27,
+                    "planes": [
+                        2,
+                        1,
+                        0
+                    ],
+                    "presented": 2849,
+                    "sequence": 2853,
+                    "source": "cam11",
+                    "visible": true
+                },
+                {
+                    "generation": 28,
+                    "planes": [
+                        1,
+                        3,
+                        2
+                    ],
+                    "presented": 2843,
+                    "sequence": 2848,
+                    "source": "cam12",
+                    "visible": true
+                },
+                {
+                    "generation": 29,
+                    "planes": [
+                        1,
+                        2,
+                        0
+                    ],
+                    "presented": 2850,
+                    "sequence": 2853,
+                    "source": "cam13",
+                    "visible": true
+                },
+                {
+                    "generation": 30,
+                    "planes": [
+                        0,
+                        3,
+                        2
+                    ],
+                    "presented": 2819,
+                    "sequence": 2821,
+                    "source": "cam14",
+                    "visible": true
+                },
+                {
+                    "generation": 32,
+                    "planes": [
+                        2,
+                        0,
+                        1
+                    ],
+                    "presented": 944,
+                    "sequence": 948,
+                    "source": "resource-monitor",
+                    "visible": true
+                }
+            ]
+        }
+    ],
+    "scope": "Declared interactive lifecycle trial; not a fixed-layout physical-frame acceptance run"
+}

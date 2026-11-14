@@ -1,4 +1,6 @@
 #include "window.hpp"
+#include "live_preview_policy.hpp"
+#include <qpa/qplatformwindow.h>
 #include "diagnostic_slot_lock.hpp"
 #include "amdva/overlay.hpp"
 #include <QApplication>
@@ -101,6 +103,7 @@ Tiles::Tiles(Controller &c, PreviewSlot *playback)
     });
     auto surface_format = format();
     surface_format.setSamples(4);
+    if(!playback_)surface_format.setSwapInterval(0);
     setFormat(surface_format);
     current_.fill(-1);
     click_timer_ = new QTimer(this);
@@ -108,9 +111,37 @@ Tiles::Tiles(Controller &c, PreviewSlot *playback)
     auto *selection_timer = new QTimer(this);
     connect(selection_timer, &QTimer::timeout, this, [this] { poll_selection(); });
     selection_timer->start(20);
+    if(!playback_) {
+        auto *scheduler=new QTimer(this);
+        scheduler->setTimerType(Qt::PreciseTimer);
+        connect(scheduler,&QTimer::timeout,this,[this] {
+            if(!isExposed() || frozen_ || held_ || preview_mode_ || !error_.empty())return;
+            const auto now=Telemetry::monotonic_ns();
+            for(unsigned i=0;i<slot_count();++i) {
+                auto &s=slot(i);std::lock_guard<std::mutex> lock(s.mutex);
+                if(!controller_.gpu_slots()[i].preview_visible.load())continue;
+                if(current_[i]>=0 && !s.preview[current_[i]].presentation_confirmed &&
+                   !s.preview[current_[i]].presentation_retired)continue;
+                for(const auto &p:s.preview)
+                    if(p.state==1 && p.generation==s.generation && p.presentation_due_ns<=now) {
+                        QMetaObject::invokeMethod(this,[this] {
+                        update();
+                        // Qt Wayland otherwise waits for wl_surface.frame even
+                        // with swapInterval(0). Deliver the ordinary Qt paint
+                        // path now; never bypass its framebuffer/resolve/swap.
+                        if(handle() && handle()->hasPendingUpdateRequest())
+                            handle()->deliverUpdateRequest();
+                        },Qt::QueuedConnection);
+                        return;
+                    }
+            }
+        });
+        scheduler->start(4);
+    }
 }
 void Tiles::observe_visibility() {
-    const bool active = isVisible() && isExposed() && visibility() != QWindow::Minimized;
+    const bool active = isVisible() && isExposed() && visibility() != QWindow::Minimized &&
+                        image_program_ && error_.empty() && !frozen_ && !held_ && !preview_mode_;
     if (!playback_)
         controller_.presentation_active(active);
     if (!active) {
@@ -129,6 +160,15 @@ Tiles::~Tiles() {
         analysis_query_.wait();
     if (extracting_.valid())
         extracting_.wait();
+    if(feedback_)feedback_->poll();
+    feedback_.reset();
+    if(!playback_)for(unsigned i=0;i<slot_count();++i) {
+        auto &s=slot(i);std::lock_guard<std::mutex> lock(s.mutex);
+        for(const auto &plane:s.preview)
+            if((plane.state==2 || plane.state==3 || plane.state==5) &&
+               !plane.presentation_confirmed && plane.timing.telemetry)
+                plane.timing.telemetry->diagnostic(plane.timing.frame,"shutdown_present_retired");
+    }
     if (!context() || !gl_)
         return;
     makeCurrent();
@@ -212,8 +252,53 @@ void Tiles::initializeGL() {
             "#version 300 es\nprecision mediump float;uniform vec4 pen;out vec4 color;void "
             "main(){color=pen;}");
         gl_->glGenBuffers(1, &buffer_);
+        if(!playback_)feedback_=std::make_unique<PresentationFeedback>(*this,
+            [this](const std::vector<FeedbackFrame> &frames,int64_t at,uint32_t flags,bool shown) {
+                bool lost=false;
+                for(const auto &frame:frames) {
+                    auto &s=slot(frame.slot);
+                    std::lock_guard<std::mutex> lock(s.mutex);
+                    auto &plane=s.preview[frame.plane];
+                    if(plane.generation!=frame.generation || plane.sequence!=frame.sequence) {
+                        if(frame.timing.telemetry)
+                            frame.timing.telemetry->diagnostic(frame.timing.frame,"presentation_stale_feedback");
+                        continue;
+                    }
+                    if(!shown) {
+                        const bool requested=isExposed() && !frozen_ && !held_ && !preview_mode_ &&
+                                             controller_.gpu_slots()[frame.slot].preview_visible.load();
+                        if(!plane.presentation_confirmed && !plane.presentation_retired &&
+                           plane.state!=2 && requested && feedback_ && !feedback_->pending(frame)) {
+                            if(frame.timing.telemetry)
+                                frame.timing.telemetry->diagnostic(frame.timing.frame,"presentation_frame_lost");
+                            lost=true;
+                        }
+                        continue;
+                    }
+                    if(!plane.presentation_confirmed) {
+                        plane.presentation_confirmed=true;++presented_;++presented_by_slot_[frame.slot];
+                        if(frame.timing.telemetry)
+                            frame.timing.telemetry->diagnostic(frame.timing.frame,"presented",
+                                flags,plane.presentation_due_ns,-1,at);
+                    }
+                }
+                if(shown && !playback_)update();
+                if(lost) {
+                    error_="A video frame was not presented; lossless presentation failed";
+                    diagnostic_event("presentation",0,0,"presentation_error",Telemetry::monotonic_ns(),2);
+                    controller_.presentation_active(false);
+                }
+            },[this](std::string message) {
+                error_="Presentation: "+message;
+                diagnostic_event("presentation",0,0,"presentation_error",Telemetry::monotonic_ns(),1);
+                controller_.presentation_active(false);
+            });
     } catch (const std::exception &e) {
         error_ = e.what();
+        if(!playback_) {
+            diagnostic_event("presentation",0,0,"presentation_error",Telemetry::monotonic_ns(),1);
+            controller_.presentation_active(false);
+        }
     }
 }
 void Tiles::vertices(const float *data, unsigned count, unsigned stride) {
@@ -574,7 +659,8 @@ void Tiles::paintGL() {
     displayed_stream_info_.fill({});
     displayed_encode_info_.fill({});
     if (!playback_)
-        controller_.presentation_active(isExposed() && visibility() != QWindow::Minimized);
+        controller_.presentation_active(isExposed() && visibility() != QWindow::Minimized &&
+            image_program_ && error_.empty() && !frozen_ && !held_ && !preview_mode_);
     for (const auto &pending : pending_swap_)
         if (pending.timing.telemetry)
             pending.timing.telemetry->counter(TimingCounter::PresentationUnobserved);
@@ -591,6 +677,7 @@ void Tiles::paintGL() {
         draw_preview();
         return;
     }
+    std::vector<FeedbackFrame> feedback_frames;feedback_frames.reserve(16);
     const auto statuses = controller_.status();
     std::vector<int> active;
     if (playback_)
@@ -616,14 +703,22 @@ void Tiles::paintGL() {
         for (unsigned j = 0; j < 3; ++j) {
             auto &p = s.preview[j];
             auto &t = textures_[i][j];
+            if(!playback_ && p.generation && p.generation!=s.generation &&
+               p.state!=0 && p.state!=4) {
+                if(!p.presentation_confirmed && !p.presentation_retired && p.timing.telemetry)
+                    p.timing.telemetry->diagnostic(p.timing.frame,"presentation_generation_retired");
+                p.presentation_retired=true;
+                if(p.state==1)p.state=0;
+            }
             if (p.state == 3 && t.fence) {
                 const auto result = gl_->glClientWaitSync(t.fence, 0, 0);
                 if (result == GL_ALREADY_SIGNALED || result == GL_CONDITION_SATISFIED) {
                     gl_->glDeleteSync(t.fence);
                     t.fence = nullptr;
-                    p.state = 0;
+                    p.state = playback_ || detail::may_reuse_preview(true,p.presentation_confirmed,p.presentation_retired) ? 0 : 5;
                 }
             }
+            if(p.state==5 && detail::may_reuse_preview(true,p.presentation_confirmed,p.presentation_retired))p.state=0;
         }
         if ((frozen_ || held_ || preview_mode_) && current_[i] >= 0)
             continue;
@@ -636,6 +731,12 @@ void Tiles::paintGL() {
         }
         if (current_[i] >= 0 && s.preview[current_[i]].generation != s.generation)
             release_current(i);
+        if(!playback_ && current_[i]>=0) {
+            const auto &current=s.preview[current_[i]];
+            if(!detail::may_advance_preview(current.presentation_confirmed,
+                current.presentation_retired))
+                continue;
+        }
         int newest = -1;
         for (unsigned j = 0; j < 3; ++j)
             if (s.preview[j].state == 1) {
@@ -647,15 +748,21 @@ void Tiles::paintGL() {
                     s.preview[j].state = 0;
                     continue;
                 }
-                if (newest < 0 || s.preview[j].sequence > s.preview[newest].sequence)
-                    newest = int(j);
+                if(!playback_ && s.preview[j].presentation_due_ns>
+                    Telemetry::monotonic_ns()+(feedback_?feedback_->refresh_ns():0))
+                    continue;
+                if(newest<0 || (playback_?s.preview[j].sequence>s.preview[newest].sequence:
+                                          s.preview[j].sequence<s.preview[newest].sequence))
+                    newest=int(j);
             }
         if (newest >= 0) {
             release_current(i);
             current_[i] = newest;
             s.preview[newest].state = 2;
-            presented_++;
-            for (unsigned j = 0; j < 3; ++j)
+            if(playback_)++presented_;
+            // Playback retains its existing seek/newest behavior. Live preview
+            // keeps every other ready plane until it is presented in FIFO order.
+            if(playback_)for (unsigned j = 0; j < 3; ++j)
                 if (s.preview[j].state == 1) {
                     if (s.preview[j].timing.telemetry) {
                         s.preview[j].timing.telemetry->diagnostic(s.preview[j].timing.frame,"preview_discarded");
@@ -724,6 +831,11 @@ void Tiles::paintGL() {
         p.timing.mark(TimingStage::Draw);
         if (p.timing.telemetry && !p.timing.frame.ns[unsigned(TimingStage::Swap)])
             pending_swap_.push_back({index, unsigned(image), p.timing});
+        if(!playback_) {
+            FeedbackFrame submitted{index,unsigned(image),p.generation,p.sequence,p.timing};
+            if(!p.presentation_confirmed && !p.presentation_retired)
+                feedback_frames.push_back(std::move(submitted));
+        }
         if (!playback_) {
             // Live tiles only: the slot also carries the latest AI results.
             auto &live = controller_.gpu_slots()[index];
@@ -890,6 +1002,7 @@ void Tiles::paintGL() {
             painter.drawRect(rect.adjusted(1, 1, -2, -2));
         }
     }
+    if(feedback_)feedback_->submit(std::move(feedback_frames));
 }
 void install_shutdown_signals(QCoreApplication &app) {
     shutdown_requested = 0;

@@ -1,0 +1,37 @@
+{
+  "v1": {
+    "validator_sha256": "a9993c0707bc49891d0fbbba87540a9a1e8e5d0fab80d58b22ce65d903a8fb8e",
+    "artifact": "physical-validator-v1.py"
+  },
+  "v2": {
+    "validator_sha256": "8bd8fe080ddfad7d63c2ae5a49a85265145bd557fd74f185c53b8d362624ef55",
+    "artifact": "physical-validator-v2.py"
+  },
+  "trials": {
+    "fifo-pilot-04": {
+      "validator_version": "v1",
+      "events_gzip_sha256": "b8774c1c81f9b5e33c47f1ddd62542cc0cacb730b03567cf34212651b31352e0",
+      "events_gzip_bytes": 28766809
+    },
+    "fifo-pilot-05": {
+      "validator_version": "v1",
+      "events_gzip_sha256": "9875810ce17fae7349d7ebf24e0eed6b0669cb6ffa3a9829e4d6559d8653ec09",
+      "events_gzip_bytes": 27379337
+    },
+    "fifo-pilot-06": {
+      "validator_version": "v1",
+      "events_gzip_sha256": "343607fab5724eabe7837913ca986d1605bbb48e76a38641d581a873b7bb0367",
+      "events_gzip_bytes": 27396669
+    },
+    "fifo-normal-01": {
+      "validator_version": "v2",
+      "events_gzip_sha256": "4d76a71decb558ec8246f278af2c745a47f6f987a95240bfdd2320e89070c743",
+      "events_gzip_bytes": 220815195
+    },
+    "fifo-final-01": {
+      "validator_version": "v2",
+      "events_gzip_sha256": "a0e9ddc29535a3fa4b20c713b5c8490f146e87935e520ab8237974d3f004d893",
+      "events_gzip_bytes": 27275120
+    }
+  }
+}

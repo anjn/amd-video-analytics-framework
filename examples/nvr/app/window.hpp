@@ -1,8 +1,10 @@
+class QCloseEvent;
 #pragma once
 #include "amdva/overlay.hpp"
 #include "amdva/streaming/playback.hpp"
 #include "backend/config.hpp"
 #include "vector_text.hpp"
+#include "presentation_feedback.hpp"
 #include "amdva/egl_import.hpp"
 #include <memory>
 #include <EGL/egl.h>
@@ -63,6 +65,7 @@ class Tiles final : public QOpenGLWindow {
     QRectF displayed_video_rect() const { return video_rect_; }
     std::string error() const { return error_; }
     uint64_t presented() const { return presented_; }
+    uint64_t presented_by_slot(unsigned i) const { return presented_by_slot_.at(i); }
     int64_t displayed_playback_time() const { return displayed_playback_time_; }
     void stream_info_visible(bool enabled) {
         stream_info_visible_ = enabled;
@@ -144,11 +147,13 @@ class Tiles final : public QOpenGLWindow {
     GLuint buffer_{};
     std::string error_;
     uint64_t presented_{};
+    std::array<uint64_t,16> presented_by_slot_{};
     struct PendingSwap {
         unsigned slot, plane;
         TraceToken timing;
     };
     std::vector<PendingSwap> pending_swap_;
+    std::unique_ptr<PresentationFeedback> feedback_;
     void observe_visibility();
     void vertices(const float *data, unsigned count, unsigned stride);
     void release_current(unsigned slot);
@@ -156,6 +161,8 @@ class Tiles final : public QOpenGLWindow {
                            bool right = false, QColor color = Qt::white, double size = 22);
 };
 class Window final : public QMainWindow {
+  protected:
+    void closeEvent(QCloseEvent *) override;
   public:
     Window(Controller &controller, Options options, std::string config);
     ~Window() override;

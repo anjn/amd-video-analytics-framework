@@ -8,6 +8,8 @@
 #include "amdva/streaming/transcoder.hpp"
 #include "amdva/tracking.hpp"
 #include "backend/search.hpp"
+#include "backend/presentation_fifo.hpp"
+#include "backend/preview_selection.hpp"
 #include <array>
 #include <atomic>
 #include <chrono>
@@ -93,6 +95,7 @@ struct Slot : PreviewSlot {
     VASurfaceID ai_surface{VA_INVALID_SURFACE};
     std::unique_ptr<ImportedSurface> image;
     Frame latest;
+    PresentationFifo<Frame> presentation;
     std::vector<Detection> detections;
     std::vector<TrackedObject> tracked;
     std::unique_ptr<MetadataTracker> tracker;
@@ -144,6 +147,7 @@ class Controller {
     SearchService *search_service() { return search_.get(); }
     std::shared_ptr<AiRuntime> ai_runtime() const { return ai_runtime_; }
     void ai_frequency(double fps, unsigned embedding_interval_ms);
+    void request_shutdown();
     void shutdown();
 
   private:
@@ -156,8 +160,9 @@ class Controller {
     Slot &ai_slot(unsigned index) {
         return index < 16 ? slots_[index] : background_slots_[index - 16];
     }
-    std::atomic<bool> stopping_{false}, initial_enqueued_{false};
-    std::atomic<bool> presentation_observed_{true};
+    std::atomic<bool> stopping_{false}, shutdown_started_{false}, initial_enqueued_{false};
+    std::atomic<bool> presentation_observed_{false};
+    detail::PreviewSelection preview_selection_;
     uint64_t next_generation_{0};
     std::thread control_, gpu_, preview_;
     mutable std::mutex mutex_;

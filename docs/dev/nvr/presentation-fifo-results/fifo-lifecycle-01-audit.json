@@ -1,0 +1,27 @@
+{
+  "scope": "Declared interactive lifecycle, separate from fixed-layout frame acceptance",
+  "audit_passed": false,
+  "errors": {},
+  "copy": {
+    "missing_result": true
+  },
+  "vpe": {
+    "schema": 1,
+    "method": "binary-syncobj-fence",
+    "scopes": 70952,
+    "completed": 70952,
+    "failed": 0,
+    "aborted": 0,
+    "submissions": 106975,
+    "rejected_submissions": 0,
+    "foreign_operations": 0,
+    "active_scope": 0,
+    "observer_wait_ns": 12226538,
+    "maximum_observer_wait_ns": 120137
+  },
+  "dispositions": {
+    "presentation_suspended_retired": 70,
+    "presentation_generation_retired": 0,
+    "shutdown_present_retired": 17
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "physical_frames_passed": true,
+  "records_read": 2256485,
+  "failures": {},
+  "examples": [],
+  "sources": {
+    "cam0": {
+      "decoded": 3401,
+      "presented": 3398,
+      "shutdown_retired": 3
+    },
+    "cam1": {
+      "decoded": 3407,
+      "presented": 3402,
+      "shutdown_retired": 5
+    },
+    "cam10": {
+      "decoded": 3407,
+      "presented": 3401,
+      "shutdown_retired": 6
+    },
+    "cam11": {
+      "decoded": 3376,
+      "presented": 3372,
+      "shutdown_retired": 4
+    },
+    "cam12": {
+      "decoded": 3408,
+      "presented": 3403,
+      "shutdown_retired": 5
+    },
+    "cam13": {
+      "decoded": 3376,
+      "presented": 3372,
+      "shutdown_retired": 4
+    },
+    "cam14": {
+      "decoded": 3407,
+      "presented": 3403,
+      "shutdown_retired": 4
+    },
+    "cam2": {
+      "decoded": 3406,
+      "presented": 3401,
+      "shutdown_retired": 5
+    },
+    "cam3": {
+      "decoded": 3406,
+      "presented": 3402,
+      "shutdown_retired": 4
+    },
+    "cam4": {
+      "decoded": 3407,
+      "presented": 3401,
+      "shutdown_retired": 6
+    },
+    "cam5": {
+      "decoded": 3375,
+      "presented": 3372,
+      "shutdown_retired": 3
+    },
+    "cam6": {
+      "decoded": 3401,
+      "presented": 3398,
+      "shutdown_retired": 3
+    },
+    "cam7": {
+      "decoded": 3407,
+      "presented": 3401,
+      "shutdown_retired": 6
+    },
+    "cam8": {
+      "decoded": 3407,
+      "presented": 3401,
+      "shutdown_retired": 6
+    },
+    "cam9": {
+      "decoded": 3407,
+      "presented": 3401,
+      "shutdown_retired": 6
+    },
+    "resource-monitor": {
+      "decoded": 1136,
+      "presented": 1133,
+      "shutdown_retired": 3
+    }
+  },
+  "events": {
+    "catalog_enforce_lock": 113,
+    "catalog_bytes_lock": 228,
+    "catalog_file_sizes": 228,
+    "catalog_extension_sizes": 228,
+    "catalog_analysis_sizes": 228,
+    "control_loop": 10541,
+    "control_tick": 1789,
+    "presentation_mode": 1,
+    "ui_select_lock": 110512,
+    "ui_draw_lock": 110512,
+    "input": 55542,
+    "access_unit": 55542,
+    "pts": 166626,
+    "decode_dispatch_wait": 55542,
+    "decode_dispatch_queue": 55542,
+    "decode_dispatch_oldest": 55542,
+    "ingest_queue": 55521,
+    "ingest_oldest_age": 55521,
+    "appsrc_queue": 55542,
+    "appsrc_time": 55542,
+    "decode_submit": 111084,
+    "decode_input": 55542,
+    "decode_output": 55542,
+    "decoded_lock": 55542,
+    "handoff": 55542,
+    "decoder_pool": 16,
+    "decoder_pool_bytes": 16,
+    "fifo_enter": 52119,
+    "fifo_wait": 52119,
+    "fifo_oldest": 52119,
+    "latest_replaced": 3407,
+    "counter": 84852,
+    "fifo_exit": 52077,
+    "preview_lock": 52077,
+    "control_status_slot": 1293,
+    "preview_scale": 52077,
+    "preview_ready": 52077,
+    "draw": 52067,
+    "presentation_commit_submit": 104492,
+    "swap": 52067,
+    "presentation_commit_discarded": 1610,
+    "presentation_feedback_received": 104477,
+    "presentation_commit_presented": 102867,
+    "presented": 52061,
+    "ai_done": 68226,
+    "ai_submit": 7645,
+    "ai_complete": 7645,
+    "presentation_stale_feedback": 13,
+    "control_malloc_trim": 1,
+    "control_quota": 14,
+    "shutdown_requested": 1,
+    "shutdown_fifo_retired": 57,
+    "preview_not_requested": 14,
+    "ingest_retired": 11,
+    "receive_au_closed": 14823,
+    "decoder_drain": 17,
+    "shutdown_latest_retired": 1,
+    "presentation_feedback_retired": 15,
+    "shutdown_present_retired": 6,
+    "shutdown_preview_retired": 10,
+    "copy_audit_result": 1,
+    "shutdown_drained": 1
+  },
+  "shutdown_ns": 92205900256913,
+  "scope": "Fixed-layout normal trial; startup and <=1s shutdown dispositions are separate from physical presentation.",
+  "diagnostic_integrity_valid": true
+}
