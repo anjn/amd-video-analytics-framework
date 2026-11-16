@@ -161,7 +161,9 @@ class SetupContracts(unittest.TestCase):
             (profile/"manage.py").write_text("")
             def executable(name,text):
                 path=root/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text(text);path.chmod(0o755)
-            executable("scripts/env.sh","#!/bin/bash\n")
+            # This launcher fixture does not execute GPU work or load audit modules.
+            # Model the audit selection normally exported while sourcing env.sh.
+            executable("scripts/env.sh","#!/bin/bash\nexport AMDVA_VPE_AUDIT_LIBRARY=fixture-vpe-audit\n")
             executable("scripts/audit-env.sh","#!/bin/bash\n")
             for name in ["build/examples/rtsp-files/amdva-rtsp-files","build/examples/resource-dashboard/amdva-dashboard"]:
                 executable(name,"#!/usr/bin/python3\nimport time\ntime.sleep(60)\n")
