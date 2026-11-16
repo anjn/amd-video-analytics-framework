@@ -277,6 +277,17 @@ void Tiles::initializeGL() {
                     }
                     if(!plane.presentation_confirmed) {
                         plane.presentation_confirmed=true;++presented_;++presented_by_slot_[frame.slot];
+                        if(s.generation==frame.generation) {
+                            const auto observed=Telemetry::monotonic_ns();
+                            const bool accepted=presentation_latency_[frame.slot].observe(frame.generation,frame.sequence,
+                                frame.timing.frame.ns[unsigned(TimingStage::Input)],at,observed);
+                            if(diagnostics_enabled() && frame.timing.telemetry)
+                                frame.timing.telemetry->diagnostic(frame.timing.frame,
+                                    "presentation_latency_update",Telemetry::monotonic_ns()-observed);
+                            if(!accepted && diagnostics_enabled() && frame.timing.telemetry)
+                                frame.timing.telemetry->diagnostic(frame.timing.frame,"presentation_latency_rejected",
+                                    frame.timing.frame.ns[unsigned(TimingStage::Input)],observed,-1,at);
+                        }
                         if(frame.timing.telemetry)
                             frame.timing.telemetry->diagnostic(frame.timing.frame,"presented",
                                 flags,plane.presentation_due_ns,-1,at);
@@ -946,10 +957,12 @@ void Tiles::paintGL() {
                                 .arg(codec, resolution)
                                 .arg(source->input_fps, 0, 'f', 1)
                                 .arg(source->input_mbps, 0, 'f', 1);
-                const auto latency = decode_latency.find(s.channel);
-                text += latency == decode_latency.end()
-                            ? "  decode N/A"
-                            : QString("  decode %1 ms").arg(latency->second, 0, 'f', 1);
+                const auto latency = presentation_latency_[index].snapshot(
+                    s.generation,Telemetry::monotonic_ns());
+                const auto latency_text = latency.available
+                    ? QString("latency 10s max %1 ms").arg(latency.maximum_ms,0,'f',1)
+                    : QString("latency 10s max N/A");
+                text += "  " + latency_text;
                 const double size = active.size() == 1 ? 22 : grid_text;
                 const unsigned cell = focus_ >= 0 ? unsigned(focus_) : tile;
                 // A re-encoded camera adds its encoder line below the decoder line.

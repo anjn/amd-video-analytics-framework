@@ -14,15 +14,17 @@
 using namespace amdva::nvr;
 // Explicit hardware test; never registered in hardware-free CTest runs.
 int main(int argc,char **argv) {
-    if(argc!=3){std::cerr<<"Usage: amdva-presentation-lifecycle CONFIG.json RESULT.json\n";return 2;}
+    const bool overlay_only=argc==4 && std::string(argv[1])=="--overlay-only";
+    if(argc!=3 && !overlay_only){std::cerr<<"Usage: amdva-presentation-lifecycle [--overlay-only] CONFIG.json RESULT.json\n";return 2;}
+    const char *config=argv[argc-2],*result_path=argv[argc-1];
     if(setenv("AMDVA_COPY_AUDIT","1",1)!=0)return 2;
     initialize_runtime();
     QSurfaceFormat format;format.setRenderableType(QSurfaceFormat::OpenGLES);
     format.setVersion(3,0);format.setSwapInterval(1);QSurfaceFormat::setDefaultFormat(format);
     QApplication app(argc,argv);install_shutdown_signals(app);
-    QJsonArray phases;std::string error;bool completed=false,copy_was_active=false;
+    QJsonArray phases;std::string error,renderer_error;bool completed=false,copy_was_active=false;
     try {
-        amdva::diagnostics_enabled();auto options=load_config(argv[1]);
+        amdva::diagnostics_enabled();auto options=load_config(config);
         std::array<std::string,16> cells{};unsigned count=0;std::string extra;
         for(const auto &source:options.sources) {
             if(source.selected && count<16)cells[count++]=source.id;
@@ -62,9 +64,17 @@ int main(int argc,char **argv) {
             }
             if(require_progress && observed!=std::set<std::string>(cells.begin(),cells.end()))
                 throw std::runtime_error("Visible source membership did not recover");
+            QJsonArray overlays;
+            unsigned latency_lines=0;
+            for(const auto &text:tiles->displayed_stream_info()) {
+                overlays.append(text);
+                if(text.contains("latency 10s max ") && !text.contains("N/A") && !text.contains(QChar(10)))++latency_lines;
+            }
             phases.append(QJsonObject{{"phase",phase},{"ns",double(amdva::Telemetry::monotonic_ns())},
-                {"presented",double(tiles->presented())},{"slots",slot_states}});
+                {"presented",double(tiles->presented())},{"slots",slot_states},{"overlays",overlays}});
             amdva::diagnostic_event("presentation-test",0,0,"presentation_test_phase",amdva::Telemetry::monotonic_ns(),phases.size());
+            if(require_progress && latency_lines!=16)
+                throw std::runtime_error("Visible sources are missing actual-presentation latency text: "+std::to_string(latency_lines));
             before=std::move(next);
         };
         unsigned stage=0;auto at=std::chrono::steady_clock::now();QTimer timer;
@@ -77,7 +87,9 @@ int main(int argc,char **argv) {
                 const double wait=(stage==0?20:(stage==1||stage==3||stage==5?3:15));
                 if(elapsed<wait)return;
                 switch(stage) {
-                case 0:snapshot("warmup",true);tiles->hold_live(true);break;
+                case 0:snapshot("warmup",true);
+                    if(overlay_only){completed=true;controller.request_shutdown();app.quit();return;}
+                    tiles->hold_live(true);break;
                 case 1:snapshot("held",false);tiles->hold_live(false);break;
                 case 2:snapshot("hold-resumed",true);view.hide();break;
                 case 3:snapshot("hidden",false);view.show();break;
@@ -90,7 +102,7 @@ int main(int argc,char **argv) {
                 case 8:snapshot("camera-restored",true);completed=true;controller.request_shutdown();app.quit();return;
                 }
                 ++stage;at=std::chrono::steady_clock::now();
-            }catch(const std::exception &e){error=e.what();app.quit();}
+            }catch(const std::exception &e){renderer_error=tiles->error();error=e.what();app.quit();}
         });timer.start(100);app.exec();
         copy_was_active=controller.copy_audit_started_ns()>0;
     }catch(const std::exception &e){error=e.what();}
@@ -103,9 +115,9 @@ int main(int argc,char **argv) {
     const QJsonObject result{{"passed",completed&&error.empty()},
         {"copy_audit_active",copy_was_active},{"copy_audit_passed",copy_proved},
         {"vpe_audit_complete",vpe_complete},{"vpe_scopes",double(v.scopes)},
-        {"error",QString::fromStdString(error)},{"phases",phases},
+        {"error",QString::fromStdString(error)},{"renderer_error",QString::fromStdString(renderer_error)},{"phases",phases},
         {"scope","Declared interactive lifecycle trial; not a fixed-layout physical-frame acceptance run"}};
-    std::ofstream out(argv[2]);out<<QJsonDocument(result).toJson().constData();
+    std::ofstream out(result_path);out<<QJsonDocument(result).toJson().constData();
     if(!out){std::cerr<<"Cannot save lifecycle evidence\n";return 2;}
     std::cout<<(completed&&error.empty()?"Presentation lifecycle passed\n":"Presentation lifecycle failed\n");
     return completed&&error.empty()?0:1;

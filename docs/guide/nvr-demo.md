@@ -1,4 +1,4 @@
-<!-- source: docs/guide/nvr-demo.ja.md ee582f76f4604d3cb20a9bbce5f9e438c93a90cb -->
+<!-- source: docs/guide/nvr-demo.ja.md f5f1c2b4f6891f5d4d56ae1fa10cfeb64ac21534 -->
 # NVR demo
 
 The NVR demo is a sample network video recorder built with this framework. It records all registered RTSP cameras while showing up to 16 of them on the desktop, and runs person and vehicle detection and tracking on the cameras being displayed. Recordings can be played back from a timeline, and if you prepare a native embedding model, you can also search for people by text or image.
@@ -137,3 +137,24 @@ Click the figure to enlarge it. MobileCLIP green arrows cover application input 
 ## Move the prepared 1440p demo to another environment
 
 For `artifacts/1440p-demo`, use the [Git-managed templates and migration guide](../../examples/nvr/demo/1440p/README.md). Launch/configuration/layout files stay in Git while models and videos are exported separately. Generate local settings using destination paths instead of retaining the source machine's absolute config paths. NPU caches also contain internal absolute paths and SDK dependencies, so reprepare and validate them on the destination.
+
+
+## Input-to-actual-display latency in live tiles
+
+The `latency 10s max XX.X ms` line measures from reception of a frame's
+first RTP packet to the presentation timestamp reported by Wayland. Each camera
+shows the maximum over the last ten seconds (available history during
+startup). This includes FIFO, preview preparation, rendering and compositor
+waiting. It is not GPU-only decode time or camera-exposure/network latency before
+the packet reaches the application.
+
+Only physically confirmed pictures are counted, once each. Callback receipt and
+swap timestamps are not substitutes. The values describe already presented
+pictures, not a prediction for the picture currently being rendered. Missing or
+invalid timestamps, a truncated collection window, a different generation, or no
+actual presentation in the last ten seconds produce `N/A` instead of zero or the
+previous camera's value. The metric works without diagnostic logs and adds no
+GPU synchronization or pixel readback. The former input-to-decoder-output
+software metric remains in the detailed timing statistics.
+
+The ten-second window follows receipt of confirmed feedback; latency still uses the reported presentation timestamp. This timestamp can slightly lead CPU receipt, so it is not clamped or rejected solely for that ordering.

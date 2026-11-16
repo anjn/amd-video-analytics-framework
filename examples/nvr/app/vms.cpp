@@ -997,10 +997,6 @@ void Window::persist(bool force) {
 void Window::refresh() {
     const auto statuses = controller_.status();
     const auto timing_snapshots = controller_.telemetry();
-    tiles_->decode_latency.clear();
-    for (const auto &metrics : timing_snapshots)
-        if (metrics.enabled && metrics.latency[0][0].samples)
-            tiles_->decode_latency[metrics.source] = metrics.latency[0][0].mean_ms;
     updating_ = true;
     table_->setRowCount(int(statuses.size()));
     for (unsigned row = 0; row < statuses.size(); ++row) {

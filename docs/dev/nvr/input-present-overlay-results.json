@@ -1,0 +1,635 @@
+{
+  "schema": 1,
+  "metric": "First RTP packet reception to reported compositor presentation timestamp",
+  "window": "10 seconds of received feedback",
+  "aggregation": [
+    "mean",
+    "maximum"
+  ],
+  "samples_per_slot_limit": 512,
+  "extra_gpu_waits": false,
+  "pixel_readback_added": false,
+  "metric_update_max_ns": 15820,
+  "trials": [
+    {
+      "name": "hardware-ui",
+      "result": {
+        "copy_audit_active": true,
+        "copy_audit_passed": true,
+        "error": "Presentation cam8: Presentation FIFO remained full; no frame was overwritten",
+        "passed": false,
+        "phases": [],
+        "scope": "Declared interactive lifecycle trial; not a fixed-layout physical-frame acceptance run",
+        "vpe_audit_complete": true,
+        "vpe_scopes": 454
+      },
+      "manifest": {
+        "copy_audit_requested": true,
+        "scope": "Input-to-presentation UI hardware smoke test",
+        "commit": "6cf47a0f05c23c6977c697ae284feaf74aa200f7",
+        "binary_sha256": "be96633282f4e8a61d01061965d847a9c2c5897199465092c6594cc34926c45b",
+        "config_sha256": "9dc0ee34000e7bfba566b7272ce379336faecaf7ef8b272b9ee6342b0f1466e4",
+        "source_archive_sha256": "8354371736c7883795deb6f4afc70e0a0c6aa73a92f98fd2d929e6c2c4c353a0",
+        "helper_sha256": "9b6335dcc991261fdf0c30452a25c11f9e55024eeb83708a1edf4097284f952a",
+        "returncode": 1,
+        "diagnostic_archives": {
+          "events.csv": {
+            "raw_sha256": "11e022cc1031cfb18004c107e286035011eb70ca04f1fddba6a4036a428133ed",
+            "gzip_sha256": "4ba84faa6c4b0ca9cd9e4713ebbf171ef6449d2f76d3f4be348832f73338bb2b"
+          }
+        }
+      }
+    },
+    {
+      "name": "hardware-ui-02",
+      "result": {
+        "copy_audit_active": true,
+        "copy_audit_passed": true,
+        "error": "Presentation cam1: Presentation FIFO remained full; no frame was overwritten",
+        "passed": false,
+        "phases": [],
+        "scope": "Declared interactive lifecycle trial; not a fixed-layout physical-frame acceptance run",
+        "vpe_audit_complete": true,
+        "vpe_scopes": 553
+      },
+      "manifest": {
+        "copy_audit_requested": true,
+        "scope": "Input-to-presentation UI hardware smoke test",
+        "commit": "6cf47a0f05c23c6977c697ae284feaf74aa200f7",
+        "binary_sha256": "dfe028285167587e6221d08716d710803f75ca92e5391121101ed8a9c193e34c",
+        "config_sha256": "9dc0ee34000e7bfba566b7272ce379336faecaf7ef8b272b9ee6342b0f1466e4",
+        "source_archive_sha256": "7250f2294d7a1d9060f8fe6c57c871f4ac5608e147fb068315b3879415f05e6f",
+        "helper_sha256": "045b85090b26a0f0ad12c59d0d11a3c2929a8f48cec291438c561d72efef178f",
+        "returncode": 1,
+        "diagnostic_archives": {
+          "events.csv": {
+            "raw_sha256": "894fedb59d70a14c1e66bc6e66a5f3279d99871a5dbabef7fc4ade9914d9e20b",
+            "gzip_sha256": "f1b5147c7357d1a28a7152d9ee3ab4e4e5175d2a0419c6cad437829def6d73f1"
+          }
+        }
+      }
+    },
+    {
+      "name": "hardware-ui-03",
+      "result": {
+        "copy_audit_active": true,
+        "copy_audit_passed": true,
+        "error": "Visible sources are missing actual-presentation latency text",
+        "passed": false,
+        "phases": [],
+        "renderer_error": "",
+        "scope": "Declared interactive lifecycle trial; not a fixed-layout physical-frame acceptance run",
+        "vpe_audit_complete": true,
+        "vpe_scopes": 16134
+      },
+      "manifest": {
+        "copy_audit_requested": true,
+        "scope": "Input-to-presentation UI hardware smoke test",
+        "commit": "6cf47a0f05c23c6977c697ae284feaf74aa200f7",
+        "binary_sha256": "72927dcc32a704adfb7ef700780f06bdacd4f1c58a2a3c0e722cb095c66dd745",
+        "config_sha256": "9dc0ee34000e7bfba566b7272ce379336faecaf7ef8b272b9ee6342b0f1466e4",
+        "source_archive_sha256": "593753faac3a7f3baa7fe0bf22fc2390fae51b4e5426a8ef992669e97a1beac0",
+        "helper_sha256": "cbe4a4e0e02869ec066a27f380d557e168118e597608f6131cc13387e687c586",
+        "returncode": 1,
+        "diagnostic_archives": {
+          "events.csv": {
+            "raw_sha256": "8e3e7971ba7a5efb3160fc888f1b671a66814f8983b04a9cc9d81a1fc54ff5d6",
+            "gzip_sha256": "36ba399a601c77c1022106a4957b977f7a01702fff7cdb4ffda5ed40af975970"
+          }
+        }
+      }
+    },
+    {
+      "name": "hardware-ui-04",
+      "result": {
+        "copy_audit_active": true,
+        "copy_audit_passed": true,
+        "error": "Visible sources are missing actual-presentation latency text: 0",
+        "passed": false,
+        "phases": [
+          {
+            "ns": 104501102700792,
+            "overlays": [
+              "H.265  2560x1440  29.8 fps  5.0 Mbps\nin\u2192screen N/A (10s)",
+              "H.265  2560x1440  29.9 fps  7.3 Mbps\nin\u2192screen N/A (10s)",
+              "H.265  2560x1440  30.9 fps  5.6 Mbps\nin\u2192screen N/A (10s)",
+              "H.265  2560x1440  29.9 fps  6.1 Mbps\nin\u2192screen N/A (10s)",
+              "H.265  2560x1440  29.9 fps  8.2 Mbps\nin\u2192screen N/A (10s)",
+              "H.265  2560x1440  29.9 fps  7.8 Mbps\nin\u2192screen N/A (10s)",
+              "H.265  2560x1440  29.9 fps  7.9 Mbps\nin\u2192screen N/A (10s)",
+              "H.265  2560x1440  29.9 fps  7.9 Mbps\nin\u2192screen N/A (10s)",
+              "H.265  2560x1440  29.9 fps  6.7 Mbps\nin\u2192screen N/A (10s)",
+              "H.265  2560x1440  29.8 fps  5.8 Mbps\nin\u2192screen N/A (10s)",
+              "H.265  2560x1440  29.8 fps  5.7 Mbps\nin\u2192screen N/A (10s)",
+              "H.265  2560x1440  29.8 fps  6.5 Mbps\nin\u2192screen N/A (10s)",
+              "H.265  2560x1440  29.8 fps  5.6 Mbps\nin\u2192screen N/A (10s)",
+              "H.265  2560x1440  29.8 fps  4.6 Mbps\nin\u2192screen N/A (10s)",
+              "H.265  2560x1440  29.8 fps  2.1 Mbps\nin\u2192screen N/A (10s)",
+              "H.264  1920x1080  9.9 fps  4.0 Mbps\nin\u2192screen N/A (10s)"
+            ],
+            "phase": "warmup",
+            "presented": 8965,
+            "slots": [
+              {
+                "generation": 33,
+                "planes": [
+                  1,
+                  3,
+                  2
+                ],
+                "presented": 594,
+                "sequence": 596,
+                "source": "cam0",
+                "visible": true
+              },
+              {
+                "generation": 17,
+                "planes": [
+                  2,
+                  3,
+                  4
+                ],
+                "presented": 596,
+                "sequence": 597,
+                "source": "cam1",
+                "visible": true
+              },
+              {
+                "generation": 18,
+                "planes": [
+                  0,
+                  2,
+                  1
+                ],
+                "presented": 595,
+                "sequence": 597,
+                "source": "cam2",
+                "visible": true
+              },
+              {
+                "generation": 19,
+                "planes": [
+                  3,
+                  2,
+                  0
+                ],
+                "presented": 565,
+                "sequence": 566,
+                "source": "cam3",
+                "visible": true
+              },
+              {
+                "generation": 20,
+                "planes": [
+                  2,
+                  1,
+                  0
+                ],
+                "presented": 565,
+                "sequence": 567,
+                "source": "cam4",
+                "visible": true
+              },
+              {
+                "generation": 21,
+                "planes": [
+                  0,
+                  0,
+                  2
+                ],
+                "presented": 594,
+                "sequence": 595,
+                "source": "cam5",
+                "visible": true
+              },
+              {
+                "generation": 22,
+                "planes": [
+                  1,
+                  0,
+                  2
+                ],
+                "presented": 596,
+                "sequence": 598,
+                "source": "cam6",
+                "visible": true
+              },
+              {
+                "generation": 23,
+                "planes": [
+                  3,
+                  2,
+                  0
+                ],
+                "presented": 565,
+                "sequence": 566,
+                "source": "cam7",
+                "visible": true
+              },
+              {
+                "generation": 24,
+                "planes": [
+                  0,
+                  2,
+                  1
+                ],
+                "presented": 594,
+                "sequence": 596,
+                "source": "cam8",
+                "visible": true
+              },
+              {
+                "generation": 25,
+                "planes": [
+                  2,
+                  0,
+                  3
+                ],
+                "presented": 594,
+                "sequence": 595,
+                "source": "cam9",
+                "visible": true
+              },
+              {
+                "generation": 26,
+                "planes": [
+                  3,
+                  2,
+                  0
+                ],
+                "presented": 565,
+                "sequence": 566,
+                "source": "cam10",
+                "visible": true
+              },
+              {
+                "generation": 27,
+                "planes": [
+                  3,
+                  1,
+                  2
+                ],
+                "presented": 565,
+                "sequence": 567,
+                "source": "cam11",
+                "visible": true
+              },
+              {
+                "generation": 28,
+                "planes": [
+                  3,
+                  0,
+                  2
+                ],
+                "presented": 594,
+                "sequence": 595,
+                "source": "cam12",
+                "visible": true
+              },
+              {
+                "generation": 29,
+                "planes": [
+                  1,
+                  0,
+                  2
+                ],
+                "presented": 591,
+                "sequence": 593,
+                "source": "cam13",
+                "visible": true
+              },
+              {
+                "generation": 30,
+                "planes": [
+                  2,
+                  0,
+                  0
+                ],
+                "presented": 594,
+                "sequence": 595,
+                "source": "cam14",
+                "visible": true
+              },
+              {
+                "generation": 32,
+                "planes": [
+                  2,
+                  1,
+                  0
+                ],
+                "presented": 198,
+                "sequence": 199,
+                "source": "resource-monitor",
+                "visible": true
+              }
+            ]
+          }
+        ],
+        "renderer_error": "",
+        "scope": "Declared interactive lifecycle trial; not a fixed-layout physical-frame acceptance run",
+        "vpe_audit_complete": true,
+        "vpe_scopes": 16173
+      },
+      "manifest": {
+        "copy_audit_requested": true,
+        "scope": "Input-to-presentation UI hardware smoke test",
+        "commit": "6cf47a0f05c23c6977c697ae284feaf74aa200f7",
+        "binary_sha256": "c493f75b31981bab6c9acf7b37ed6b742a22402d572528a611ab1446daa0b639",
+        "config_sha256": "9dc0ee34000e7bfba566b7272ce379336faecaf7ef8b272b9ee6342b0f1466e4",
+        "source_archive_sha256": "dd2bf14eef72e7bd244a455f35ee15e536ae9dcd4a7139be2934ebe33c0fb14a",
+        "helper_sha256": "7ebdf3a5326fc7debe20175fb54f9225d260a1930d8cbc7b5c7ebfe0b432cfb7",
+        "returncode": 1,
+        "diagnostic_archives": {
+          "events.csv": {
+            "raw_sha256": "5ae626daf66b65c39d7c25cc9788b31a1efaebacc8794a14ac8528dc980a0a9f",
+            "gzip_sha256": "0724a110f73ebcd7d0a91c3dbfb7fe6ecb358fb5442ae80adb824f00fb3519c2"
+          }
+        }
+      }
+    },
+    {
+      "name": "hardware-ui-05",
+      "result": {
+        "copy_audit_active": true,
+        "copy_audit_passed": true,
+        "error": "",
+        "passed": true,
+        "phases": [
+          {
+            "ns": 104675500341083,
+            "overlays": [
+              "H.265  2560x1440  29.7 fps  5.0 Mbps\nin\u2192screen avg 173.4 / max 189.8 ms (10s)",
+              "H.265  2560x1440  29.8 fps  7.3 Mbps\nin\u2192screen avg 181.5 / max 197.8 ms (10s)",
+              "H.265  2560x1440  29.8 fps  5.6 Mbps\nin\u2192screen avg 147.3 / max 165.6 ms (10s)",
+              "H.265  2560x1440  29.8 fps  6.1 Mbps\nin\u2192screen avg 148.0 / max 166.2 ms (10s)",
+              "H.265  2560x1440  30.8 fps  8.3 Mbps\nin\u2192screen avg 122.7 / max 140.1 ms (10s)",
+              "H.265  2560x1440  29.8 fps  8.0 Mbps\nin\u2192screen avg 132.7 / max 150.8 ms (10s)",
+              "H.265  2560x1440  30.8 fps  8.1 Mbps\nin\u2192screen avg 162.0 / max 178.4 ms (10s)",
+              "H.265  2560x1440  30.8 fps  8.1 Mbps\nin\u2192screen avg 107.9 / max 124.5 ms (10s)",
+              "H.265  2560x1440  29.8 fps  6.7 Mbps\nin\u2192screen avg 126.9 / max 143.4 ms (10s)",
+              "H.265  2560x1440  29.8 fps  5.8 Mbps\nin\u2192screen avg 119.6 / max 136.1 ms (10s)",
+              "H.265  2560x1440  29.8 fps  5.7 Mbps\nin\u2192screen avg 128.9 / max 145.6 ms (10s)",
+              "H.265  2560x1440  29.8 fps  7.0 Mbps\nin\u2192screen avg 147.8 / max 165.5 ms (10s)",
+              "H.265  2560x1440  29.8 fps  4.8 Mbps\nin\u2192screen avg 137.8 / max 156.1 ms (10s)",
+              "H.265  2560x1440  29.6 fps  4.5 Mbps\nin\u2192screen avg 140.9 / max 159.2 ms (10s)",
+              "H.265  2560x1440  29.6 fps  5.3 Mbps\nin\u2192screen avg 119.3 / max 135.5 ms (10s)",
+              "H.264  1920x1080  9.9 fps  4.0 Mbps\nin\u2192screen avg 275.5 / max 292.1 ms (10s)"
+            ],
+            "phase": "warmup",
+            "presented": 8904,
+            "slots": [
+              {
+                "generation": 33,
+                "planes": [
+                  0,
+                  2,
+                  1
+                ],
+                "presented": 596,
+                "sequence": 597,
+                "source": "cam0",
+                "visible": true
+              },
+              {
+                "generation": 17,
+                "planes": [
+                  0,
+                  2,
+                  1
+                ],
+                "presented": 596,
+                "sequence": 597,
+                "source": "cam1",
+                "visible": true
+              },
+              {
+                "generation": 18,
+                "planes": [
+                  0,
+                  2,
+                  1
+                ],
+                "presented": 566,
+                "sequence": 567,
+                "source": "cam2",
+                "visible": true
+              },
+              {
+                "generation": 19,
+                "planes": [
+                  1,
+                  0,
+                  2
+                ],
+                "presented": 567,
+                "sequence": 568,
+                "source": "cam3",
+                "visible": true
+              },
+              {
+                "generation": 20,
+                "planes": [
+                  1,
+                  0,
+                  2
+                ],
+                "presented": 567,
+                "sequence": 568,
+                "source": "cam4",
+                "visible": true
+              },
+              {
+                "generation": 21,
+                "planes": [
+                  1,
+                  0,
+                  2
+                ],
+                "presented": 566,
+                "sequence": 567,
+                "source": "cam5",
+                "visible": true
+              },
+              {
+                "generation": 22,
+                "planes": [
+                  1,
+                  2,
+                  0
+                ],
+                "presented": 596,
+                "sequence": 597,
+                "source": "cam6",
+                "visible": true
+              },
+              {
+                "generation": 23,
+                "planes": [
+                  2,
+                  0,
+                  3
+                ],
+                "presented": 597,
+                "sequence": 598,
+                "source": "cam7",
+                "visible": true
+              },
+              {
+                "generation": 24,
+                "planes": [
+                  2,
+                  0,
+                  3
+                ],
+                "presented": 597,
+                "sequence": 598,
+                "source": "cam8",
+                "visible": true
+              },
+              {
+                "generation": 25,
+                "planes": [
+                  3,
+                  0,
+                  2
+                ],
+                "presented": 597,
+                "sequence": 598,
+                "source": "cam9",
+                "visible": true
+              },
+              {
+                "generation": 26,
+                "planes": [
+                  2,
+                  0,
+                  3
+                ],
+                "presented": 566,
+                "sequence": 567,
+                "source": "cam10",
+                "visible": true
+              },
+              {
+                "generation": 27,
+                "planes": [
+                  2,
+                  3,
+                  0
+                ],
+                "presented": 596,
+                "sequence": 597,
+                "source": "cam11",
+                "visible": true
+              },
+              {
+                "generation": 28,
+                "planes": [
+                  0,
+                  2,
+                  1
+                ],
+                "presented": 566,
+                "sequence": 567,
+                "source": "cam12",
+                "visible": true
+              },
+              {
+                "generation": 29,
+                "planes": [
+                  2,
+                  0,
+                  1
+                ],
+                "presented": 566,
+                "sequence": 567,
+                "source": "cam13",
+                "visible": true
+              },
+              {
+                "generation": 30,
+                "planes": [
+                  2,
+                  0,
+                  1
+                ],
+                "presented": 567,
+                "sequence": 568,
+                "source": "cam14",
+                "visible": true
+              },
+              {
+                "generation": 32,
+                "planes": [
+                  1,
+                  2,
+                  0
+                ],
+                "presented": 198,
+                "sequence": 199,
+                "source": "resource-monitor",
+                "visible": true
+              }
+            ]
+          }
+        ],
+        "renderer_error": "",
+        "scope": "Declared interactive lifecycle trial; not a fixed-layout physical-frame acceptance run",
+        "vpe_audit_complete": true,
+        "vpe_scopes": 16145
+      },
+      "manifest": {
+        "copy_audit_requested": true,
+        "scope": "Input-to-presentation UI hardware smoke test",
+        "commit": "6cf47a0f05c23c6977c697ae284feaf74aa200f7",
+        "binary_sha256": "56dd6c77d619e5d766527a3fd67d0adb89afae9b7b4337bd607b4922424582df",
+        "config_sha256": "9dc0ee34000e7bfba566b7272ce379336faecaf7ef8b272b9ee6342b0f1466e4",
+        "source_archive_sha256": "db3cde2e98aefe57a39cf22f5e89a71c8dc64bc54dd448ee41b47c40d579a595",
+        "helper_sha256": "2279b1e2f063bdc5cbe7c1c51c8a581b7aa4c61f26abe08326c5df3e5ac4175a",
+        "returncode": 0,
+        "diagnostic_archives": {
+          "events.csv": {
+            "raw_sha256": "337448dea27d415a14536e18bdbbe8c90028a38aa9bc84366bc3b71ead2cc29e",
+            "gzip_sha256": "08e4cd9a74c231a917c959a8749222bfe906a25eac6c630f9bf29cebbdf99658"
+          }
+        }
+      }
+    }
+  ],
+  "known_limitations": [
+    "Two initial hardware trials encountered FIFO-full timeouts; root cause is not established.",
+    "The UI change received a short hardware check; it is not a new long-duration or cross-platform acceptance result."
+  ],
+  "base_commit": "6cf47a0",
+  "committed": false,
+  "normal_ui_smoke": {
+    "physical_frames_passed": true,
+    "counts": {
+      "decoded": 17371,
+      "presented": 17310,
+      "shutdown_retired": 61
+    },
+    "audits": {
+      "audits_passed": true,
+      "copy_active_seconds": 37.531104392,
+      "active_snapshots": 7,
+      "vpe": {
+        "schema": 1,
+        "method": "binary-syncobj-fence",
+        "scopes": 31854,
+        "completed": 31854,
+        "failed": 0,
+        "aborted": 0,
+        "submissions": 49177,
+        "rejected_submissions": 0,
+        "foreign_operations": 0,
+        "active_scope": 0,
+        "observer_wait_ns": 5464553,
+        "maximum_observer_wait_ns": 118537
+      },
+      "failures": []
+    },
+    "progress_passed": true,
+    "progress_failures": []
+  }
+}

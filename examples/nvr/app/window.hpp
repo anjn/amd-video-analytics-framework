@@ -5,6 +5,7 @@ class QCloseEvent;
 #include "backend/config.hpp"
 #include "vector_text.hpp"
 #include "presentation_feedback.hpp"
+#include "presentation_latency.hpp"
 #include "amdva/egl_import.hpp"
 #include <memory>
 #include <EGL/egl.h>
@@ -41,7 +42,6 @@ class Tiles final : public QOpenGLWindow {
         paused_ = value;
         update();
     }
-    std::map<std::string, double> decode_latency;
     bool live_held() const { return held_; }
     void preview_image(bool enabled, const KeyframePreviewStatus &status = {});
     bool preview_active() const { return preview_mode_; }
@@ -148,6 +148,7 @@ class Tiles final : public QOpenGLWindow {
     std::string error_;
     uint64_t presented_{};
     std::array<uint64_t,16> presented_by_slot_{};
+    std::array<detail::PresentationLatency,16> presentation_latency_;
     struct PendingSwap {
         unsigned slot, plane;
         TraceToken timing;
