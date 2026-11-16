@@ -11,11 +11,13 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include <thread>
 using namespace amdva::nvr;
 // Explicit hardware test; never registered in hardware-free CTest runs.
 int main(int argc,char **argv) {
     const bool overlay_only=argc==4 && std::string(argv[1])=="--overlay-only";
-    if(argc!=3 && !overlay_only){std::cerr<<"Usage: amdva-presentation-lifecycle [--overlay-only] CONFIG.json RESULT.json\n";return 2;}
+    const bool congestion=argc==4 && std::string(argv[1])=="--congestion";
+    if(argc!=3 && !overlay_only && !congestion){std::cerr<<"Usage: amdva-presentation-lifecycle [--overlay-only|--congestion] CONFIG.json RESULT.json\n";return 2;}
     const char *config=argv[argc-2],*result_path=argv[argc-1];
     if(setenv("AMDVA_COPY_AUDIT","1",1)!=0)return 2;
     initialize_runtime();
@@ -77,6 +79,7 @@ int main(int argc,char **argv) {
                 throw std::runtime_error("Visible sources are missing actual-presentation latency text: "+std::to_string(latency_lines));
             before=std::move(next);
         };
+        std::map<std::string,uint64_t> recording_before,ai_before,gaps_before;
         unsigned stage=0;auto at=std::chrono::steady_clock::now();QTimer timer;
         const std::string original=cells[0];
         QObject::connect(&timer,&QTimer::timeout,[&] {
@@ -84,6 +87,30 @@ int main(int argc,char **argv) {
                 if(!controller.fatal().empty())throw std::runtime_error(controller.fatal());
                 if(!tiles->error().empty())throw std::runtime_error(tiles->error());
                 const auto elapsed=std::chrono::duration<double>(std::chrono::steady_clock::now()-at).count();
+                if(congestion) {
+                    if(elapsed<(stage==0?20:15))return;
+                    snapshot(stage==0?"congestion-warmup":stage==1?"350ms-recovered":"1200ms-recovered",true);
+                    uint64_t drops=0;
+                    for(const auto &s:controller.status()) {
+                        if(s.slot<0)continue;
+                        drops+=s.presentation_dropped;
+                        if(stage && (s.received<=recording_before[s.source.id] ||
+                           s.ai<=ai_before[s.source.id] || s.gaps!=gaps_before[s.source.id] ||
+                           s.recording!="recording"))
+                            throw std::runtime_error("Recording/AI failed during congestion: "+s.source.id);
+                        recording_before[s.source.id]=s.received;
+                        ai_before[s.source.id]=s.ai;gaps_before[s.source.id]=s.gaps;
+                    }
+                    if(stage && !drops)throw std::runtime_error("No explicit display drops observed");
+                    phases.append(QJsonObject{{"phase","drop-accounting"},{"drops",double(drops)}});
+                    if(stage==2){completed=true;controller.request_shutdown();app.quit();return;}
+                    const int pause_ms=stage==0?350:1200;
+                    amdva::diagnostic_event("presentation-test",0,0,"gui_stall_begin",
+                        amdva::Telemetry::monotonic_ns(),pause_ms);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(pause_ms));
+                    amdva::diagnostic_event("presentation-test",0,0,"gui_stall_end",amdva::Telemetry::monotonic_ns());
+                    ++stage;at=std::chrono::steady_clock::now();return;
+                }
                 const double wait=(stage==0?20:(stage==1||stage==3||stage==5?3:15));
                 if(elapsed<wait)return;
                 switch(stage) {

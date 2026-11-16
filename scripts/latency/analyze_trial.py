@@ -4,6 +4,7 @@ from array import array
 from pathlib import Path
 EDGES={'input_au':('input','access_unit'),'au_decoder':('access_unit','decode_input'),
        'decoder':('decode_input','decode_output'),'input_decode':('input','decode_output'),
+       'input_decode_ready':('input','decode_ready'),'decoder_ready':('decode_input','decode_ready'),
        'decode_handoff':('decode_output','handoff'),'decode_preview':('decode_output','preview_ready'),
        'preview_draw':('preview_ready','draw'),'draw_swap':('draw','swap'),
        'input_swap':('input','swap'),'input_present':('input','presented'),

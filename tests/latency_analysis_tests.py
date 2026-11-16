@@ -6,6 +6,23 @@ from analyze_trial import analyze
 from validate_trial import latency_gates
 from validate_progress import validate_progress
 class AnalysisTest(unittest.TestCase):
+    def test_ready_observation_is_distinct_from_output_notification(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);(root/'diagnostics').mkdir()
+            events=[(1,'input'),(2,'decode_submit'),(3,'decode_input'),
+                    (4,'decode_output'),(8,'decode_ready'),(9,'preview_not_requested')]
+            with (root/'diagnostics/events.csv').open('w',newline='') as out:
+                writer=csv.writer(out)
+                writer.writerow(['ns','source','generation','sequence','event','value','value2','pts'])
+                for ns,event in events:writer.writerow([ns*1000000,'cam0',1,1,event,0,0,100])
+            (root/'diagnostics/diagnostics-summary.json').write_text(json.dumps(dict(
+                accepted=len(events),written=len(events),queue_lost=0,limit_lost=0,pending=0,write_failed=False)))
+            with contextlib.redirect_stdout(io.StringIO()):result=analyze(root)
+            metrics=result['minutes'][0]['metrics']
+            self.assertEqual(metrics['input_decode']['mean'],3)
+            self.assertEqual(metrics['input_decode_ready']['mean'],7)
+            self.assertEqual(metrics['decoder_ready']['mean'],5)
+
     def test_shutdown_rtp_retirement_cannot_hide_a_complete_au(self):
         for complete,post_stop in [(False,True),(True,True),(False,False)]:
             with tempfile.TemporaryDirectory() as temp:

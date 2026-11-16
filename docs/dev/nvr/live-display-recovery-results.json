@@ -1,0 +1,443 @@
+{
+  "date": "2026-11-16",
+  "host": "amd-rai370",
+  "ip": "192.168.1.225",
+  "os": "Ubuntu 24.04",
+  "gpu": "gfx1150",
+  "branch": "codex/decode-ready-latency",
+  "base_commit": "3e4b873be53c590eb42853223f88dc8b5c5f0156",
+  "authorized_policy": "Prioritize responsive latest-frame live display over showing every frame. Recording and AI frequency unchanged. No host or SDK changes.",
+  "policy": {
+    "fifo_capacity": 3,
+    "prefill_periods": 2,
+    "overflow": "discard oldest unconsumed queued frame",
+    "late": "discard stale queued frames and catch up",
+    "in_flight": "retain until GPU fence complete; compositor discard retired after all pending commits resolve",
+    "counting": "per-frame diagnostic dispositions, single-line tile drop count, AI Statistics total, rate-limited ordinary log"
+  },
+  "root_cause_scope": "FIFO remained full for 100ms caused a fatal exception and control-loop exit. Original source of the initial long display stall remains unproved.",
+  "tests": {
+    "ctest": "49/49 passed",
+    "presentation_analysis": "18 passed",
+    "translations": "0 stale",
+    "mkdocs_strict": "passed"
+  },
+  "failed_initial_trial": {
+    "directory": "/home/amd/work/rai/logs/live-display-recovery-20261116/congestion-01",
+    "result": "startup burst could keep replacing future-dated heads and starve presentation",
+    "correction": "bound FIFO clock prefill relative to arrival and process oldest prepared frame before due-time filtering",
+    "retained": true
+  },
+  "congestion": {
+    "frame_accounting_passed": true,
+    "physical_frames_passed": false,
+    "failures": {},
+    "totals": {
+      "decoded": 23632,
+      "presented": 22917,
+      "live_dropped": 662,
+      "shutdown_retired": 53
+    },
+    "passed": true,
+    "gui_stall_ms": [
+      350,
+      1200
+    ],
+    "vpe_audit": {
+      "schema": 1,
+      "method": "binary-syncobj-fence",
+      "scopes": 42716,
+      "completed": 42716,
+      "failed": 0,
+      "aborted": 0,
+      "submissions": 65655,
+      "rejected_submissions": 0,
+      "foreign_operations": 0,
+      "active_scope": 0,
+      "observer_wait_ns": 7137740,
+      "maximum_observer_wait_ns": 14870
+    },
+    "copy_audit": {
+      "requested": true,
+      "active_start_ns": 297389518148529,
+      "active_end_ns": 297440372151314,
+      "violations": 0,
+      "copies": 39270,
+      "bytes": 17074144332
+    }
+  },
+  "normal_six_minutes": {
+    "frame_accounting_passed": true,
+    "physical_frames_passed": false,
+    "failures": {},
+    "totals": {
+      "decoded": 162814,
+      "presented": 162750,
+      "live_dropped": 18,
+      "shutdown_retired": 46
+    },
+    "manifest": {
+      "launcher": "/home/amd/work/amd-video-analysis-framework/artifacts/1440p-demo-rocm101/run-demo.sh",
+      "launcher_sha256": "2fe7d9a4e8b1aaeb62c01841b2b03d07f596fb62d58d5e2ad765ed39dfd4c3eb",
+      "diagnostic_launcher": false,
+      "build_libraries_sha256": {
+        "/home/amd/work/amd-video-analysis-framework/build/libamdva_vpe_audit.so.0.1.0": "bed70ac121f01cf18572e188d8e19d01d19f905a5f41a6ba9c0570073240798b",
+        "/home/amd/work/amd-video-analysis-framework/build/libamdva_npu.so.0.1.0": "675829d37fad2fc83678430d9bbcbee178fd79c5bbca4bcec181491c7b68da56",
+        "/home/amd/work/amd-video-analysis-framework/build/libvpe-audit-test-driver.so": "8efd8ae083c0834941036c0f4b7975f6747095d68bd630f3fcfcada5461e122c",
+        "/home/amd/work/amd-video-analysis-framework/build/libamdva_runtime.so.0.1.0": "c2d96e1a9b4ffe1149337c9008543e0ce9d04bf58f1a4ff98e3981959f5e48a5",
+        "/home/amd/work/amd-video-analysis-framework/build/libamdva_monitor.so.0.1.0": "42656bef413ef2556dd53cd049e18c1700eb2ebdeebbb919cd2335e0eb7f5473",
+        "/home/amd/work/amd-video-analysis-framework/build/plugins/libgstamdnpu.so": "cabd9abd368a53f8c0d9bd175cf73ca83e525e5eda6c5eed587306bc1b7d56b6",
+        "/home/amd/work/amd-video-analysis-framework/build/plugins/libgstgvametapublish.so": "d996ebeae2e2cc3bce91c5505d270ad8f423fca02e869ad9f3fa4f5d3493f2d3",
+        "/home/amd/work/amd-video-analysis-framework/build/plugins/libgstgvametapublishmqtt.so": "cfb02f2561801782c2b96c105ce0c038b430f6677fcbb135229c75168e097022",
+        "/home/amd/work/amd-video-analysis-framework/build/plugins/libgstamdanalytics.so": "46cee1c0db0a051d2e067faae1e6d22767c1d3f9ff158c1f958ce22c1f5e4164",
+        "/home/amd/work/amd-video-analysis-framework/build/plugins/libgstgva.so": "0c79adb22303da8dc9295960447903b25dbd75930cc5e3741a4e14fa856b97a0",
+        "/home/amd/work/amd-video-analysis-framework/build/plugins/libgstgvametapublishkafka.so": "67c378596a6de5403b22c3b573116b1bb4b7b0d52b7c3d72abff438819d10916",
+        "/home/amd/work/amd-video-analysis-framework/build/third_party/dlstreamer/libamdva_gva_common.so": "90f508ae402e3b9267b68a57c811620302d3f2b9fafbee147ba7dba98bc851bf",
+        "/home/amd/work/amd-video-analysis-framework/build/examples/nvr/libamdva_nvr_backend.so": "0bd8dd9baeae52ba251fca8351f0721bec117bf29d2869bc406713519aab1427",
+        "/home/amd/work/amd-video-analysis-framework/build/examples/mobileclip/libamdva_mobileclip.so": "6d9d6b0289a46eb528c59bc72fbffa7a1fb763a94efbba662b2f176e0ab6d2f5",
+        "/home/amd/work/amd-video-analysis-framework/build/examples/mobileclip/tokenizer/release/deps/libdarling_macro-aa9c2e2eee65594e.so": "663b05ecc78bc9a327f2f9b22d04593444cfe26f8b143b30223556cf76544b61",
+        "/home/amd/work/amd-video-analysis-framework/build/examples/mobileclip/tokenizer/release/deps/libpaste-ac04bdb343690283.so": "76d1baa9f68ec5f5bbafc8f698b9532a7de8b09cce634defe0e616afc08f6a3e",
+        "/home/amd/work/amd-video-analysis-framework/build/examples/mobileclip/tokenizer/release/deps/libmonostate_impl-aa16aacc5535a25b.so": "cc52d1f88dcfa82641a40ba00e27afe4ddb7cf5ac03020663a8b64cae384b8da",
+        "/home/amd/work/amd-video-analysis-framework/build/examples/mobileclip/tokenizer/release/deps/libthiserror_impl-11a3b995a85498ab.so": "be8425885b0caafce6fbda50489f3733460a04eb3489a1b0b83b0d6835f8924b",
+        "/home/amd/work/amd-video-analysis-framework/build/examples/mobileclip/tokenizer/release/deps/libpastey-bad7e1b63985cda5.so": "d144d6ebafedb5ac5db2c906c756be9d838ca57a40204faab8508ca341ef28c9",
+        "/home/amd/work/amd-video-analysis-framework/build/examples/mobileclip/tokenizer/release/deps/librustversion-e94011c39df38bdd.so": "0078be6819fe54d85d957b6705159a341512855142c6e5222818e28a160e5fbf",
+        "/home/amd/work/amd-video-analysis-framework/build/examples/mobileclip/tokenizer/release/deps/libmacro_rules_attribute_proc_macro-31a3210b0067d835.so": "1fb48ae7b590c840d493612531c31aaa30cdf644a44f42c53d0af43f77be7c1e",
+        "/home/amd/work/amd-video-analysis-framework/build/examples/mobileclip/tokenizer/release/deps/libserde_derive-338002de55fd56a4.so": "f3482b5fb60fe631b68b9b0d056169a7b681f8100db6da49c859a784dabda331",
+        "/home/amd/work/amd-video-analysis-framework/build/examples/mobileclip/tokenizer/release/deps/libderive_builder_macro-74a8ba971c29d2f5.so": "463fbbe1b64801341f0bbe5e71f7093e6e0ced94c47fb492eb8254f3c15c9d23",
+        "/home/amd/work/amd-video-analysis-framework/build/src/gst/libamdva_npu_pipeline.so.0.1.0": "d5c6468b41029da3581a2499c0ca29cd6f4d19294e37accd9bd9b7febc4a719e",
+        "/home/amd/work/amd-video-analysis-framework/build/src/gst/libamdva_inference.so.0.1.0": "c2789b36da3b7cceda1ecb31bfa9ab8c193a19965dfc8adb3c9d687f47753c52",
+        "/home/amd/work/amd-video-analysis-framework/build/src/gst/libamdva_gst_support.so.0.1.0": "fcc102783d9e97d5b43e2e8a11e84fa0284d6fafc957b018d2e2879acac873d9",
+        "/home/amd/work/amd-video-analysis-framework/build/src/gst/libamdva_copy_audit.so": "10bbed9ebba3f7239dcc210161f1515a627abb0d5c0eee0cf03456c0658b3f59",
+        "/home/amd/work/amd-video-analysis-framework/build/src/media/libamdva_media.so.0.1.0": "f55aee68944b44bd6083b35c98ec9ed57de80431a41696817aaa4073a5bba139",
+        "/home/amd/work/amd-video-analysis-framework/build/src/streaming/libamdva_streaming.so.0.1.0": "268e25ca77180c9c1744af5ef8b398002f5fc4037905f910c304602066b72025"
+      },
+      "rocm_root": "/opt/rocm/core-10.1",
+      "migraphx_root": "/opt/rocm/extras-10",
+      "start_monotonic_ns": 297522095704391,
+      "start_jst": "2026-11-16T22:10:24.793272+09:00",
+      "seconds": 360,
+      "diagnostics": true,
+      "config_sha256": "9dc0ee34000e7bfba566b7272ce379336faecaf7ef8b272b9ee6342b0f1466e4",
+      "ui_sha256": "0e65c1db14d78c6c50a3224e70ded0c1bac62877d9cf8d4e6ad9bd9621b293f0",
+      "binary_sha256": "758623dcb6b031216f14a2347be2978d79931111d7fae024f89e67490cef10b2",
+      "clock_ticks": 100,
+      "exit_reason": "duration",
+      "source_archive_sha256": "12934e3ad498b72d612d4639944fcdd223d89266f0995cb911b06b282b4343af",
+      "returncode": 0,
+      "elapsed_s": 363.04901660303585,
+      "end_jst": "2026-11-16T22:16:29.040333+09:00"
+    },
+    "audit": {
+      "audits_passed": true,
+      "copy_active_seconds": 353.681915787,
+      "active_snapshots": 70,
+      "vpe": {
+        "schema": 1,
+        "method": "binary-syncobj-fence",
+        "scopes": 293997,
+        "completed": 293997,
+        "failed": 0,
+        "aborted": 0,
+        "submissions": 456763,
+        "rejected_submissions": 0,
+        "foreign_operations": 0,
+        "active_scope": 0,
+        "observer_wait_ns": 71132384,
+        "maximum_observer_wait_ns": 151397
+      },
+      "failures": []
+    },
+    "progress": {
+      "validation_schema": 2,
+      "validator_sha256": "4e39a5d6b19554d32e1b17fc1a0655278aca7375647cbd8d40eae5270423b7d5",
+      "progress_passed": true,
+      "snapshots": 71,
+      "duration_s": 360.693990968,
+      "largest_snapshot_gap_s": 5.03235384,
+      "channel_progress": {
+        "cam0": {
+          "previous": 10547,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        },
+        "cam1": {
+          "previous": 10547,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        },
+        "cam2": {
+          "previous": 10546,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        },
+        "cam3": {
+          "previous": 10547,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        },
+        "cam4": {
+          "previous": 10515,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        },
+        "cam5": {
+          "previous": 10515,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        },
+        "cam6": {
+          "previous": 10546,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        },
+        "cam7": {
+          "previous": 10547,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        },
+        "cam8": {
+          "previous": 10515,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        },
+        "cam9": {
+          "previous": 10515,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        },
+        "cam10": {
+          "previous": 10514,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        },
+        "cam11": {
+          "previous": 10514,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        },
+        "cam12": {
+          "previous": 10546,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        },
+        "cam13": {
+          "previous": 10514,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        },
+        "cam14": {
+          "previous": 10514,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        },
+        "cam15": {
+          "previous": 0,
+          "first": null,
+          "last": null,
+          "gap": 0,
+          "last_display": null
+        },
+        "resource-monitor": {
+          "previous": 3515,
+          "first": 14.035775893,
+          "last": 360.693990968,
+          "gap": 5.032353839999985,
+          "last_display": 360.693990968
+        }
+      },
+      "visible_sources": [
+        "cam0",
+        "cam1",
+        "cam10",
+        "cam11",
+        "cam12",
+        "cam13",
+        "cam14",
+        "cam2",
+        "cam3",
+        "cam4",
+        "cam5",
+        "cam6",
+        "cam7",
+        "cam8",
+        "cam9",
+        "resource-monitor"
+      ],
+      "first_progress": {
+        "Analysis DB save": 14.035775893,
+        "Decoded frame wait": 14.035775893,
+        "Detection update": 14.035775893,
+        "Embedding first result": 14.035775893,
+        "Embedding freshness": 14.035775893,
+        "Embedding update interval": 14.035775893,
+        "Image embedding": 14.035775893,
+        "Image embedding NPU": 14.035775893,
+        "Image embedding NPU preprocess": 14.035775893,
+        "Image embedding NPU total": 14.035775893,
+        "PNG + DB save": 14.035775893,
+        "Person crop": 14.035775893,
+        "ReID inference + transfer": 14.035775893,
+        "ReID preprocess": 14.035775893,
+        "Tracking association": 14.035775893,
+        "Tracking eligible": 14.035775893,
+        "YOLO executor total": 14.035775893,
+        "YOLO inference": 14.035775893,
+        "YOLO postprocess": 14.035775893,
+        "YOLO preprocess": 14.035775893
+      },
+      "last_progress": {
+        "Analysis DB save": {
+          "elapsed_s": 360.693990968,
+          "completed": 1378
+        },
+        "Decoded frame wait": {
+          "elapsed_s": 360.693990968,
+          "completed": 47662
+        },
+        "Detection update": {
+          "elapsed_s": 360.693990968,
+          "completed": 23833
+        },
+        "Embedding first result": {
+          "elapsed_s": 360.693990968,
+          "completed": 1133
+        },
+        "Embedding freshness": {
+          "elapsed_s": 360.693990968,
+          "completed": 9394
+        },
+        "Embedding update interval": {
+          "elapsed_s": 360.693990968,
+          "completed": 7222
+        },
+        "Image embedding": {
+          "elapsed_s": 360.693990968,
+          "completed": 9394
+        },
+        "Image embedding NPU": {
+          "elapsed_s": 360.693990968,
+          "completed": 9394
+        },
+        "Image embedding NPU preprocess": {
+          "elapsed_s": 360.693990968,
+          "completed": 9395
+        },
+        "Image embedding NPU total": {
+          "elapsed_s": 360.693990968,
+          "completed": 9394
+        },
+        "PNG + DB save": {
+          "elapsed_s": 360.693990968,
+          "completed": 9394
+        },
+        "Person crop": {
+          "elapsed_s": 360.693990968,
+          "completed": 23829
+        },
+        "ReID inference + transfer": {
+          "elapsed_s": 360.693990968,
+          "completed": 20152
+        },
+        "ReID preprocess": {
+          "elapsed_s": 360.693990968,
+          "completed": 20152
+        },
+        "Tracking association": {
+          "elapsed_s": 360.693990968,
+          "completed": 23826
+        },
+        "Tracking eligible": {
+          "elapsed_s": 360.693990968,
+          "completed": 23833
+        },
+        "YOLO executor total": {
+          "elapsed_s": 360.693990968,
+          "completed": 7008
+        },
+        "YOLO inference": {
+          "elapsed_s": 360.693990968,
+          "completed": 7008
+        },
+        "YOLO postprocess": {
+          "elapsed_s": 360.693990968,
+          "completed": 7008
+        },
+        "YOLO preprocess": {
+          "elapsed_s": 360.693990968,
+          "completed": 7008
+        }
+      },
+      "largest_progress_gap_s": {
+        "Analysis DB save": 5.032353839999985,
+        "Decoded frame wait": 5.032353839999985,
+        "Detection update": 5.032353839999985,
+        "Embedding first result": 5.032353839999985,
+        "Embedding freshness": 5.032353839999985,
+        "Embedding update interval": 5.032353839999985,
+        "Image embedding": 5.032353839999985,
+        "Image embedding NPU": 5.032353839999985,
+        "Image embedding NPU preprocess": 5.032353839999985,
+        "Image embedding NPU total": 5.032353839999985,
+        "PNG + DB save": 5.032353839999985,
+        "Person crop": 5.032353839999985,
+        "ReID inference + transfer": 5.032353839999985,
+        "ReID preprocess": 5.032353839999985,
+        "Tracking association": 5.032353839999985,
+        "Tracking eligible": 5.032353839999985,
+        "YOLO executor total": 5.032353839999985,
+        "YOLO inference": 5.032353839999985,
+        "YOLO postprocess": 5.032353839999985,
+        "YOLO preprocess": 5.032353839999985
+      },
+      "failures": []
+    },
+    "steady_recording_states": [
+      "recording"
+    ],
+    "maximum_recording_gaps": 0
+  },
+  "evidence_directory": "/home/amd/work/rai/logs/live-display-recovery-20261116",
+  "user_demo": {
+    "launcher_pid": 309185,
+    "gpu_wave_mode": "window",
+    "copy_audit": true,
+    "diagnostics": false
+  },
+  "limitations": [
+    "Six-minute normal trial and two injected stalls are not long-duration stability acceptance.",
+    "Explicit live drops are not all-frames-presented acceptance.",
+    "Recording progress and gap counters were checked; every recorded file frame was not independently reconciled.",
+    "Cannot guarantee recovery from permanent device/compositor failure; invalid PTS/device failures remain explicit."
+  ],
+  "git": "Uncommitted; no push."
+}

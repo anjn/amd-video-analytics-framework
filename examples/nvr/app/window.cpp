@@ -254,7 +254,7 @@ void Tiles::initializeGL() {
         gl_->glGenBuffers(1, &buffer_);
         if(!playback_)feedback_=std::make_unique<PresentationFeedback>(*this,
             [this](const std::vector<FeedbackFrame> &frames,int64_t at,uint32_t flags,bool shown) {
-                bool lost=false;
+                bool discarded=false;
                 for(const auto &frame:frames) {
                     auto &s=slot(frame.slot);
                     std::lock_guard<std::mutex> lock(s.mutex);
@@ -267,15 +267,20 @@ void Tiles::initializeGL() {
                     if(!shown) {
                         const bool requested=isExposed() && !frozen_ && !held_ && !preview_mode_ &&
                                              controller_.gpu_slots()[frame.slot].preview_visible.load();
-                        if(!plane.presentation_confirmed && !plane.presentation_retired &&
-                           plane.state!=2 && requested && feedback_ && !feedback_->pending(frame)) {
-                            if(frame.timing.telemetry)
-                                frame.timing.telemetry->diagnostic(frame.timing.frame,"presentation_frame_lost");
-                            lost=true;
+                        if(feedback_ && detail::may_retire_discarded(
+                               plane.presentation_confirmed,plane.presentation_retired,
+                               requested,feedback_->pending(frame))) {
+                            // Retire the observation, not the GPU fence or an in-use texture.
+                            plane.presentation_retired=true;
+                            if(frame.timing.telemetry) {
+                                frame.timing.telemetry->counter(TimingCounter::PresentationDropped);
+                                frame.timing.telemetry->diagnostic(frame.timing.frame,"presentation_display_dropped");
+                            }
+                            discarded=true;
                         }
                         continue;
                     }
-                    if(!plane.presentation_confirmed) {
+                    if(!plane.presentation_confirmed && !plane.presentation_retired) {
                         plane.presentation_confirmed=true;++presented_;++presented_by_slot_[frame.slot];
                         if(s.generation==frame.generation) {
                             const auto observed=Telemetry::monotonic_ns();
@@ -293,12 +298,7 @@ void Tiles::initializeGL() {
                                 flags,plane.presentation_due_ns,-1,at);
                     }
                 }
-                if(shown && !playback_)update();
-                if(lost) {
-                    error_="A video frame was not presented; lossless presentation failed";
-                    diagnostic_event("presentation",0,0,"presentation_error",Telemetry::monotonic_ns(),2);
-                    controller_.presentation_active(false);
-                }
+                if((shown || discarded) && !playback_)update();
             },[this](std::string message) {
                 error_="Presentation: "+message;
                 diagnostic_event("presentation",0,0,"presentation_error",Telemetry::monotonic_ns(),1);
@@ -759,13 +759,14 @@ void Tiles::paintGL() {
                     s.preview[j].state = 0;
                     continue;
                 }
-                if(!playback_ && s.preview[j].presentation_due_ns>
-                    Telemetry::monotonic_ns()+(feedback_?feedback_->refresh_ns():0))
-                    continue;
                 if(newest<0 || (playback_?s.preview[j].sequence>s.preview[newest].sequence:
                                           s.preview[j].sequence<s.preview[newest].sequence))
                     newest=int(j);
             }
+        // A startup clock correction can change deadlines of queued inputs.
+        // Never let a newly prepared image overtake an older prepared image.
+        if(!playback_ && newest>=0 && s.preview[newest].presentation_due_ns>
+            Telemetry::monotonic_ns()+(feedback_?feedback_->refresh_ns():0))newest=-1;
         if (newest >= 0) {
             release_current(i);
             current_[i] = newest;
@@ -963,6 +964,8 @@ void Tiles::paintGL() {
                     ? QString("latency 10s max %1 ms").arg(latency.maximum_ms,0,'f',1)
                     : QString("latency 10s max N/A");
                 text += "  " + latency_text;
+                if(source->presentation_dropped)
+                    text += QString("  drop %1").arg(qulonglong(source->presentation_dropped));
                 const double size = active.size() == 1 ? 22 : grid_text;
                 const unsigned cell = focus_ >= 0 ? unsigned(focus_) : tile;
                 // A re-encoded camera adds its encoder line below the decoder line.

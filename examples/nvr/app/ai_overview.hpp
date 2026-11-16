@@ -14,8 +14,8 @@ struct AiOverviewSample {
         State state{Idle};
         unsigned cameras{}, live{};
         double fps{}, mpixels{}; // Decoded frames and megapixels per second, all cameras.
-        double p99_ms{-1};       // Worst camera's input → decode P99; -1 when unmeasured.
-        uint64_t stops{}, gaps{};
+        double p99_ms{-1};       // Worst camera's input → GPU-ready observation P99; -1 when unmeasured.
+        uint64_t stops{}, gaps{}, presentation_dropped{};
         QStringList formats; // For example "H265 1920×1080 ×4".
     } decode;
     struct Gpu {

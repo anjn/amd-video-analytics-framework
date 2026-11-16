@@ -18,7 +18,8 @@ constexpr size_t capacity = 4096;
 constexpr const char *stages[] = {"input",         "access_unit", "decode_input", "decode_output",
                                   "preview_ready", "draw",        "swap"};
 constexpr const char *latencies[] = {"input_decode",   "decoder",      "input_draw", "input_swap",
-                                     "decode_preview", "preview_draw", "draw_swap"};
+                                     "decode_preview", "preview_draw", "draw_swap",
+                                     "input_decode_ready", "decoder_ready"};
 constexpr std::pair<unsigned, unsigned> edges[] = {{0, 3}, {2, 3}, {0, 5}, {0, 6},
                                                    {3, 4}, {4, 5}, {5, 6}};
 struct Samples {
@@ -128,8 +129,11 @@ struct Telemetry::Impl {
     };
     std::map<uint64_t, Seen> seen;
     std::array<std::array<Stage, timing_stage_count>, 2> stage;
-    std::array<std::array<Samples, 7>, 2> latency;
-    std::array<uint64_t, 12> counters{};
+    std::array<std::array<Samples, timing_latency_count>, 2> latency;
+    std::array<Samples,2> ready_uncertainty;
+    std::array<int64_t,2> ready_invalid_at{};
+    uint64_t ready_unavailable{};
+    std::array<uint64_t, unsigned(TimingCounter::Count)> counters{};
     Impl(std::string id, TelemetryOptions o, Now n)
         : source(std::move(id)), options(o), clock(std::move(n)) {
         if (!options.stall_ms)
@@ -166,6 +170,7 @@ void Telemetry::begin_generation(uint64_t generation) {
             v.intervals = {};
             v.arrivals = {};
         }
+    s.ready_uncertainty={};s.ready_invalid_at={};s.ready_unavailable=0;
 }
 uint64_t Telemetry::generation() const {
     std::lock_guard<std::mutex> lock(impl_->mutex);
@@ -279,6 +284,37 @@ bool Telemetry::mark(FrameTrace &frame, TimingStage which, int64_t at) {
     diagnostic_event(s.source, frame.generation, frame.sequence, timing_stage_name(which), at);
     return true;
 }
+bool Telemetry::decode_ready(const FrameTrace &frame,int64_t at,int64_t uncertainty) {
+    if(!enabled()) return false;
+    auto &s=*impl_;
+    std::lock_guard<std::mutex> lock(s.mutex);
+    if(frame.generation!=s.generation) { ++s.counters[unsigned(TimingCounter::Stale)]; return false; }
+    auto it=s.seen.find(frame.sequence);
+    const auto output=frame.ns[unsigned(TimingStage::DecodeOutput)];
+    const unsigned g=frame.background?1:0, bit=1u<<timing_stage_count;
+    if(it==s.seen.end() || !output || at<output || uncertainty<0 || uncertainty>at-output) {
+        ++s.ready_unavailable;s.ready_invalid_at[g]=now();return false;
+    }
+    if(it->second.mask & bit) return false;
+    it->second.mask|=bit;
+    if(!frame.ns[unsigned(TimingStage::Input)]) {
+        ++s.ready_unavailable;s.ready_invalid_at[g]=now();
+    }
+    if(const auto input=frame.ns[unsigned(TimingStage::Input)])
+        s.latency[g][input_decode_ready_latency].add(at,at-input);
+    if(const auto input=frame.ns[unsigned(TimingStage::DecodeInput)])
+        s.latency[g][decoder_ready_latency].add(at,at-input);
+    s.ready_uncertainty[g].add(at,uncertainty);
+    diagnostic_event(s.source,frame.generation,frame.sequence,"decode_ready",at,uncertainty);
+    return true;
+}
+void Telemetry::decode_ready_missing(const FrameTrace &frame) {
+    if(!enabled()) return;
+    auto &s=*impl_; std::lock_guard<std::mutex> lock(s.mutex);
+    if(frame.generation!=s.generation) return;
+    ++s.ready_unavailable;s.ready_invalid_at[frame.background?1:0]=now();
+    diagnostic_event(s.source,frame.generation,frame.sequence,"decode_ready_unavailable",now());
+}
 void Telemetry::availability(TimingStage stage, bool supported, bool active) {
     if (unsigned(stage) >= timing_stage_count)
         return;
@@ -300,12 +336,16 @@ void Telemetry::availability(TimingStage stage, bool supported, bool active) {
     }
 }
 void Telemetry::counter(TimingCounter counter, uint64_t amount) {
-    if (!enabled() || unsigned(counter) >= 12)
+    if ((!enabled() && counter!=TimingCounter::PresentationDropped) || unsigned(counter) >= unsigned(TimingCounter::Count))
         return;
     auto &s = *impl_;
     std::lock_guard<std::mutex> lock(s.mutex);
     s.counters[unsigned(counter)] += amount;
     diagnostic_event(s.source, s.generation, 0, "counter", now(), unsigned(counter), amount);
+}
+uint64_t Telemetry::counter_value(TimingCounter counter) const {
+    std::lock_guard<std::mutex> lock(impl_->mutex);
+    return unsigned(counter)<impl_->counters.size()?impl_->counters[unsigned(counter)]:0;
 }
 TelemetrySnapshot Telemetry::snapshot() {
     auto &s = *impl_;
@@ -334,9 +374,13 @@ TelemetrySnapshot Telemetry::snapshot() {
             d.stopped_ms = double(v.total_stop + current) / 1e6;
             d.longest_stop_ms = double(std::max(v.longest_stop, current)) / 1e6;
         }
-        for (unsigned i = 0; i < 7; i++)
+        for (unsigned i = 0; i < timing_latency_count; i++)
             out.latency[g][i] = s.latency[g][i].stats(at);
+        out.decode_ready_uncertainty[g]=s.ready_uncertainty[g].stats(at);
+        out.decode_ready_complete[g]=!s.ready_invalid_at[g] || at-s.ready_invalid_at[g]>window_ns;
     }
+    out.decode_ready_unavailable=s.ready_unavailable;
+    out.presentation_dropped=s.counters[unsigned(TimingCounter::PresentationDropped)];
     out.encoded_discarded = s.counters[0];
     out.latest_replaced = s.counters[1];
     out.preview_discarded = s.counters[2];
@@ -376,13 +420,16 @@ std::string TelemetrySnapshot::json() const {
             out << '}';
         }
         out << "},\"latency\":{";
-        for (unsigned i = 0; i < 7; i++) {
+        for (unsigned i = 0; i < timing_latency_count; i++) {
             if (i)
                 out << ',';
             out << quote(latencies[i]) << ':';
             distribution(out, latency[g][i]);
         }
-        out << "}}";
+        out << "},\"decode_ready_complete\":" << (decode_ready_complete[g]?"true":"false")
+            << ",\"decode_ready_uncertainty\":";
+        distribution(out,decode_ready_uncertainty[g]);
+        out << "}";
     }
     out << ",\"counters\":{";
     const std::pair<const char *, uint64_t> counters[] = {
@@ -397,8 +444,10 @@ std::string TelemetrySnapshot::json() const {
         {"stale", stale},
         {"invalid_time", invalid_time},
         {"submitted_without_output", submitted_without_output},
-        {"presentation_unobserved", presentation_unobserved}};
-    for (unsigned i = 0; i < 12; i++) {
+        {"presentation_unobserved", presentation_unobserved},
+        {"decode_ready_unavailable", decode_ready_unavailable},
+        {"presentation_dropped", presentation_dropped}};
+    for (unsigned i = 0; i < sizeof(counters)/sizeof(counters[0]); i++) {
         if (i)
             out << ',';
         out << quote(counters[i].first) << ':' << counters[i].second;

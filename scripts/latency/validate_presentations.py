@@ -13,10 +13,12 @@ FRAME_EVENTS = {'input','decode_output','fifo_enter','fifo_exit','preview_ready'
                 'shutdown_fifo_retired','shutdown_present_retired',
                 'shutdown_preview_retired','shutdown_latest_retired',
                 'presentation_commit_presented'}
-FATAL_EVENTS = {'presentation_frame_lost','presentation_error','presentation_fifo_error',
+DROP_EVENTS = {'presentation_fifo_dropped','presentation_display_dropped'}
+FRAME_EVENTS |= DROP_EVENTS
+FATAL_EVENTS = {'control_loop_failed','presentation_frame_lost','presentation_error','presentation_fifo_error',
                 'preview_discarded','latest_replaced'}
 
-def reconcile(rows, sources=DEFAULT_SOURCES, retire_age_ns=1_000_000_000):
+def reconcile(rows, sources=DEFAULT_SOURCES, retire_age_ns=1_000_000_000, allow_live_drops=False):
     expected=set(sources); frames={}; first_admission={}; counts=collections.Counter()
     per_source=collections.defaultdict(collections.Counter); errors=collections.Counter()
     examples=[]; cutoff=None; watermark=0; next_prune=0; previous_pts={}; read=0
@@ -25,11 +27,14 @@ def reconcile(rows, sources=DEFAULT_SOURCES, retire_age_ns=1_000_000_000):
         if len(examples)<128:examples.append({'reason':reason,'frame':key})
     def finish(key,frame):
         source,gen,seq=key
+        drops=[e for e in DROP_EVENTS if e in frame]
         if 'decode_output' not in frame:
+            if drops:reject('drop_without_decode',key)
             if 'presented' in frame:reject('presented_without_decode',key)
             return
         per_source[source]['decoded']+=1
         if 'presented' in frame:
+            if drops:reject('dropped_frame_was_presented',key)
             if not all(e in frame for e in ['draw','swap','presentation_commit_presented']):
                 reject('presented_without_submission_evidence',key)
             if frame.get('presentation_commit_presented')!=frame['presented']:
@@ -37,6 +42,16 @@ def reconcile(rows, sources=DEFAULT_SOURCES, retire_age_ns=1_000_000_000):
             if 'draw' in frame and frame['presented']<frame['draw']:
                 reject('physical_timestamp_before_draw',key)
             per_source[source]['presented']+=1
+            return
+        if drops:
+            if len(drops)!=1:reject('multiple_drop_dispositions',key)
+            if 'presentation_fifo_dropped' in drops:
+                if 'fifo_enter' not in frame or any(e in frame for e in ('fifo_exit','preview_ready','draw','swap')):
+                    reject('invalid_fifo_drop',key)
+            if 'presentation_display_dropped' in drops and not all(e in frame for e in ('draw','swap')):
+                reject('display_drop_without_submission',key)
+            per_source[source]['live_dropped']+=1
+            if not allow_live_drops:reject('live_display_drop',key)
             return
         retired=[frame[e] for e in ['shutdown_fifo_retired','shutdown_present_retired',
                  'shutdown_preview_retired','shutdown_latest_retired'] if e in frame]
@@ -55,12 +70,13 @@ def reconcile(rows, sources=DEFAULT_SOURCES, retire_age_ns=1_000_000_000):
         if event=='shutdown_requested':
             if cutoff is not None:reject('duplicate_shutdown_marker')
             cutoff=ns
-        if event in FATAL_EVENTS and (source in expected or event in {'presentation_error','presentation_fifo_error'}):reject(event)
+        if event in FATAL_EVENTS and (source in expected or event in {'presentation_error','presentation_fifo_error','control_loop_failed'}):reject(event)
         if event=='presentation_mode' and int(row.get('value2',0))!=1:reject('unexpected_presentation_mode')
         seq=int(row.get('sequence',0));gen=int(row.get('generation',0))
         if source in expected and seq and event in FRAME_EVENTS:
             key=(source,gen,seq);frame=frames.setdefault(key,{'last':ns})
             frame['last']=max(frame['last'],ns)
+            if event in DROP_EVENTS and event in frame:reject('duplicate_drop',key)
             if event=='presented':
                 if event in frame:reject('duplicate_unique_presentation',key)
                 pts=int(row.get('pts',-1));old=previous_pts.get((source,gen))
@@ -78,27 +94,30 @@ def reconcile(rows, sources=DEFAULT_SOURCES, retire_age_ns=1_000_000_000):
     if cutoff is None:reject('missing_shutdown_marker')
     for source in sorted(expected):
         if not per_source[source]['presented']:reject('source_never_presented',source)
-    return {'physical_frames_passed':not errors,'records_read':read,'failures':dict(errors),
+    live_dropped=sum(v['live_dropped'] for v in per_source.values())
+    return {'frame_accounting_passed':not errors,'live_dropped':live_dropped,
+            'physical_frames_passed':not errors and not live_dropped,'records_read':read,'failures':dict(errors),
             'examples':examples,'sources':{s:dict(v) for s,v in sorted(per_source.items())},
             'events':dict(counts),'shutdown_ns':cutoff,
             'scope':'Fixed-layout normal trial; startup and <=1s shutdown dispositions are separate from physical presentation.'}
 
-def validate(directory,sources=DEFAULT_SOURCES):
+def validate(directory,sources=DEFAULT_SOURCES,allow_live_drops=False):
     directory=Path(directory);path=directory/'diagnostics/events.csv';opener=open
     if not path.exists():path=Path(str(path)+'.gz');opener=gzip.open
     with opener(path,'rt',newline='') as f:
-        result=reconcile(csv.DictReader(f,escapechar=chr(92),doublequote=False),sources)
+        result=reconcile(csv.DictReader(f,escapechar=chr(92),doublequote=False),sources,allow_live_drops=allow_live_drops)
     summary=directory/'diagnostics/diagnostics-summary.json'
     integrity=json.loads(summary.read_text()) if summary.exists() else {}
     valid=integrity.get('accepted')==integrity.get('written')==result['records_read'] and           all(integrity.get(k,-1)==0 for k in ['queue_lost','limit_lost','pending','write_failed'])
     result['diagnostic_integrity_valid']=valid
     if not valid:result['failures']['diagnostic_record_loss_or_unclean_summary']=1
-    result['physical_frames_passed']=not result['failures']
-    (directory/'physical-frame-acceptance.json').write_text(json.dumps(result,indent=2)+'\n')
+    result['frame_accounting_passed']=not result['failures']
+    result['physical_frames_passed']=not result['failures'] and not result['live_dropped']
+    (directory/('live-frame-accounting.json' if allow_live_drops else 'physical-frame-acceptance.json')).write_text(json.dumps(result,indent=2)+'\n')
     return result
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('directory');args=p.parse_args()
-    result=validate(args.directory)
+    p=argparse.ArgumentParser();p.add_argument('directory');p.add_argument('--allow-live-drops',action='store_true');args=p.parse_args()
+    result=validate(args.directory,allow_live_drops=args.allow_live_drops)
     print(json.dumps(result,indent=2))
-    raise SystemExit(0 if result['physical_frames_passed'] else 1)
+    raise SystemExit(0 if (result['frame_accounting_passed'] if args.allow_live_drops else result['physical_frames_passed']) else 1)

@@ -1,0 +1,258 @@
+{
+  "direct_failure": "Presentation cam2: Presentation FIFO remained full; no frame was overwritten",
+  "application_state": {
+    "fatal": "Presentation cam2: Presentation FIFO remained full; no frame was overwritten",
+    "control_pthread": "138515553707648",
+    "stopping": "{_M_base = {static _S_alignment = 1, _M_i = false}, static is_always_lock_free = true}",
+    "statuses": [
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam0",
+        "slot": 0,
+        "decoded": 7617,
+        "ai": 1011
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam1",
+        "slot": 1,
+        "decoded": 7617,
+        "ai": 1011
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam2",
+        "slot": 2,
+        "decoded": 7617,
+        "ai": 1011
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam3",
+        "slot": 3,
+        "decoded": 7617,
+        "ai": 1011
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam4",
+        "slot": 4,
+        "decoded": 7617,
+        "ai": 1011
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam5",
+        "slot": 5,
+        "decoded": 7616,
+        "ai": 1011
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam6",
+        "slot": 6,
+        "decoded": 7617,
+        "ai": 1011
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam7",
+        "slot": 7,
+        "decoded": 7617,
+        "ai": 1011
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam8",
+        "slot": 8,
+        "decoded": 7589,
+        "ai": 1011
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam9",
+        "slot": 9,
+        "decoded": 7618,
+        "ai": 1011
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam10",
+        "slot": 10,
+        "decoded": 7589,
+        "ai": 1011
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam11",
+        "slot": 11,
+        "decoded": 7618,
+        "ai": 1011
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam12",
+        "slot": 12,
+        "decoded": 7617,
+        "ai": 1011
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam13",
+        "slot": 13,
+        "decoded": 7589,
+        "ai": 1011
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam14",
+        "slot": 14,
+        "decoded": 7617,
+        "ai": 1011
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "cam15",
+        "slot": -1,
+        "decoded": 0,
+        "ai": 0
+      },
+      {
+        "connection": "live",
+        "recording": "recording",
+        "error": "",
+        "id": "resource-monitor",
+        "slot": 15,
+        "decoded": 2540,
+        "ai": 1011
+      }
+    ],
+    "slots": [
+      {
+        "slot": 0,
+        "channel": "cam0",
+        "error": "Presentation FIFO remained full; no frame was overwritten"
+      },
+      {
+        "slot": 1,
+        "channel": "cam1",
+        "error": "Presentation FIFO remained full; no frame was overwritten"
+      },
+      {
+        "slot": 2,
+        "channel": "cam2",
+        "error": "Presentation FIFO remained full; no frame was overwritten"
+      },
+      {
+        "slot": 3,
+        "channel": "cam3",
+        "error": "Presentation FIFO remained full; no frame was overwritten"
+      },
+      {
+        "slot": 4,
+        "channel": "cam4",
+        "error": "Presentation FIFO remained full; no frame was overwritten"
+      },
+      {
+        "slot": 5,
+        "channel": "cam5",
+        "error": "Presentation FIFO remained full; no frame was overwritten"
+      },
+      {
+        "slot": 6,
+        "channel": "cam6",
+        "error": "Presentation FIFO remained full; no frame was overwritten"
+      },
+      {
+        "slot": 7,
+        "channel": "cam7",
+        "error": "Presentation FIFO remained full; no frame was overwritten"
+      },
+      {
+        "slot": 8,
+        "channel": "cam8",
+        "error": "Presentation FIFO exceeded four frame periods of lateness; no frame was overwritten"
+      },
+      {
+        "slot": 9,
+        "channel": "cam9",
+        "error": ""
+      },
+      {
+        "slot": 10,
+        "channel": "cam10",
+        "error": ""
+      },
+      {
+        "slot": 11,
+        "channel": "cam11",
+        "error": "Presentation FIFO remained full; no frame was overwritten"
+      },
+      {
+        "slot": 12,
+        "channel": "cam12",
+        "error": "Presentation FIFO remained full; no frame was overwritten"
+      },
+      {
+        "slot": 13,
+        "channel": "cam13",
+        "error": "Presentation FIFO remained full; no frame was overwritten"
+      },
+      {
+        "slot": 14,
+        "channel": "cam14",
+        "error": "Presentation FIFO remained full; no frame was overwritten"
+      },
+      {
+        "slot": 15,
+        "channel": "resource-monitor",
+        "error": "Presentation FIFO remained full; no frame was overwritten"
+      }
+    ]
+  },
+  "control_pthread_hex": "0x7dfaaa5fe680",
+  "control_pthread_in_backtrace": false,
+  "evidence_directory": "/home/amd/work/rai/logs/demo-frozen-20261116-2029",
+  "mechanism": [
+    "Presentation FIFO capacity is 3 decoded frames; producer full-wait timeout is 100 ms.",
+    "Channel::tick reads the FIFO failure and throws Presentation <source>: <failure>.",
+    "Controller::loop catches the exception, stores fatal_ and exits without setting stopping_.",
+    "GUI, GPU, preview and other workers remain alive; channel state snapshots stop updating and input queues develop backpressure."
+  ],
+  "trigger": "Not established: no pre-failure frame/draw/presentation timeline in this ordinary run.",
+  "user_observation": "Live view remained displayed; no tab switch, minimization or screen lock reported.",
+  "debugger_caveat": "The control thread was absent in /proc before the first debugger attachment, so its persisted fatal predates debugging. Additional slot errors observed after debugger pauses must not all be attributed to the original incident.",
+  "policy": "No FIFO threshold or frame-drop policy changed; no restart performed."
+}

@@ -237,6 +237,8 @@ struct Controller::Channel {
         while (search_stamps.size() > 256)
             search_stamps.erase(search_stamps.begin());
     }
+    uint64_t logged_display_drops{};
+    Clock::time_point display_drop_log_at{};
     unsigned retries{};
     Clock::time_point reconnect{Clock::now()}, record_retry{};
     uint64_t decode_count_base{}, ai_count_base{};
@@ -305,6 +307,7 @@ struct Controller::Channel {
             c.timing->counter(TimingCounter::LatestReplaced);
         }
         auto trace = frame_trace(gst_sample_get_buffer(s.get()));
+        if(!trace.telemetry)trace.telemetry=c.timing; // Always account live display loss.
         slot.latest = {std::move(trace),
                        std::move(s),
                        c.state.generation,
@@ -350,11 +353,22 @@ struct Controller::Channel {
             const auto before=Telemetry::monotonic_ns();
             try {
                 auto result=PresentationFifo<Frame>::Result::Inactive;
+                std::vector<PresentationFifo<Frame>::Dropped> dropped;
                 if(c.controller.options_.preview_enabled &&
                    c.controller.presentation_observed_.load() && slot.preview_visible.load())
                     result=slot.presentation.push(std::move(presentation_frame),c.state.generation,
-                        serial,presentation_pts,period);
+                        serial,presentation_pts,period,&dropped);
+                for(const auto &discarded:dropped) {
+                    const auto &trace=discarded.entry.frame.timing;
+                    if(trace.telemetry) {
+                        trace.telemetry->counter(TimingCounter::PresentationDropped);
+                        trace.telemetry->diagnostic(trace.frame,"presentation_fifo_dropped",
+                            int64_t(discarded.reason),discarded.entry.serial);
+                    }
+                }
                 const auto snapshot=slot.presentation.snapshot();
+                if(result==PresentationFifo<Frame>::Result::Queued)
+                    c.timing->diagnostic(diagnostic_trace.frame,"fifo_deadline",snapshot.next_due_ns,snapshot.clock_resyncs);
                 if(result==PresentationFifo<Frame>::Result::Queued) {
                     c.timing->diagnostic(diagnostic_trace.frame,"fifo_enter",snapshot.frames,period);
                     c.timing->diagnostic(diagnostic_trace.frame,"fifo_wait",Telemetry::monotonic_ns()-before);
@@ -852,6 +866,14 @@ struct Controller::Channel {
         return gst_app_src_push_buffer(GST_APP_SRC(input), b) == GST_FLOW_OK;
     }
     void tick(bool space) {
+        state.presentation_dropped=timing->counter_value(TimingCounter::PresentationDropped);
+        if(state.presentation_dropped!=logged_display_drops && Clock::now()>=display_drop_log_at) {
+            std::cerr<<"NVR live display drops camera="<<state.source.id
+                     <<" delta="<<state.presentation_dropped-logged_display_drops
+                     <<" total="<<state.presentation_dropped<<'\n';
+            logged_display_drops=state.presentation_dropped;
+            display_drop_log_at=Clock::now()+std::chrono::seconds(1);
+        }
         if(state.slot>=0) {
             const auto failure=controller.slots_[state.slot].presentation.snapshot().error;
             if(!failure.empty())throw std::runtime_error("Presentation "+state.source.id+": "+failure);
@@ -1546,6 +1568,8 @@ void Controller::loop() {
     } catch (const std::exception &e) {
         std::lock_guard<std::mutex> l(mutex_);
         fatal_ = e.what();
+        std::cerr<<"NVR control loop failed: "<<fatal_<<'\n';
+        diagnostic_event("controller",0,0,"control_loop_failed",Telemetry::monotonic_ns(),1);
     }
 }
 void Controller::preview_loop() {

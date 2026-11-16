@@ -69,6 +69,41 @@ int main(){
   check(epoch.active(false).size()==1,"Suspend returns existing identity");epoch.active(true);
   check(suspended.get()==Queue::Result::Retired,"Old epoch cannot enter after resume");
   check(!epoch.peek(),"Resumed queue contains no stale blocked input");
+  int64_t burst_now=1000000000;
+  Queue burst(3,2,100ms,[&]{return burst_now;},Queue::Policy::DropOldest);
+  burst.reset(1,true);
+  for(unsigned i=0;i<20;++i) {
+    burst.push(i,1,i+1,uint64_t(i)*33333333,33333333);burst_now+=1000000;
+  }
+  check(burst.snapshot().clock_resyncs>0 &&
+        burst.peek()->due_ns<=burst_now+33333333,
+        "A startup burst cannot perpetually evict future-dated heads");
+  int64_t live_now=1000000000;
+  Queue live(3,2,100ms,[&]{return live_now;},Queue::Policy::DropOldest);
+  live.reset(1,true);
+  for(unsigned i=0;i<3;++i) { live.push(i,1,i+1,i*33333333,33333333);live_now+=33333333; }
+  auto peeked=live.peek();std::vector<Queue::Dropped> dropped;
+  check(live.push(4,1,4,99999999,33333333,&dropped)==Queue::Result::Queued,
+        "Live FIFO never waits for a full consumer");
+  check(dropped.size()==1 && dropped[0].entry.serial==1 &&
+        dropped[0].reason==Queue::DropReason::Full,"Overflow reports exact oldest identity");
+  check(!live.pop(peeked->generation,peeked->serial),"Stale peek cannot consume a replacement");
+  check(live.peek()->serial==2 && live.snapshot().frames==3 && live.snapshot().error.empty(),
+        "Newest admission is bounded and leaves no latched pressure error");
+  auto in_flight=live.pop(1,2);check(in_flight->frame==1,"Consumer retains its own sample");
+  live_now+=500000000;dropped.clear();
+  live.push(5,1,5,133333332,33333333,&dropped);
+  check(dropped.size()==2 && dropped[0].entry.serial==3 && dropped[1].entry.serial==4,
+        "Late recovery retires queued frames only, never the consumer-owned frame");
+  check(in_flight->frame==1 && live.peek()->serial==5 &&
+        live.peek()->due_ns==live_now && live.snapshot().late_recoveries==1,
+        "Late recovery catches up without touching in-flight resources");
+  check(live.pop(1,5)->serial==5,"Recovered frame can display immediately");
+  live_now+=33333333;live.push(6,1,6,166666665,33333333);
+  check(live.pop(1,6)->serial==6,
+        "Presentation order remains increasing after frame loss");
+  rejects([&]{live.push(7,1,7,100,33333333);});
+  check(!live.snapshot().error.empty(),"Live policy does not conceal corrupt PTS");
   std::cout<<"Presentation FIFO ordering, pressure, cutoff, cadence and lifecycle passed\n";
   return 0;
  }catch(const std::exception&e){std::cerr<<e.what()<<'\n';return 1;}

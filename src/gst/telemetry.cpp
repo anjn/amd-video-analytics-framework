@@ -1,5 +1,10 @@
 #include "amdva/gst_telemetry.hpp"
+#include "../ready_observer.hpp"
 #include <algorithm>
+#include <cstdlib>
+#include <gst/va/gstvaallocator.h>
+#include <gst/va/gstvadisplay.h>
+#include <va/va.h>
 #include <atomic>
 #include <gst/rtp/gstrtpbuffer.h>
 #include <map>
@@ -72,6 +77,7 @@ bool set_frame_trace(GstBuffer *b, const TraceToken &token) {
 }
 struct PipelineTelemetry::Impl {
     std::shared_ptr<Telemetry> telemetry;
+    detail::ReadyObserver::Active ready_active=std::make_shared<std::atomic<bool>>(true);
     std::atomic<bool> background{false};
     std::mutex mutex;
     struct Rtp {
@@ -228,6 +234,40 @@ struct PipelineTelemetry::Impl {
         }
         prune(input, now);
     }
+    void observe_ready(GstBuffer *buffer,const TraceToken &token) {
+        static const bool enabled=[] {
+            const char *value=std::getenv("AMDVA_DECODE_READY_OBSERVE");
+            return !value || std::string(value)!="0";
+        }();
+        if(!enabled || !telemetry->enabled()) return;
+        auto *display=gst_va_buffer_peek_display(buffer);
+        const auto surface=gst_va_buffer_get_surface(buffer);
+        if(!display || surface==VA_INVALID_SURFACE) {
+            telemetry->decode_ready_missing(token.frame);return;
+        }
+        // Retain the exact decoded surface until its readiness has been observed.
+        // This retains GPU memory only; no image is mapped or copied to the CPU.
+        auto hold=std::shared_ptr<GstBuffer>(gst_buffer_ref(buffer),gst_buffer_unref);
+        auto va=std::shared_ptr<GstVaDisplay>(
+            GST_VA_DISPLAY(gst_object_ref(display)),
+            [](GstVaDisplay *d) { gst_object_unref(d); });
+        static detail::ReadyObserver observer;
+        const auto active=ready_active;
+        const bool queued=observer.submit(active,[hold,va,surface] {
+            VASurfaceStatus status{};
+            const auto result=vaQuerySurfaceStatus(gst_va_display_get_va_dpy(va.get()),surface,&status);
+            if(result!=VA_STATUS_SUCCESS) return detail::ReadyObserver::State::Error;
+            if(status==VASurfaceReady) return detail::ReadyObserver::State::Ready;
+            if(status==VASurfaceRendering || status==VASurfaceDisplaying)
+                return detail::ReadyObserver::State::Busy;
+            return detail::ReadyObserver::State::Error;
+        },[token,active](bool ready,int64_t at,int64_t uncertainty) {
+            if(!active->load()) return;
+            if(ready) token.telemetry->decode_ready(token.frame,at,uncertainty);
+            else token.telemetry->decode_ready_missing(token.frame);
+        },token.frame.ns[unsigned(TimingStage::DecodeOutput)]);
+        if(!queued) telemetry->decode_ready_missing(token.frame);
+    }
     GstBuffer *process(GstBuffer *buffer, Mode mode, TimingStage stage) {
         if (mode == RtpIn || mode == RtpOut) {
             packet(buffer, mode == RtpOut);
@@ -317,6 +357,7 @@ struct PipelineTelemetry::Impl {
                 token = {telemetry, telemetry->frame(0, background.load())};
             }
             token.mark(TimingStage::DecodeOutput, now);
+            observe_ready(buffer,token);
         } else if (token.telemetry)
             token.mark(stage, now);
         if (!token.telemetry)
@@ -442,6 +483,7 @@ struct PipelineTelemetry::Impl {
         gst_iterator_free(iterator);
     }
     void detach() {
+        ready_active->store(false);
         // Pipelines must be stopped first: no application callback races teardown.
         std::vector<Signal> sig;
         std::vector<Probe> prob;

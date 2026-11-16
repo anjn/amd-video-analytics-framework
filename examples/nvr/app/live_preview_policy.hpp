@@ -2,6 +2,9 @@
 namespace amdva::nvr::detail {
 // A swap is submission, not proof that a picture reached the screen.
 // Nonblocking swaps remove the extra refresh wait; advance still requires ACK.
+inline bool may_retire_discarded(bool confirmed,bool retired,bool requested,bool pending) {
+    return !confirmed && !retired && requested && !pending;
+}
 inline bool may_advance_preview(bool confirmed,bool retired) {
     return confirmed || retired;
 }

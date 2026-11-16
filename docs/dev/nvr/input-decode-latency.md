@@ -1,5 +1,14 @@
 # Input-to-decode latency investigation
 
+## Live display recovery (2026-11-16)
+
+Live display prioritizes following the latest video. When its three-frame FIFO fills, the oldest entry that has not been consumed is discarded and the new frame is accepted. Initial prefill remains two frame periods. Excessively late queued frames are discarded to catch up; startup burst timing is bounded so scheduled presentation cannot keep moving into the future. Surfaces used by rendering or GPU processing are never reused before completion.
+
+Display drops appear as drop N in the single-line tile overlay, as a total in AI Statistics, and as per-camera entries in the ordinary log. Compositor-discarded submissions are accounted separately. latency 10s max covers frames actually presented; a low value alone does not prove that every frame was shown. Recording, retention and AI frequency are unchanged.
+
+Diagnostic analysis with --allow-live-drops reconciles explicit display drops but does not grant all-frames-presented acceptance. The default strict check remains available. Invalid PTS and device failures remain explicit errors. Historical descriptions below of a 100 ms FIFO-full failure and no discards describe the earlier policy; this section supersedes them for current live display.
+
+
 Direct decoder dispatch independent of recording/database waits passed two full normal runs on Ubuntu 24.04/gfx1150. The observed input-to-decode growth was caused by storage/control-path coupling. Presentation discards at that checkpoint and anonymous RSS growth are recorded separately; the experimental FIFO and Qt comparison below are later work. See the [final review](input-decode-results/dispatch-final-review.json).
 
 The investigation separates receive/assembly delay, input queueing, decoder pad
@@ -474,3 +483,31 @@ With `AMDVA_DIAGNOSTICS_DIR` unset, the separate lifecycle run also passed using
 in-memory per-slot physical-presentation counters. Diagnostic logging is not
 required for FIFO operation. This is a functionality check, not a quantified
 instrumentation-overhead comparison.
+
+## GPU-ready observation added on 2026-11-16
+
+The historical input_decode and decoder metrics in this investigation remain CPU
+decoder pad transit metrics. They are preserved so earlier latency-growth trials
+retain their original meaning. A 45-second output-status probe found 12,987 of
+12,997 output notifications still VASurfaceRendering, with only 10 already Ready.
+
+AI Statistics now uses input_decode_ready, measured to a nonblocking
+vaQuerySurfaceStatus Ready observation after decoder output. decoder_ready uses
+the decoder sink-pad timestamp as its start. A single worker polls at a nominal
+1 ms interval, retains the exact GstBuffer and GstVaDisplay, and limits outstanding
+observations globally to 64 with a 1-second timeout. No vaSyncSurface, GPU command,
+pixel map or readback is added. Failures affect measurement coverage, not frame
+admission: recent incomplete input-to-ready windows display N/A for ten seconds.
+The separate decode_ready_uncertainty distribution records the actual interval
+between the preceding not-ready query (or output notification) and ready observation.
+This is an upper-bound observation of output availability, not a GPU execution timer.
+
+AMDVA_DECODE_READY_OBSERVE=0 disables the observer for diagnostic overhead
+comparisons; ready latency remains unavailable rather than using the old endpoint.
+Missing input identity, stale generations, duplicate observations and readiness
+arriving after draw/swap have dedicated regression coverage. Offline analysis
+reports the old and new metrics separately. See
+[short comparison results](decode-ready-latency-results.json). Short tests do not
+establish long-duration reliability or zero overhead.
+
+In the single sequential 90-second off/on comparison, application CPU usage after warmup was about 1.97 versus 2.20 cores (difference 0.23 core). Both trials sustained frame/AI progress, passed physical-frame reconciliation and short-run audits. This is evidence of nonzero observer cost, not a noise-controlled overhead bound or long-duration acceptance result.

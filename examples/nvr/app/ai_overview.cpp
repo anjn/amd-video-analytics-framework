@@ -21,12 +21,13 @@ AiOverviewSample summarize_overview(const std::vector<Status> &statuses,
                                     const Options &options, bool fatal, Clock::time_point now) {
     AiOverviewSample o;
     auto &d = o.decode;
-    bool stalled = false;
+    bool stalled = false,ready_complete=true;
     std::map<QString, unsigned> formats;
     for (const auto &s : statuses) {
         ++d.cameras;
         d.live += s.connection == "live";
         d.gaps += s.gaps;
+        d.presentation_dropped += s.presentation_dropped;
         double fps = s.display_fps;
         for (const auto &t : telemetry)
             if (t.source == s.source.id && t.enabled) {
@@ -35,8 +36,9 @@ AiOverviewSample summarize_overview(const std::vector<Status> &statuses,
                     fps = decoded.fps;
                 d.stops += decoded.stops;
                 stalled |= decoded.stalled;
-                if (t.latency[0][0].samples)
-                    d.p99_ms = std::max(d.p99_ms, t.latency[0][0].p99_ms);
+                ready_complete &= t.decode_ready_complete[0];
+                if (t.latency[0][input_decode_ready_latency].samples)
+                    d.p99_ms = std::max(d.p99_ms, t.latency[0][input_decode_ready_latency].p99_ms);
             }
         d.fps += fps;
         d.mpixels += fps * s.input_width * s.input_height / 1e6;
@@ -46,11 +48,12 @@ AiOverviewSample summarize_overview(const std::vector<Status> &statuses,
                           .arg(s.input_width)
                           .arg(s.input_height)];
     }
+    if(!ready_complete) d.p99_ms=-1;
     for (const auto &[format, count] : formats)
         d.formats << (count > 1 ? QString("%1 ×%2").arg(format).arg(count) : format);
     d.state = fatal                           ? AiOverviewSample::Error
               : !d.cameras                    ? AiOverviewSample::Idle
-              : d.live < d.cameras || stalled ? AiOverviewSample::Warning
+              : d.live < d.cameras || stalled || !ready_complete ? AiOverviewSample::Warning
                                               : AiOverviewSample::Good;
 
     const auto &search = options.search;
@@ -137,11 +140,13 @@ void AiOverview::paintEvent(QPaintEvent *) {
                                 .arg(d.live)
                                 .arg(d.cameras)
                                 .arg(number(d.mpixels)),
-                            QString("Decoder stalls %1 · stream gaps %2 · input→decode P99 %3")
+                            QString("Decoder stalls %1 · stream gaps %2 · input→GPU-ready P99 %3")
                                 .arg(d.stops)
                                 .arg(d.gaps)
                                 .arg(d.p99_ms < 0 ? QString("N/A")
                                                   : QString::number(d.p99_ms, 'f', 1) + " ms")};
+        details << QString("Live display drops %1 · latest-frame priority")
+                       .arg(qulonglong(d.presentation_dropped));
         if (!d.formats.empty())
             details << d.formats.join(" · ");
         cards[0] = {"Video decode", "VCN hardware decoder (VA-API)", number(d.fps), "frames/s",

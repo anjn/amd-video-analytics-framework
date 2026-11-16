@@ -61,7 +61,7 @@ struct Status {
     Source source;
     std::string connection{"connecting"}, recording{"waiting"}, error;
     int slot{-1};
-    uint64_t received{}, decoded{}, ai{}, gaps{}, generation{};
+    uint64_t received{}, decoded{}, ai{}, gaps{}, generation{}, presentation_dropped{};
     double display_fps{}, ai_fps{};
     std::string input_codec;
     unsigned input_width{}, input_height{};
@@ -95,7 +95,8 @@ struct Slot : PreviewSlot {
     VASurfaceID ai_surface{VA_INVALID_SURFACE};
     std::unique_ptr<ImportedSurface> image;
     Frame latest;
-    PresentationFifo<Frame> presentation;
+    PresentationFifo<Frame> presentation{3,2,std::chrono::milliseconds(100),
+        Telemetry::monotonic_ns,PresentationFifo<Frame>::Policy::DropOldest};
     std::vector<Detection> detections;
     std::vector<TrackedObject> tracked;
     std::unique_ptr<MetadataTracker> tracker;

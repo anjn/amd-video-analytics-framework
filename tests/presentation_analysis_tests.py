@@ -9,6 +9,22 @@ def normal():
 class PhysicalTests(unittest.TestCase):
  def check_pass(self,rows):self.assertTrue(m.reconcile(rows,['cam0'])['physical_frames_passed'])
  def check_fail(self,rows,why):self.assertIn(why,m.reconcile(rows,['cam0'])['failures'])
+ def test_live_drop_is_accounted_but_not_lossless(self):
+  rows=normal()+[row('decode_output',30,2),row('fifo_enter',31,2),row('presentation_fifo_dropped',32,2)]
+  self.check_fail(rows,'live_display_drop')
+  result=m.reconcile(rows,['cam0'],allow_live_drops=True)
+  self.assertTrue(result['frame_accounting_passed'])
+  self.assertFalse(result['physical_frames_passed'])
+  self.assertEqual(result['sources']['cam0']['live_dropped'],1)
+ def test_invalid_drop_never_excuses_a_consumed_frame(self):
+  rows=normal()+[row('decode_output',30,2),row('fifo_enter',31,2),row('draw',32,2),row('presentation_fifo_dropped',33,2)]
+  self.assertIn('invalid_fifo_drop',m.reconcile(rows,['cam0'],allow_live_drops=True)['failures'])
+ def test_discard_and_present_are_not_both_success(self):
+  rows=normal()+[row('presentation_display_dropped',15,1)]
+  self.assertIn('dropped_frame_was_presented',m.reconcile(rows,['cam0'],allow_live_drops=True)['failures'])
+ def test_control_failure_cannot_be_excused_by_live_drop_policy(self):
+  rows=normal()+[row('control_loop_failed',90,src='controller')]
+  self.assertIn('control_loop_failed',m.reconcile(rows,['cam0'],allow_live_drops=True)['failures'])
  def test_normal(self):self.check_pass(normal())
  def test_swap_not_physical(self):self.check_fail([r for r in normal() if r['event']!='presented'],'decoded_frame_not_presented')
  def test_discarded_commit_not_lost_frame(self):

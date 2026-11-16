@@ -1,5 +1,14 @@
-<!-- source: docs/guide/nvr-demo.ja.md f5f1c2b4f6891f5d4d56ae1fa10cfeb64ac21534 -->
+<!-- source: docs/guide/nvr-demo.ja.md 810e8c05d960c4bc0ede147fa0f9090609d1d064 -->
 # NVR demo
+
+## Live display recovery (2026-11-16)
+
+Live display prioritizes following the latest video. When its three-frame FIFO fills, the oldest entry that has not been consumed is discarded and the new frame is accepted. Initial prefill remains two frame periods. Excessively late queued frames are discarded to catch up; startup burst timing is bounded so scheduled presentation cannot keep moving into the future. Surfaces used by rendering or GPU processing are never reused before completion.
+
+Display drops appear as drop N in the single-line tile overlay, as a total in AI Statistics, and as per-camera entries in the ordinary log. Compositor-discarded submissions are accounted separately. latency 10s max covers frames actually presented; a low value alone does not prove that every frame was shown. Recording, retention and AI frequency are unchanged.
+
+Diagnostic analysis with --allow-live-drops reconciles explicit display drops but does not grant all-frames-presented acceptance. The default strict check remains available. Invalid PTS and device failures remain explicit errors. Historical descriptions below of a 100 ms FIFO-full failure and no discards describe the earlier policy; this section supersedes them for current live display.
+
 
 The NVR demo is a sample network video recorder built with this framework. It records all registered RTSP cameras while showing up to 16 of them on the desktop, and runs person and vehicle detection and tracking on the cameras being displayed. Recordings can be played back from a timeline, and if you prepare a native embedding model, you can also search for people by text or image.
 
@@ -158,3 +167,21 @@ GPU synchronization or pixel readback. The former input-to-decoder-output
 software metric remains in the detailed timing statistics.
 
 The ten-second window follows receipt of confirmed feedback; latency still uses the reported presentation timestamp. This timestamp can slightly lead CPU receipt, so it is not clamped or rejected solely for that ordering.
+
+## GPU-ready latency in AI Statistics
+
+The Video decode card's input→GPU-ready P99 is the largest per-camera P99 in the
+last ten seconds. It measures first-RTP reception to observation that the decoder
+output surface is Ready in VA-API. The former input→decode value around 1 ms ended
+at the CPU decoder output notification, which does not prove completion of
+asynchronous GPU work. That value remains under “Input → decoder output
+notification” in camera details and as input_decode in diagnostic JSON.
+
+A separate thread checks readiness without adding GPU completion waits or pixel
+readback to the video path. The observed value includes nominal 1 ms polling and
+CPU scheduling delay; it is not pure VCN execution time. Camera detail tooltips
+report the actual polling/scheduling interval. Failed, capacity-limited or
+input-timestamp-missing observations make the recent window N/A; there is no
+fallback to notification timing or zero. The live tile's input-to-actual-display
+latency has a later endpoint including presentation FIFO, rendering and compositor
+waits. A 30 fps input period of 33.3 ms does not imply 33.3 ms of decode work per frame.

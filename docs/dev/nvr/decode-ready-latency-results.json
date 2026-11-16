@@ -1,0 +1,1313 @@
+{
+  "scope": "Input-to-decode measurement correction; two short 90-second controlled trials, not long-duration acceptance.",
+  "base_commit": "3e4b873be53c590eb42853223f88dc8b5c5f0156",
+  "branch": "codex/decode-ready-latency",
+  "raw_probe": {
+    "va_status_and_surface_status": {
+      "(0, 4)": 10,
+      "(0, 1)": 12987
+    },
+    "sources": {
+      "cam0": {
+        "(0, 4)": 3,
+        "(0, 1)": 804
+      },
+      "cam1": {
+        "(0, 1)": 807
+      },
+      "cam3": {
+        "(0, 1)": 805,
+        "(0, 4)": 1
+      },
+      "cam2": {
+        "(0, 1)": 807
+      },
+      "cam14": {
+        "(0, 1)": 807
+      },
+      "cam7": {
+        "(0, 4)": 2,
+        "(0, 1)": 804
+      },
+      "cam8": {
+        "(0, 1)": 806
+      },
+      "cam15": {
+        "(0, 1)": 807
+      },
+      "cam13": {
+        "(0, 1)": 807
+      },
+      "resource-monitor": {
+        "(0, 1)": 269
+      },
+      "cam6": {
+        "(0, 1)": 806,
+        "(0, 4)": 1
+      },
+      "cam4": {
+        "(0, 1)": 775,
+        "(0, 4)": 1
+      },
+      "cam5": {
+        "(0, 4)": 1,
+        "(0, 1)": 776
+      },
+      "cam9": {
+        "(0, 4)": 1,
+        "(0, 1)": 776
+      },
+      "cam10": {
+        "(0, 1)": 777
+      },
+      "cam11": {
+        "(0, 1)": 777
+      },
+      "cam12": {
+        "(0, 1)": 777
+      }
+    },
+    "surface_status_rendering": 1,
+    "surface_status_ready": 4
+  },
+  "method": {
+    "legacy_input_decode": "First received RTP packet to decoder source-pad output notification; not GPU completion.",
+    "input_decode_ready": "First received RTP packet to observation of VA surface ready after decoder output.",
+    "observation": "One bounded CPU observer thread; vaQuerySurfaceStatus only, no vaSyncSurface, GPU command, pixel mapping or readback added.",
+    "limits": "64 global pending surfaces, nominal 1 ms polling, 1 s observation timeout; observation failures invalidate displayed ready coverage for 10 seconds.",
+    "uncertainty": "Observation timestamp is an upper bound on output availability; actual poll/scheduling interval is measured and exposed. Not pure VCN execution time."
+  },
+  "trials": [
+    {
+      "name": "observer-off-01",
+      "elapsed_s": 90.88126139598899,
+      "binary_sha256": "20ee21b905455720c66255f338fa3b2af1351046be71049750ac6adf93639415",
+      "config_sha256": "9dc0ee34000e7bfba566b7272ce379336faecaf7ef8b272b9ee6342b0f1466e4",
+      "ui_sha256": "0e65c1db14d78c6c50a3224e70ded0c1bac62877d9cf8d4e6ad9bd9621b293f0",
+      "cpu_core_percent_after_30s": 197.16374948858257,
+      "short_audit_minimum_seconds": 30,
+      "audits": {
+        "audits_passed": true,
+        "copy_active_seconds": 82.86863203,
+        "active_snapshots": 16,
+        "vpe": {
+          "schema": 1,
+          "method": "binary-syncobj-fence",
+          "scopes": 71012,
+          "completed": 71012,
+          "failed": 0,
+          "aborted": 0,
+          "submissions": 109230,
+          "rejected_submissions": 0,
+          "foreign_operations": 0,
+          "active_scope": 0,
+          "observer_wait_ns": 12477154,
+          "maximum_observer_wait_ns": 66159
+        },
+        "failures": []
+      },
+      "progress": {
+        "validation_schema": 2,
+        "validator_sha256": "4e39a5d6b19554d32e1b17fc1a0655278aca7375647cbd8d40eae5270423b7d5",
+        "progress_passed": true,
+        "snapshots": 17,
+        "duration_s": 88.036533585,
+        "largest_snapshot_gap_s": 5.02137475,
+        "channel_progress": {
+          "cam0": {
+            "previous": 2373,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          },
+          "cam1": {
+            "previous": 2404,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          },
+          "cam2": {
+            "previous": 2403,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          },
+          "cam3": {
+            "previous": 2403,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          },
+          "cam4": {
+            "previous": 2374,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          },
+          "cam5": {
+            "previous": 2374,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          },
+          "cam6": {
+            "previous": 2373,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          },
+          "cam7": {
+            "previous": 2404,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          },
+          "cam8": {
+            "previous": 2373,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          },
+          "cam9": {
+            "previous": 2368,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          },
+          "cam10": {
+            "previous": 2404,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          },
+          "cam11": {
+            "previous": 2373,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          },
+          "cam12": {
+            "previous": 2368,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          },
+          "cam13": {
+            "previous": 2404,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          },
+          "cam14": {
+            "previous": 2404,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          },
+          "cam15": {
+            "previous": 0,
+            "first": null,
+            "last": null,
+            "gap": 0,
+            "last_display": null
+          },
+          "resource-monitor": {
+            "previous": 801,
+            "first": 12.796290159,
+            "last": 88.036533585,
+            "gap": 5.021374749999993,
+            "last_display": 88.036533585
+          }
+        },
+        "visible_sources": [
+          "cam0",
+          "cam1",
+          "cam10",
+          "cam11",
+          "cam12",
+          "cam13",
+          "cam14",
+          "cam2",
+          "cam3",
+          "cam4",
+          "cam5",
+          "cam6",
+          "cam7",
+          "cam8",
+          "cam9",
+          "resource-monitor"
+        ],
+        "first_progress": {
+          "Analysis DB save": 12.796290159,
+          "Decoded frame wait": 12.796290159,
+          "Detection update": 12.796290159,
+          "Embedding first result": 12.796290159,
+          "Embedding freshness": 12.796290159,
+          "Embedding update interval": 12.796290159,
+          "Image embedding": 12.796290159,
+          "Image embedding NPU": 12.796290159,
+          "Image embedding NPU preprocess": 12.796290159,
+          "Image embedding NPU total": 12.796290159,
+          "PNG + DB save": 12.796290159,
+          "Person crop": 12.796290159,
+          "ReID inference + transfer": 12.796290159,
+          "ReID preprocess": 12.796290159,
+          "Tracking association": 12.796290159,
+          "Tracking eligible": 12.796290159,
+          "YOLO executor total": 12.796290159,
+          "YOLO inference": 12.796290159,
+          "YOLO postprocess": 12.796290159,
+          "YOLO preprocess": 12.796290159
+        },
+        "last_progress": {
+          "Analysis DB save": {
+            "elapsed_s": 88.036533585,
+            "completed": 312
+          },
+          "Decoded frame wait": {
+            "elapsed_s": 88.036533585,
+            "completed": 10756
+          },
+          "Detection update": {
+            "elapsed_s": 88.036533585,
+            "completed": 5376
+          },
+          "Embedding first result": {
+            "elapsed_s": 88.036533585,
+            "completed": 303
+          },
+          "Embedding freshness": {
+            "elapsed_s": 88.036533585,
+            "completed": 2326
+          },
+          "Embedding update interval": {
+            "elapsed_s": 88.036533585,
+            "completed": 1763
+          },
+          "Image embedding": {
+            "elapsed_s": 88.036533585,
+            "completed": 2327
+          },
+          "Image embedding NPU": {
+            "elapsed_s": 88.036533585,
+            "completed": 2327
+          },
+          "Image embedding NPU preprocess": {
+            "elapsed_s": 88.036533585,
+            "completed": 2327
+          },
+          "Image embedding NPU total": {
+            "elapsed_s": 88.036533585,
+            "completed": 2327
+          },
+          "PNG + DB save": {
+            "elapsed_s": 88.036533585,
+            "completed": 2326
+          },
+          "Person crop": {
+            "elapsed_s": 88.036533585,
+            "completed": 5375
+          },
+          "ReID inference + transfer": {
+            "elapsed_s": 88.036533585,
+            "completed": 4586
+          },
+          "ReID preprocess": {
+            "elapsed_s": 88.036533585,
+            "completed": 4586
+          },
+          "Tracking association": {
+            "elapsed_s": 88.036533585,
+            "completed": 5373
+          },
+          "Tracking eligible": {
+            "elapsed_s": 88.036533585,
+            "completed": 5376
+          },
+          "YOLO executor total": {
+            "elapsed_s": 88.036533585,
+            "completed": 1581
+          },
+          "YOLO inference": {
+            "elapsed_s": 88.036533585,
+            "completed": 1581
+          },
+          "YOLO postprocess": {
+            "elapsed_s": 88.036533585,
+            "completed": 1581
+          },
+          "YOLO preprocess": {
+            "elapsed_s": 88.036533585,
+            "completed": 1582
+          }
+        },
+        "largest_progress_gap_s": {
+          "Analysis DB save": 5.021374749999993,
+          "Decoded frame wait": 5.021374749999993,
+          "Detection update": 5.021374749999993,
+          "Embedding first result": 5.021374749999993,
+          "Embedding freshness": 5.021374749999993,
+          "Embedding update interval": 5.021374749999993,
+          "Image embedding": 5.021374749999993,
+          "Image embedding NPU": 5.021374749999993,
+          "Image embedding NPU preprocess": 5.021374749999993,
+          "Image embedding NPU total": 5.021374749999993,
+          "PNG + DB save": 5.021374749999993,
+          "Person crop": 5.021374749999993,
+          "ReID inference + transfer": 5.021374749999993,
+          "ReID preprocess": 5.021374749999993,
+          "Tracking association": 5.021374749999993,
+          "Tracking eligible": 5.021374749999993,
+          "YOLO executor total": 5.021374749999993,
+          "YOLO inference": 5.021374749999993,
+          "YOLO postprocess": 5.021374749999993,
+          "YOLO preprocess": 5.021374749999993
+        },
+        "failures": []
+      },
+      "physical": {
+        "passed": true,
+        "decoded": 38267,
+        "presented": 38200,
+        "shutdown_retired": 67,
+        "failures": {},
+        "diagnostic_integrity_valid": true
+      },
+      "readiness_missing_events": 0,
+      "metrics": {
+        "cam1": {
+          "notification": {
+            "samples": 2512,
+            "mean_ms": 0.5176470465764331,
+            "p99_ms": 1.298158,
+            "maximum_ms": 40.214151
+          }
+        },
+        "cam2": {
+          "notification": {
+            "samples": 2512,
+            "mean_ms": 0.5971314044585987,
+            "p99_ms": 1.525433,
+            "maximum_ms": 38.155191
+          }
+        },
+        "cam13": {
+          "notification": {
+            "samples": 2513,
+            "mean_ms": 0.47109074174293675,
+            "p99_ms": 1.099133,
+            "maximum_ms": 38.114382
+          }
+        },
+        "cam10": {
+          "notification": {
+            "samples": 2513,
+            "mean_ms": 0.5849818376442499,
+            "p99_ms": 1.847805,
+            "maximum_ms": 35.356849
+          }
+        },
+        "cam7": {
+          "notification": {
+            "samples": 2512,
+            "mean_ms": 0.5148563678343949,
+            "p99_ms": 1.568772,
+            "maximum_ms": 22.18061
+          }
+        },
+        "cam14": {
+          "notification": {
+            "samples": 2513,
+            "mean_ms": 0.5739318559490648,
+            "p99_ms": 1.700509,
+            "maximum_ms": 37.321921
+          }
+        },
+        "cam3": {
+          "notification": {
+            "samples": 2512,
+            "mean_ms": 0.5222167671178344,
+            "p99_ms": 1.592361,
+            "maximum_ms": 36.249278
+          }
+        },
+        "resource-monitor": {
+          "notification": {
+            "samples": 838,
+            "mean_ms": 0.7121102792362769,
+            "p99_ms": 1.928432,
+            "maximum_ms": 29.757955
+          }
+        },
+        "cam4": {
+          "notification": {
+            "samples": 2482,
+            "mean_ms": 0.45347347099113616,
+            "p99_ms": 1.150732,
+            "maximum_ms": 14.3567
+          }
+        },
+        "cam8": {
+          "notification": {
+            "samples": 2482,
+            "mean_ms": 0.5243254520547945,
+            "p99_ms": 1.363687,
+            "maximum_ms": 35.623282
+          }
+        },
+        "cam11": {
+          "notification": {
+            "samples": 2482,
+            "mean_ms": 0.6146869000805801,
+            "p99_ms": 1.779646,
+            "maximum_ms": 24.093463
+          }
+        },
+        "cam6": {
+          "notification": {
+            "samples": 2482,
+            "mean_ms": 0.5368735564061241,
+            "p99_ms": 1.452634,
+            "maximum_ms": 29.15786
+          }
+        },
+        "cam5": {
+          "notification": {
+            "samples": 2481,
+            "mean_ms": 0.4816717904070939,
+            "p99_ms": 1.235269,
+            "maximum_ms": 7.404
+          }
+        },
+        "cam15": {
+          "notification": {
+            "samples": 2482,
+            "mean_ms": 0.4180305020145044,
+            "p99_ms": 1.106573,
+            "maximum_ms": 28.824438
+          }
+        },
+        "cam0": {
+          "notification": {
+            "samples": 2481,
+            "mean_ms": 0.598723423216445,
+            "p99_ms": 1.506614,
+            "maximum_ms": 27.179969
+          }
+        },
+        "cam12": {
+          "notification": {
+            "samples": 2476,
+            "mean_ms": 0.5157560246365105,
+            "p99_ms": 1.679819,
+            "maximum_ms": 17.775437
+          }
+        },
+        "cam9": {
+          "notification": {
+            "samples": 2476,
+            "mean_ms": 0.4864108053311793,
+            "p99_ms": 1.425245,
+            "maximum_ms": 10.413877
+          }
+        }
+      }
+    },
+    {
+      "name": "observer-on-01",
+      "elapsed_s": 91.12171141599538,
+      "binary_sha256": "20ee21b905455720c66255f338fa3b2af1351046be71049750ac6adf93639415",
+      "config_sha256": "9dc0ee34000e7bfba566b7272ce379336faecaf7ef8b272b9ee6342b0f1466e4",
+      "ui_sha256": "0e65c1db14d78c6c50a3224e70ded0c1bac62877d9cf8d4e6ad9bd9621b293f0",
+      "cpu_core_percent_after_30s": 220.30647946736428,
+      "short_audit_minimum_seconds": 30,
+      "audits": {
+        "audits_passed": true,
+        "copy_active_seconds": 81.746810355,
+        "active_snapshots": 16,
+        "vpe": {
+          "schema": 1,
+          "method": "binary-syncobj-fence",
+          "scopes": 70127,
+          "completed": 70127,
+          "failed": 0,
+          "aborted": 0,
+          "submissions": 107906,
+          "rejected_submissions": 0,
+          "foreign_operations": 0,
+          "active_scope": 0,
+          "observer_wait_ns": 15500531,
+          "maximum_observer_wait_ns": 127506
+        },
+        "failures": []
+      },
+      "progress": {
+        "validation_schema": 2,
+        "validator_sha256": "4e39a5d6b19554d32e1b17fc1a0655278aca7375647cbd8d40eae5270423b7d5",
+        "progress_passed": true,
+        "snapshots": 17,
+        "duration_s": 89.051902708,
+        "largest_snapshot_gap_s": 5.03290457,
+        "channel_progress": {
+          "cam0": {
+            "previous": 2375,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          },
+          "cam1": {
+            "previous": 2375,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          },
+          "cam2": {
+            "previous": 2375,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          },
+          "cam3": {
+            "previous": 2375,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          },
+          "cam4": {
+            "previous": 2405,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          },
+          "cam5": {
+            "previous": 2405,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          },
+          "cam6": {
+            "previous": 2405,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          },
+          "cam7": {
+            "previous": 2406,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          },
+          "cam8": {
+            "previous": 2406,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          },
+          "cam9": {
+            "previous": 2405,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          },
+          "cam10": {
+            "previous": 2405,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          },
+          "cam11": {
+            "previous": 2401,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          },
+          "cam12": {
+            "previous": 2375,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          },
+          "cam13": {
+            "previous": 2401,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          },
+          "cam14": {
+            "previous": 2405,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          },
+          "cam15": {
+            "previous": 0,
+            "first": null,
+            "last": null,
+            "gap": 0,
+            "last_display": null
+          },
+          "resource-monitor": {
+            "previous": 801,
+            "first": 13.751563716,
+            "last": 89.051902708,
+            "gap": 5.0329045699999995,
+            "last_display": 89.051902708
+          }
+        },
+        "visible_sources": [
+          "cam0",
+          "cam1",
+          "cam10",
+          "cam11",
+          "cam12",
+          "cam13",
+          "cam14",
+          "cam2",
+          "cam3",
+          "cam4",
+          "cam5",
+          "cam6",
+          "cam7",
+          "cam8",
+          "cam9",
+          "resource-monitor"
+        ],
+        "first_progress": {
+          "Analysis DB save": 13.751563716,
+          "Decoded frame wait": 13.751563716,
+          "Detection update": 13.751563716,
+          "Embedding first result": 13.751563716,
+          "Embedding freshness": 13.751563716,
+          "Embedding update interval": 13.751563716,
+          "Image embedding": 13.751563716,
+          "Image embedding NPU": 13.751563716,
+          "Image embedding NPU preprocess": 13.751563716,
+          "Image embedding NPU total": 13.751563716,
+          "PNG + DB save": 13.751563716,
+          "Person crop": 13.751563716,
+          "ReID inference + transfer": 13.751563716,
+          "ReID preprocess": 13.751563716,
+          "Tracking association": 13.751563716,
+          "Tracking eligible": 13.751563716,
+          "YOLO executor total": 13.751563716,
+          "YOLO inference": 13.751563716,
+          "YOLO postprocess": 13.751563716,
+          "YOLO preprocess": 13.751563716
+        },
+        "last_progress": {
+          "Analysis DB save": {
+            "elapsed_s": 89.051902708,
+            "completed": 312
+          },
+          "Decoded frame wait": {
+            "elapsed_s": 89.051902708,
+            "completed": 10764
+          },
+          "Detection update": {
+            "elapsed_s": 89.051902708,
+            "completed": 5380
+          },
+          "Embedding first result": {
+            "elapsed_s": 89.051902708,
+            "completed": 301
+          },
+          "Embedding freshness": {
+            "elapsed_s": 89.051902708,
+            "completed": 2313
+          },
+          "Embedding update interval": {
+            "elapsed_s": 89.051902708,
+            "completed": 1743
+          },
+          "Image embedding": {
+            "elapsed_s": 89.051902708,
+            "completed": 2313
+          },
+          "Image embedding NPU": {
+            "elapsed_s": 89.051902708,
+            "completed": 2313
+          },
+          "Image embedding NPU preprocess": {
+            "elapsed_s": 89.051902708,
+            "completed": 2314
+          },
+          "Image embedding NPU total": {
+            "elapsed_s": 89.051902708,
+            "completed": 2313
+          },
+          "PNG + DB save": {
+            "elapsed_s": 89.051902708,
+            "completed": 2313
+          },
+          "Person crop": {
+            "elapsed_s": 89.051902708,
+            "completed": 5380
+          },
+          "ReID inference + transfer": {
+            "elapsed_s": 89.051902708,
+            "completed": 4593
+          },
+          "ReID preprocess": {
+            "elapsed_s": 89.051902708,
+            "completed": 4593
+          },
+          "Tracking association": {
+            "elapsed_s": 89.051902708,
+            "completed": 5380
+          },
+          "Tracking eligible": {
+            "elapsed_s": 89.051902708,
+            "completed": 5380
+          },
+          "YOLO executor total": {
+            "elapsed_s": 89.051902708,
+            "completed": 1581
+          },
+          "YOLO inference": {
+            "elapsed_s": 89.051902708,
+            "completed": 1581
+          },
+          "YOLO postprocess": {
+            "elapsed_s": 89.051902708,
+            "completed": 1581
+          },
+          "YOLO preprocess": {
+            "elapsed_s": 89.051902708,
+            "completed": 1582
+          }
+        },
+        "largest_progress_gap_s": {
+          "Analysis DB save": 5.0329045699999995,
+          "Decoded frame wait": 5.0329045699999995,
+          "Detection update": 5.0329045699999995,
+          "Embedding first result": 5.0329045699999995,
+          "Embedding freshness": 5.0329045699999995,
+          "Embedding update interval": 5.0329045699999995,
+          "Image embedding": 5.0329045699999995,
+          "Image embedding NPU": 5.0329045699999995,
+          "Image embedding NPU preprocess": 5.0329045699999995,
+          "Image embedding NPU total": 5.0329045699999995,
+          "PNG + DB save": 5.0329045699999995,
+          "Person crop": 5.0329045699999995,
+          "ReID inference + transfer": 5.0329045699999995,
+          "ReID preprocess": 5.0329045699999995,
+          "Tracking association": 5.0329045699999995,
+          "Tracking eligible": 5.0329045699999995,
+          "YOLO executor total": 5.0329045699999995,
+          "YOLO inference": 5.0329045699999995,
+          "YOLO postprocess": 5.0329045699999995,
+          "YOLO preprocess": 5.0329045699999995
+        },
+        "failures": []
+      },
+      "physical": {
+        "passed": true,
+        "decoded": 37827,
+        "presented": 37762,
+        "shutdown_retired": 65,
+        "failures": {},
+        "diagnostic_integrity_valid": true
+      },
+      "readiness_missing_events": 0,
+      "metrics": {
+        "cam8": {
+          "notification": {
+            "samples": 2479,
+            "mean_ms": 0.6918589116579266,
+            "p99_ms": 1.847795,
+            "maximum_ms": 45.459427
+          },
+          "ready": {
+            "samples": 2479,
+            "mean_ms": 3.8621668321903995,
+            "p99_ms": 6.292725,
+            "maximum_ms": 50.66973
+          },
+          "after_notification": {
+            "samples": 2479,
+            "mean_ms": 3.1703079205324727,
+            "p99_ms": 5.042977,
+            "maximum_ms": 21.803917
+          },
+          "uncertainty": {
+            "samples": 2479,
+            "mean_ms": 1.1038985623235176,
+            "p99_ms": 1.417255,
+            "maximum_ms": 5.210303
+          }
+        },
+        "cam7": {
+          "notification": {
+            "samples": 2478,
+            "mean_ms": 0.6238428434221146,
+            "p99_ms": 1.584721,
+            "maximum_ms": 30.323468
+          },
+          "ready": {
+            "samples": 2478,
+            "mean_ms": 3.958947747376917,
+            "p99_ms": 6.160409,
+            "maximum_ms": 33.394973
+          },
+          "after_notification": {
+            "samples": 2478,
+            "mean_ms": 3.3351049039548024,
+            "p99_ms": 5.427757,
+            "maximum_ms": 24.95086
+          },
+          "uncertainty": {
+            "samples": 2478,
+            "mean_ms": 1.1093067142857143,
+            "p99_ms": 1.496973,
+            "maximum_ms": 4.443711
+          }
+        },
+        "cam5": {
+          "notification": {
+            "samples": 2478,
+            "mean_ms": 0.6312142215496368,
+            "p99_ms": 1.712058,
+            "maximum_ms": 55.840713
+          },
+          "ready": {
+            "samples": 2478,
+            "mean_ms": 3.954390430589185,
+            "p99_ms": 6.839433,
+            "maximum_ms": 81.481766
+          },
+          "after_notification": {
+            "samples": 2478,
+            "mean_ms": 3.323176209039548,
+            "p99_ms": 6.066542,
+            "maximum_ms": 34.234082
+          },
+          "uncertainty": {
+            "samples": 2478,
+            "mean_ms": 1.1036853244552058,
+            "p99_ms": 1.508143,
+            "maximum_ms": 5.149724
+          }
+        },
+        "cam4": {
+          "notification": {
+            "samples": 2478,
+            "mean_ms": 0.7274266335754641,
+            "p99_ms": 2.06123,
+            "maximum_ms": 53.599459
+          },
+          "ready": {
+            "samples": 2478,
+            "mean_ms": 3.9940369931396287,
+            "p99_ms": 6.12131,
+            "maximum_ms": 70.3153
+          },
+          "after_notification": {
+            "samples": 2478,
+            "mean_ms": 3.2666103595641647,
+            "p99_ms": 5.431867,
+            "maximum_ms": 29.113428
+          },
+          "uncertainty": {
+            "samples": 2478,
+            "mean_ms": 1.091517614205004,
+            "p99_ms": 1.334927,
+            "maximum_ms": 4.864751
+          }
+        },
+        "cam9": {
+          "notification": {
+            "samples": 2478,
+            "mean_ms": 0.6544697594834544,
+            "p99_ms": 1.910533,
+            "maximum_ms": 48.029005
+          },
+          "ready": {
+            "samples": 2478,
+            "mean_ms": 2.937206684826473,
+            "p99_ms": 5.034087,
+            "maximum_ms": 57.131362
+          },
+          "after_notification": {
+            "samples": 2478,
+            "mean_ms": 2.2827369253430185,
+            "p99_ms": 4.192888,
+            "maximum_ms": 21.313308
+          },
+          "uncertainty": {
+            "samples": 2478,
+            "mean_ms": 1.089809017756255,
+            "p99_ms": 1.61993,
+            "maximum_ms": 4.265006
+          }
+        },
+        "cam15": {
+          "notification": {
+            "samples": 2478,
+            "mean_ms": 0.5322463405972558,
+            "p99_ms": 1.406566,
+            "maximum_ms": 46.474603
+          },
+          "ready": {
+            "samples": 2478,
+            "mean_ms": 3.064919644874899,
+            "p99_ms": 5.821967,
+            "maximum_ms": 49.979727
+          },
+          "after_notification": {
+            "samples": 2478,
+            "mean_ms": 2.5326733042776435,
+            "p99_ms": 5.29022,
+            "maximum_ms": 18.863258
+          },
+          "uncertainty": {
+            "samples": 2478,
+            "mean_ms": 1.0863067534301856,
+            "p99_ms": 1.389426,
+            "maximum_ms": 8.051753
+          }
+        },
+        "cam14": {
+          "notification": {
+            "samples": 2478,
+            "mean_ms": 0.5599942332526231,
+            "p99_ms": 1.473484,
+            "maximum_ms": 46.073962
+          },
+          "ready": {
+            "samples": 2478,
+            "mean_ms": 3.047898371670702,
+            "p99_ms": 5.566623,
+            "maximum_ms": 52.489975
+          },
+          "after_notification": {
+            "samples": 2478,
+            "mean_ms": 2.487904138418079,
+            "p99_ms": 4.792752,
+            "maximum_ms": 34.027628
+          },
+          "uncertainty": {
+            "samples": 2478,
+            "mean_ms": 1.1025409878934624,
+            "p99_ms": 1.423575,
+            "maximum_ms": 5.347179
+          }
+        },
+        "cam10": {
+          "notification": {
+            "samples": 2478,
+            "mean_ms": 0.6701858607748185,
+            "p99_ms": 2.03289,
+            "maximum_ms": 38.609215
+          },
+          "ready": {
+            "samples": 2478,
+            "mean_ms": 3.248738705811138,
+            "p99_ms": 5.354949,
+            "maximum_ms": 44.038873
+          },
+          "after_notification": {
+            "samples": 2478,
+            "mean_ms": 2.5785528450363198,
+            "p99_ms": 4.362233,
+            "maximum_ms": 33.362884
+          },
+          "uncertainty": {
+            "samples": 2478,
+            "mean_ms": 1.096510805488297,
+            "p99_ms": 1.399756,
+            "maximum_ms": 5.429658
+          }
+        },
+        "cam6": {
+          "notification": {
+            "samples": 2477,
+            "mean_ms": 0.6725654864755753,
+            "p99_ms": 1.823325,
+            "maximum_ms": 46.62811
+          },
+          "ready": {
+            "samples": 2477,
+            "mean_ms": 4.750689262817925,
+            "p99_ms": 6.454642,
+            "maximum_ms": 73.234948
+          },
+          "after_notification": {
+            "samples": 2477,
+            "mean_ms": 4.078123776342349,
+            "p99_ms": 5.72032,
+            "maximum_ms": 31.958788
+          },
+          "uncertainty": {
+            "samples": 2477,
+            "mean_ms": 1.0941361465482438,
+            "p99_ms": 1.361597,
+            "maximum_ms": 3.371437
+          }
+        },
+        "resource-monitor": {
+          "notification": {
+            "samples": 826,
+            "mean_ms": 0.926836583535109,
+            "p99_ms": 2.702313,
+            "maximum_ms": 43.568814
+          },
+          "ready": {
+            "samples": 826,
+            "mean_ms": 3.174685863196126,
+            "p99_ms": 8.090701,
+            "maximum_ms": 54.614204
+          },
+          "after_notification": {
+            "samples": 826,
+            "mean_ms": 2.247849279661017,
+            "p99_ms": 5.986703,
+            "maximum_ms": 17.98384
+          },
+          "uncertainty": {
+            "samples": 826,
+            "mean_ms": 1.1033013050847458,
+            "p99_ms": 1.395785,
+            "maximum_ms": 5.150534
+          }
+        },
+        "cam11": {
+          "notification": {
+            "samples": 2472,
+            "mean_ms": 0.666426178802589,
+            "p99_ms": 1.853135,
+            "maximum_ms": 17.227119
+          },
+          "ready": {
+            "samples": 2472,
+            "mean_ms": 3.1345992855987057,
+            "p99_ms": 5.656291,
+            "maximum_ms": 21.303889
+          },
+          "after_notification": {
+            "samples": 2472,
+            "mean_ms": 2.4681731067961166,
+            "p99_ms": 4.597128,
+            "maximum_ms": 16.452127
+          },
+          "uncertainty": {
+            "samples": 2472,
+            "mean_ms": 1.0889717281553397,
+            "p99_ms": 1.424605,
+            "maximum_ms": 4.07677
+          }
+        },
+        "cam13": {
+          "notification": {
+            "samples": 2473,
+            "mean_ms": 0.48324963121714515,
+            "p99_ms": 1.348017,
+            "maximum_ms": 21.799026
+          },
+          "ready": {
+            "samples": 2473,
+            "mean_ms": 3.0768623061059444,
+            "p99_ms": 5.522234,
+            "maximum_ms": 28.841634
+          },
+          "after_notification": {
+            "samples": 2473,
+            "mean_ms": 2.593612674888799,
+            "p99_ms": 4.801832,
+            "maximum_ms": 18.710102
+          },
+          "uncertainty": {
+            "samples": 2473,
+            "mean_ms": 1.0974413578649413,
+            "p99_ms": 1.440375,
+            "maximum_ms": 5.034937
+          }
+        },
+        "cam2": {
+          "notification": {
+            "samples": 2447,
+            "mean_ms": 0.5938984192889252,
+            "p99_ms": 1.849775,
+            "maximum_ms": 25.873407
+          },
+          "ready": {
+            "samples": 2447,
+            "mean_ms": 3.1073559893747444,
+            "p99_ms": 5.990153,
+            "maximum_ms": 39.070854
+          },
+          "after_notification": {
+            "samples": 2447,
+            "mean_ms": 2.5134575700858193,
+            "p99_ms": 4.689415,
+            "maximum_ms": 15.012213
+          },
+          "uncertainty": {
+            "samples": 2447,
+            "mean_ms": 1.096133819370658,
+            "p99_ms": 1.384506,
+            "maximum_ms": 3.872035
+          }
+        },
+        "cam0": {
+          "notification": {
+            "samples": 2446,
+            "mean_ms": 0.6291418879803761,
+            "p99_ms": 1.801366,
+            "maximum_ms": 23.563503
+          },
+          "ready": {
+            "samples": 2446,
+            "mean_ms": 2.9259133319705644,
+            "p99_ms": 5.473326,
+            "maximum_ms": 31.396462
+          },
+          "after_notification": {
+            "samples": 2446,
+            "mean_ms": 2.296771443990188,
+            "p99_ms": 4.274375,
+            "maximum_ms": 14.609083
+          },
+          "uncertainty": {
+            "samples": 2446,
+            "mean_ms": 1.1125670482420278,
+            "p99_ms": 1.531732,
+            "maximum_ms": 5.569244
+          }
+        },
+        "cam1": {
+          "notification": {
+            "samples": 2446,
+            "mean_ms": 0.6440375331152902,
+            "p99_ms": 1.781336,
+            "maximum_ms": 22.604547
+          },
+          "ready": {
+            "samples": 2446,
+            "mean_ms": 2.896477908830744,
+            "p99_ms": 4.726505,
+            "maximum_ms": 32.170573
+          },
+          "after_notification": {
+            "samples": 2446,
+            "mean_ms": 2.252440375715454,
+            "p99_ms": 3.809346,
+            "maximum_ms": 15.94503
+          },
+          "uncertainty": {
+            "samples": 2446,
+            "mean_ms": 1.0848354096484056,
+            "p99_ms": 1.369276,
+            "maximum_ms": 3.458975
+          }
+        },
+        "cam3": {
+          "notification": {
+            "samples": 2446,
+            "mean_ms": 0.5469017710547833,
+            "p99_ms": 1.447905,
+            "maximum_ms": 13.196167
+          },
+          "ready": {
+            "samples": 2446,
+            "mean_ms": 2.8436411210139,
+            "p99_ms": 6.277036,
+            "maximum_ms": 22.105999
+          },
+          "after_notification": {
+            "samples": 2446,
+            "mean_ms": 2.296739349959117,
+            "p99_ms": 4.981208,
+            "maximum_ms": 15.322785
+          },
+          "uncertainty": {
+            "samples": 2446,
+            "mean_ms": 1.0939833663123466,
+            "p99_ms": 1.354807,
+            "maximum_ms": 8.909832
+          }
+        },
+        "cam12": {
+          "notification": {
+            "samples": 2447,
+            "mean_ms": 0.5282093628933388,
+            "p99_ms": 1.63978,
+            "maximum_ms": 21.252919
+          },
+          "ready": {
+            "samples": 2447,
+            "mean_ms": 3.611895026971802,
+            "p99_ms": 5.542214,
+            "maximum_ms": 27.35229
+          },
+          "after_notification": {
+            "samples": 2447,
+            "mean_ms": 3.0836856640784633,
+            "p99_ms": 4.909499,
+            "maximum_ms": 18.642984
+          },
+          "uncertainty": {
+            "samples": 2447,
+            "mean_ms": 1.097585626481406,
+            "p99_ms": 1.389976,
+            "maximum_ms": 4.687484
+          }
+        }
+      }
+    }
+  ],
+  "evidence_directory": "/home/amd/work/rai/logs/decode-ready-20261116",
+  "limitations": [
+    "Only Ubuntu 24.04/gfx1150 was tested.",
+    "Two short runs do not establish long-duration reliability or zero measurement overhead.",
+    "GPU surface references are retained until observation/cancellation/timeout; this remains a bounded source of pool pressure under overload."
+  ],
+  "test_results": {
+    "contracts": 49,
+    "failed": 0,
+    "offline_analysis_regression": "passed after addition of ready-event edges",
+    "translations_stale": 0,
+    "mkdocs_strict": "passed"
+  },
+  "overhead_observation": {
+    "comparison": "One sequential off/on pair; not a noise-controlled performance benchmark",
+    "off_cpu_cores": 1.9716374948858257,
+    "on_cpu_cores": 2.203064794673643,
+    "delta_cpu_cores": 0.23142729978781718
+  },
+  "restored_user_demo": {
+    "launcher_pid": 273369,
+    "gpu_metric": "window",
+    "readiness_observer": true,
+    "frame_diagnostics": false
+  }
+}

@@ -34,7 +34,7 @@ class DiagnosticsSession {
                         {"slot",s.slot},{"live",s.connection=="live"},{"recording",QString::fromStdString(s.recording)},
                         {"decoded",double(s.decoded)},{"ai",double(s.ai)},
                         {"display_fps",s.display_fps},{"ai_fps",s.ai_fps},
-                        {"gaps",double(s.gaps)},{"generation",double(s.generation)},
+                        {"gaps",double(s.gaps)},{"presentation_dropped",double(s.presentation_dropped)},{"generation",double(s.generation)},
                         {"error",QString::fromStdString(s.error)}});
                 for (const auto &s : controller.telemetry())
                     timing.append(QJsonDocument::fromJson(QByteArray::fromStdString(s.json())).object());

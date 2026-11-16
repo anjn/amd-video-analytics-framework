@@ -30,7 +30,9 @@ int main(int argc, char **argv) {
             decoded.supported = true;
             decoded.fps = 30;
             t.latency[0][0].samples = 10;
-            t.latency[0][0].p99_ms = i ? 12 : 8;
+            t.latency[0][0].p99_ms = 0.5;
+            t.latency[0][amdva::input_decode_ready_latency].samples = 10;
+            t.latency[0][amdva::input_decode_ready_latency].p99_ms = i ? 12 : 8;
         }
         auto metric = [](const char *stage, const char *camera, double rate, double batch) {
             AiMetric m;
@@ -68,6 +70,10 @@ int main(int argc, char **argv) {
         check(near(o.decode.mpixels, 60 * 1920 * 1080 / 1e6), "Decoded pixel rate");
         check(o.decode.live == 2 && o.decode.cameras == 2 && o.decode.gaps == 1, "Camera counts");
         check(near(o.decode.p99_ms, 12), "Worst camera P99");
+        telemetry[0].decode_ready_complete[0]=false;
+        auto incomplete=summarize_overview(statuses,telemetry,metrics,tracks,options,false,now);
+        check(incomplete.decode.p99_ms<0,"Missing completion coverage must not use notification timing");
+        telemetry[0].decode_ready_complete[0]=true;
         check(o.decode.formats == QStringList{"H265 1920×1080 ×2"}, "Input formats");
         check(o.decode.state == AiOverviewSample::Good, "Decode healthy");
         check(near(o.gpu.yolo_images, 8), "YOLO images = calls × batch");

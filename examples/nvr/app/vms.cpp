@@ -584,7 +584,7 @@ struct Window::Vms {
         w.table_->setObjectName("camera-list");
         w.table_->setHorizontalHeaderLabels({"Live", "Camera", "Connection", "Recording",
                                              "Decode / swap / AI FPS", "Status",
-                                             "Input→decode P99 ms", "Input→swap P99 ms"});
+                                             "Input→GPU-ready P99 ms", "Input→swap P99 ms"});
         w.table_->setSelectionBehavior(QAbstractItemView::SelectRows);
         w.table_->setEditTriggers(QAbstractItemView::NoEditTriggers);
         w.table_->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -1026,19 +1026,23 @@ void Window::refresh() {
                         .arg(metrics.stages[0][unsigned(TimingStage::DecodeOutput)].fps, 0, 'f', 1)
                         .arg(metrics.stages[0][unsigned(TimingStage::Swap)].fps, 0, 'f', 1)
                         .arg(s.ai_fps, 0, 'f', 1));
-                table_->item(row, 6)->setText(text(metrics.latency[0][0]));
+                table_->item(row, 6)->setText(metrics.decode_ready_complete[0]
+                    ? text(metrics.latency[0][input_decode_ready_latency]) : QString("N/A"));
                 table_->item(row, 7)->setText(text(metrics.latency[0][3]));
                 if (!metrics.enabled)
                     table_->item(row, 4)->setText(
                         QString("Timing off / AI %1").arg(s.ai_fps, 0, 'f', 1));
-                QString details = "Latency: mean / P95 / P99 / maximum (ms)\n";
-                const char *names[] = {"Input → decode", "Decoder input → output", "Input → draw",
+                QString details = QString("Live display drops: %1 (recording is independent)\n")
+                    .arg(qulonglong(metrics.presentation_dropped));
+                details += "Latency: mean / P95 / P99 / maximum (ms)\n";
+                const char *names[] = {"Input → decoder output notification", "Decoder input → output notification", "Input → draw",
                                        "Input → swap",   "Decode → preview",       "Preview → draw",
-                                       "Draw → swap"};
-                for (unsigned i = 0; i < 7; i++) {
+                                       "Draw → swap", "Input → GPU-ready observation",
+                                       "Decoder input → GPU-ready observation"};
+                for (unsigned i = 0; i < timing_latency_count; i++) {
                     const auto &d = metrics.latency[0][i];
                     details += QString::fromUtf8(names[i]) + ": ";
-                    if (!d.samples)
+                    if (!d.samples || (i>=input_decode_ready_latency && !metrics.decode_ready_complete[0]))
                         details += "N/A\n";
                     else
                         details += QString("%1 / %2 / %3 / %4 (%5 samples%6)\n")
@@ -1049,6 +1053,10 @@ void Window::refresh() {
                                        .arg(qulonglong(d.samples))
                                        .arg(d.truncated ? ", partial window" : "");
                 }
+                details += QString("GPU-ready is observed without GPU waits; polling/scheduling interval max %1 ms. "
+                                   "Not pure hardware execution time; %2 unavailable observations.\n")
+                    .arg(metrics.decode_ready_uncertainty[0].maximum_ms,0,'f',2)
+                    .arg(qulonglong(metrics.decode_ready_unavailable));
                 for (auto stage : {TimingStage::DecodeOutput, TimingStage::Swap}) {
                     const auto &v = metrics.stages[0][unsigned(stage)];
                     details +=
