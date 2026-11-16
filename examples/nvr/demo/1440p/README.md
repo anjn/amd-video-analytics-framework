@@ -1,4 +1,4 @@
-<!-- source: examples/nvr/demo/1440p/README.ja.md 653aa5eee1928ef788d984e7d846754df403f1c8 -->
+<!-- source: examples/nvr/demo/1440p/README.ja.md 67b96b388b01b1a5a3c1bd6e6382fc7470f292d2 -->
 # Prepare the 1440p demo from Git
 
 The standard workflow generates models on the target from locked public checkpoints, without copying prepared assets from another PC. The legacy migration section below is an auxiliary export tool, not a requirement for a fresh build.
@@ -180,3 +180,5 @@ sysfs values are not mixed into the wave average. `gpu_source` and `gpu_status`
 report the display source and state; `gpu_raw_pct`, `gpu_raw_source` and
 `gpu_raw_status` retain the original reading. The candidate includes resident waves waiting for memory and measures
 a cycle ratio, not the fraction of additional work that can be admitted.
+
+Set `AMDVA_GPU_WAVE_TIMING=1` to log counter API start times (monotonic nanoseconds), durations and return statuses to `/run/user/<uid>/amdva-wave/<PCI-address>.log`. This is disabled by default. Durations measure CPU call time, not an upper bound on perturbation of concurrent GPU work. To also retain per-camera status, select an unused `AMDVA_DIAGNOSTICS_DIR`; `AMDVA_DIAGNOSTICS_TRACE=0` disables detailed frame tracing.

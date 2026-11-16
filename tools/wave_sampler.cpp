@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <chrono>
 #include <csignal>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -114,6 +115,23 @@ rocprofiler_tool_configure_result_t *configure(uint32_t, const char *, uint32_t,
     static rocprofiler_tool_configure_result_t result{sizeof(result), initialize, nullptr, nullptr};
     return &result;
 }
+int64_t monotonic_ns() {
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(
+        std::chrono::steady_clock::now().time_since_epoch()).count();
+}
+template<class Call> rocprofiler_status_t timed_call(const char *stage, Call call) {
+    const char *requested = std::getenv("AMDVA_GPU_WAVE_TIMING");
+    const bool trace = requested && std::string(requested) == "1";
+    const auto begin = trace ? monotonic_ns() : 0;
+    const auto status = call();
+    if (trace) {
+        const auto duration = monotonic_ns()-begin;
+        std::cerr << "wave_api stage=" << stage << " begin_ns=" << begin
+                  << " duration_ns=" << duration
+                  << " status=" << unsigned(status) << '\n';
+    }
+    return status;
+}
 void pause(unsigned ms) {
     for (unsigned i = 0; running && i < ms; i += 20)
         std::this_thread::sleep_for(std::chrono::milliseconds(std::min(20u, ms - i)));
@@ -159,12 +177,14 @@ int main(int argc, char **argv) {
         std::vector<rocprofiler_counter_record_t> records(expected_busy + 1);
         std::optional<bool> previously_valid;
         while (running) {
-            check(rocprofiler_start_context(context));
+            check(timed_call("start", [] { return rocprofiler_start_context(context); }));
             pause(epoch);
             size_t count = records.size();
-            const auto status = rocprofiler_sample_device_counting_service(
-                context, {}, ROCPROFILER_COUNTER_FLAG_NONE, records.data(), &count);
-            const auto stopped = rocprofiler_stop_context(context);
+            const auto status = timed_call("sample", [&] {
+                return rocprofiler_sample_device_counting_service(
+                    context, {}, ROCPROFILER_COUNTER_FLAG_NONE, records.data(), &count);
+            });
+            const auto stopped = timed_call("stop", [] { return rocprofiler_stop_context(context); });
             check(status);
             check(stopped);
             if (!running) break;

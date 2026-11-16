@@ -169,3 +169,5 @@ artifacts/1440p-demo/run-demo.sh --soak-seconds 1800
 デモのGPU計測の既定値を従来の`sysfs`に戻しました。継続実行中の不安定化の報告を受け、wave収集は既定で無効にします。wave収集が原因であると確定したわけではありません。
 `AMDVA_GPU_WAVE_MODE=window artifacts/1440p-demo/run-demo.sh`で診断用wave方式（500ms収集・500ms休止）を明示的に選べます。`amdva-wave-sampler`のビルドと検証済みOS・GPUが必要です。wave表示は時定数3秒の指数移動平均で安定化します（持続する変化の95%まで約9秒）。取得失敗時は最大2秒保持し、その後は取得不可を表示します。sysfs値はwaveの平均には混ぜません。ダッシュボードログの`gpu_source`と`gpu_status`に表示の取得元と状態を残し、`gpu_raw_pct`、`gpu_raw_source`、`gpu_raw_status`で元の値も確認できます。
 wave値はメモリ待ちのwaveも含むサイクル比であり、追加処理可能量の割合ではありません。
+
+`AMDVA_GPU_WAVE_TIMING=1`を併用すると、カウンタAPIの開始時刻（単調時計ns）・所要時間・戻り値を`/run/user/<uid>/amdva-wave/<PCIアドレス>.log`へ記録します。既定は無効です。所要時間はCPU側の呼出時間で、並行GPU処理への影響の上限ではありません。カメラ別の状態も残す場合は、未使用の`AMDVA_DIAGNOSTICS_DIR`を指定し、`AMDVA_DIAGNOSTICS_TRACE=0`でフレーム詳細記録を無効にできます。
