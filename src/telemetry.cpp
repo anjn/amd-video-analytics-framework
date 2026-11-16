@@ -121,7 +121,7 @@ struct Telemetry::Impl {
     Now clock;
     std::mutex mutex;
     uint64_t generation{}, sequence{};
-    int64_t started{};
+    int64_t started{}, presentation_drop_count_after{};
     struct Seen {
         int64_t at{};
         unsigned mask{};
@@ -340,8 +340,19 @@ void Telemetry::counter(TimingCounter counter, uint64_t amount) {
         return;
     auto &s = *impl_;
     std::lock_guard<std::mutex> lock(s.mutex);
+    const auto at=now();
+    if(counter==TimingCounter::PresentationDropped && at<s.presentation_drop_count_after) {
+        diagnostic_event(s.source,s.generation,0,"presentation_startup_drop",at,amount);
+        return;
+    }
     s.counters[unsigned(counter)] += amount;
     diagnostic_event(s.source, s.generation, 0, "counter", now(), unsigned(counter), amount);
+}
+void Telemetry::presentation_drop_count_after(int64_t deadline_ns) {
+    std::lock_guard<std::mutex> lock(impl_->mutex);
+    if(impl_->presentation_drop_count_after==deadline_ns)return;
+    impl_->presentation_drop_count_after=deadline_ns;
+    diagnostic_event(impl_->source,impl_->generation,0,"presentation_drop_count_after",now(),deadline_ns);
 }
 uint64_t Telemetry::counter_value(TimingCounter counter) const {
     std::lock_guard<std::mutex> lock(impl_->mutex);

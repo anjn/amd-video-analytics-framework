@@ -170,6 +170,7 @@ class Controller {
     std::deque<std::function<void()>> commands_;
     std::vector<Status> statuses_;
     mutable std::mutex telemetry_mutex_;
+    int64_t presentation_drop_count_after_{}; // Guarded by telemetry_mutex_; never reset on reconnect.
     std::map<std::string, std::shared_ptr<Telemetry>> telemetry_;
     std::string fatal_;
     std::vector<std::unique_ptr<Channel>> channels_;

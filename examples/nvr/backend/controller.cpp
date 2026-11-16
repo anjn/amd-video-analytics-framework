@@ -252,6 +252,7 @@ struct Controller::Channel {
         state.source = std::move(source);
         timing = std::make_shared<Telemetry>(state.source.id, controller.options_.telemetry);
         std::lock_guard<std::mutex> lock(controller.telemetry_mutex_);
+        timing->presentation_drop_count_after(controller.presentation_drop_count_after_);
         controller.telemetry_[state.source.id] = timing;
         state.source.selected = false;
     }
@@ -2091,6 +2092,13 @@ std::vector<TelemetrySnapshot> Controller::telemetry() const {
 namespace amdva::nvr {
 using namespace amdva::streaming;
 void Controller::presentation_active(bool active) {
+    if(active) {
+        std::lock_guard<std::mutex> lock(telemetry_mutex_);
+        if(!presentation_drop_count_after_)
+            presentation_drop_count_after_=Telemetry::monotonic_ns()+10000000000LL;
+        for(const auto &entry:telemetry_)
+            entry.second->presentation_drop_count_after(presentation_drop_count_after_);
+    }
     presentation_observed_ = active;
     for(auto &slot:slots_) {
         const bool requested=options_.preview_enabled && active && slot.preview_visible.load() && !stopping_.load();

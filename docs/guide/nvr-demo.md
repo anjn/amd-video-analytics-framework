@@ -1,11 +1,11 @@
-<!-- source: docs/guide/nvr-demo.ja.md 810e8c05d960c4bc0ede147fa0f9090609d1d064 -->
+<!-- source: docs/guide/nvr-demo.ja.md ed5504cf96b2285ef25bca7fd6308f537647d978 -->
 # NVR demo
 
 ## Live display recovery (2026-11-16)
 
 Live display prioritizes following the latest video. When its three-frame FIFO fills, the oldest entry that has not been consumed is discarded and the new frame is accepted. Initial prefill remains two frame periods. Excessively late queued frames are discarded to catch up; startup burst timing is bounded so scheduled presentation cannot keep moving into the future. Surfaces used by rendering or GPU processing are never reused before completion.
 
-Display drops appear as drop N in the single-line tile overlay, as a total in AI Statistics, and as per-camera entries in the ordinary log. Compositor-discarded submissions are accounted separately. latency 10s max covers frames actually presented; a low value alone does not prove that every frame was shown. Recording, retention and AI frequency are unchanged.
+Drops during the first ten seconds after live presentation first starts are excluded from the displayed aggregate. This deadline is shared across cameras and is not extended by reconnecting or resuming presentation. Per-frame diagnostics still retain these drops, with presentation_startup_drop marking their exclusion. After ten seconds, display drops appear as drop N in the single-line tile overlay, as a total in AI Statistics, and as per-camera entries in the ordinary log. Compositor-discarded submissions are accounted separately. latency 10s max covers frames actually presented; a low value alone does not prove that every frame was shown. Recording, retention and AI frequency are unchanged.
 
 Diagnostic analysis with --allow-live-drops reconciles explicit display drops but does not grant all-frames-presented acceptance. The default strict check remains available. Invalid PTS and device failures remain explicit errors. Historical descriptions below of a 100 ms FIFO-full failure and no discards describe the earlier policy; this section supersedes them for current live display.
 

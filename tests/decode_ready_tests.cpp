@@ -12,6 +12,24 @@ int main() {
         check(disabled.counter_value(TimingCounter::PresentationDropped)==1 &&
               disabled.snapshot().presentation_dropped==1,
               "Live drop accounting remains active with timing disabled");
+        int64_t startup_clock=1000000000;
+        Telemetry startup("startup",{false,1000},[&] {return startup_clock;});
+        const auto deadline=startup_clock+10000000000LL;
+        startup.presentation_drop_count_after(deadline);
+        startup.counter(TimingCounter::PresentationDropped,2);
+        startup_clock=deadline-1;
+        startup.counter(TimingCounter::PresentationDropped);
+        check(startup.counter_value(TimingCounter::PresentationDropped)==0,
+              "Startup drops before ten seconds excluded even with timing disabled");
+        startup_clock=deadline;
+        startup.counter(TimingCounter::PresentationDropped,3);
+        check(startup.snapshot().presentation_dropped==3,"Drops at ten-second boundary count");
+        startup.begin_generation();
+        startup.presentation_drop_count_after(deadline);
+        startup_clock+=1;
+        startup.counter(TimingCounter::PresentationDropped);
+        check(startup.counter_value(TimingCounter::PresentationDropped)==4,
+              "Reconnect or presentation resume must not restart startup exclusion");
         int64_t clock=1000000000;
         Telemetry t("cam",{},[&] { return clock; });
         auto frame=t.frame(clock);
