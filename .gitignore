@@ -1,6 +1,7 @@
 .deps/
 build*/
 artifacts/
+COPY.md
 __pycache__/
 *.mxr
 *.onnx
