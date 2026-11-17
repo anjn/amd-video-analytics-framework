@@ -1,5 +1,10 @@
-<!-- source: docs/dev/nvr/input-decode-latency.md 9f3c9597118dad6efe13eaeb5e077a1a82bf033d -->
+<!-- source: docs/dev/nvr/input-decode-latency.md d69b65dbb8dc75f7a0bfb4322c652f7d5afba8cc -->
 # Input→Decode遅延の調査
+
+
+## 調査履歴の読み方
+
+以下の調査・計画・実験の節は各時点の記録です。「FIFO未実装」「満杯時100msで停止」「未コミット」などは当時の状態を示し、現在の仕様や作業ツリーの状態ではありません。現在の表示は3枚FIFO・初期蓄積2周期・満杯時の最古未消費フレーム破棄で、冒頭の説明と[利用ガイド](../../guide/nvr-demo.ja.md)が現行動作です。過去の合否・数値は書き換えず保持します。
 
 ## ライブ表示の停止回避（2026-11-16）
 

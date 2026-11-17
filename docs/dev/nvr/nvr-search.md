@@ -30,9 +30,9 @@ pending searches and debounce timers. Recording deletion invalidates the results
 
 The **AI Statistics** tab reports completed stage timings and per-camera update
 rates. Detection/tracking defaults to 2 Hz per camera; collection requests one
-embedding every five seconds per person and slows down under load. See
+embedding every five seconds per person. Overload can reduce achieved throughput, but does not change the requested interval. See
 [AI performance and the 16-camera configuration](nvr-ai-performance.md) for
-model selection, bounded queues, priorities and benchmark commands. This is
+model selection, bounded queues, scheduling and benchmark commands. This is
 sampled, best-effort indexing; existing recordings are not backfilled.
 
 ## Choosing the embedding model
@@ -119,8 +119,7 @@ SDK consumers must rebuild for GPU-owning `SearchImage`, the extended `SearchOpt
 Use the EmbeddingGemma 2 ROCm revision pinned in `dependencies.lock.json`:
 `351303e293e11bafe4aa09f8303ba8b4d294d128`. Older local binaries may implement a
 different profile residency policy even with the same library version.
-Build and install that revision using its `docs/build.md`, with ROCm 7.2,
-MIGraphX and ROCm LibTorch matching the framework runtime. Python is used for
+Build and install that revision using its `docs/build.md`, against the validated host ROCm 10.1.0 / MIGraphX 2.18.0 and a compatible ROCm LibTorch. The framework does not install an alternate SDK for this runtime; verify the external runtime on the target host before use. Python is used for
 model preparation; the NVR calls `libeg2` directly through its native C ABI.
 
 After obtaining the model according to its upstream download instructions,
@@ -154,9 +153,7 @@ libraries so `libamdhip64.so` and its versioned SONAME resolve to the same
 runtime. It also enables the experimental AOTriton architecture path required
 by gfx1150. Other GPU architectures need their own prepared/validated bundles.
 
-The example NVR config enables search. Configurations omitting `search` retain
-the previous behavior. A missing library or unsupported profile disables the
-search service with a visible error; reception and recording still start.
+The example NVR config enables search. Configurations omitting `search` leave it disabled. Tracking and embedding have independent readiness/error states: an embedding library/profile load, warmup or runtime failure disables embedding collection and queries but does not prevent configured ReID tracking from starting or admitting frames. A ReID load/runtime failure is reported as a tracking error; reception and recording continue.
 
 ```json
 "search": {
@@ -180,13 +177,7 @@ vectors from being compared.
 
 ## Timing, persistence and playback
 
-Person boxes receive a ten-percent margin on each side, clipped to the video.
-A dedicated GPU path converts the source to BGRA and bilinearly resizes the
-crop to bounded RGB. Only this bounded RGB image is read back for native model
-input and PNG encoding. The live and playback rendering paths still use VA,
-DMA-BUF and EGL. The copy auditor counts crop readbacks and native embedding
-transfers separately; it continues rejecting undeclared transfers in other
-threads and paths.
+With ReID enabled, person crops use tight boxes; otherwise they receive a ten-percent margin, clipped to the video. A separate GPU path converts VA NV12 to BGRA and bilinearly resizes each bounded RGB crop. Crops are read back for PNG storage and EmbeddingGemma input. MobileCLIP retains the GPU crop and does not re-upload the thumbnail; ReID independently consumes the original VA frame ROI. Live/playback rendering still uses VA, DMA-BUF and EGL. The copy auditor distinguishes declared crop readbacks and embedding transfers from undeclared transfers in other paths.
 
 SQLite stores PNG, 768-dimensional normalized FP32 embeddings and source
 metadata in one atomic row. The vendored sqlite-vec extension computes cosine
@@ -265,8 +256,8 @@ long-duration throughput or large-archive search performance.
 
 Set `search.reid_model` to a compiled OSNet MSMT17 checkpoint to enable
 person cards. An empty/omitted path retains the original time-based grouping.
-The example configuration uses `../artifacts/reid-model/osnet-x1-msmt17.mxr`.
-A configured model that cannot load fails the search service visibly; it does
+The repository example config points to `artifacts/reid-model/osnet-x1-msmt17.mxr` via a path relative to `examples/nvr/config/`; adjust it when copying the config.
+A configured ReID model that cannot load reports a tracking error; it does
 not silently switch to a different identity algorithm. Reception and recording
 continue.
 

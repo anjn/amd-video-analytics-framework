@@ -1,16 +1,8 @@
-<!-- source: docs/guide/nvr-demo.ja.md ed5504cf96b2285ef25bca7fd6308f537647d978 -->
+<!-- source: docs/guide/nvr-demo.ja.md 3ef000a127530c1ed9ce21765143d348fa448643 -->
 # NVR demo
 
-## Live display recovery (2026-11-16)
 
-Live display prioritizes following the latest video. When its three-frame FIFO fills, the oldest entry that has not been consumed is discarded and the new frame is accepted. Initial prefill remains two frame periods. Excessively late queued frames are discarded to catch up; startup burst timing is bounded so scheduled presentation cannot keep moving into the future. Surfaces used by rendering or GPU processing are never reused before completion.
-
-Drops during the first ten seconds after live presentation first starts are excluded from the displayed aggregate. This deadline is shared across cameras and is not extended by reconnecting or resuming presentation. Per-frame diagnostics still retain these drops, with presentation_startup_drop marking their exclusion. After ten seconds, display drops appear as drop N in the single-line tile overlay, as a total in AI Statistics, and as per-camera entries in the ordinary log. Compositor-discarded submissions are accounted separately. latency 10s max covers frames actually presented; a low value alone does not prove that every frame was shown. Recording, retention and AI frequency are unchanged.
-
-Diagnostic analysis with --allow-live-drops reconciles explicit display drops but does not grant all-frames-presented acceptance. The default strict check remains available. Invalid PTS and device failures remain explicit errors. Historical descriptions below of a 100 ms FIFO-full failure and no discards describe the earlier policy; this section supersedes them for current live display.
-
-
-The NVR demo is a sample network video recorder built with this framework. It records all registered RTSP cameras while showing up to 16 of them on the desktop, and runs person and vehicle detection and tracking on the cameras being displayed. Recordings can be played back from a timeline, and if you prepare a native embedding model, you can also search for people by text or image.
+The NVR demo is a sample network video recorder built with this framework. It records all registered RTSP cameras while showing up to 16 of them on the desktop, and runs person and vehicle detection and tracking. Hidden-camera analysis depends on the background-AI and ReID settings. Recordings can be played back from a timeline, and if you prepare a native embedding model, you can also search for people by text or image.
 
 ## Screen layout
 
@@ -86,11 +78,11 @@ WAYLAND_DISPLAY=wayland-0 QT_QPA_PLATFORM=wayland-egl \
 
 On an X11 desktop, specify `QT_QPA_PLATFORM=xcb`. It succeeded if a window opens and bounding boxes and IDs appear on the video from the two cameras. Recordings are saved to `artifacts/nvr/nvr-recordings/`.
 
-Each launch deletes previous recordings in that directory. Move any recordings you want to keep to another location before launching.
+Each desktop launch deletes previous catalogued recordings and their search data in that recording root. Move recordings you want to keep elsewhere before launching. Unmanaged files are retained. The headless service does not perform this startup deletion.
 
 ## Run headless
 
-`amdva-streams` uses the same configuration file and performs only ingest, recording and detection. It runs without a display and prints its status as JSON every second.
+`amdva-streams` uses the same configuration file and runs the backend, including configured detection, tracking, search and result publication, with preview disabled. It runs without a display and prints its status as JSON every second.
 
 ```bash
 build/examples/nvr/amdva-streams artifacts/nvr/nvr-local.json 20
@@ -108,13 +100,13 @@ The NVR demo combines parts of this framework, standard GStreamer elements and a
 
 [![NVR demo data flow and hardware](images/nvr-architecture.svg)](images/nvr-architecture.svg)
 
-Click the figure to enlarge it. MobileCLIP green arrows cover application input handoff to the EP; copies and conversions inside the EP are outside the verification scope. Box colors show the hardware that runs the step, and the tag at the top right shows who provides the part. Arrow colors show how data is passed: green shares the same buffer (zero-copy), red is a copy between the CPU and the GPU or NPU, and gray is compressed data or metadata in CPU memory.
+Click the figure to enlarge it. Box colors identify hardware and tags identify the provider. Green arrows indicate processing/handoff without CPU pixel readback; red arrows return images or features to the CPU; gray arrows carry compressed data or CPU-side metadata. Green paths can write new output buffers or include GPU-to-GPU copies. MobileCLIP shared-input verification ends at the EP boundary; copies and conversions inside the EP are outside the audit.
 
 **Reception and recording**: The CPU writes the received compressed data to MKV files as is. Because the video is not decoded, the load is small and cameras that are not on screen keep recording. For a camera set to re-encode its recording, the decoded video is scaled on the GPU and encoded on VCN before it is recorded ([re-encoded recordings](../dev/nvr/vms.md)).
 
-**Live view and object detection**: Video decoded by VCN never leaves GPU memory: VPE scales and converts it, and it is used for display (OpenGL ES) and object detection (HIP, MIGraphX). Only the detection results (8 KB per frame) return to the CPU, which uses them to assign IDs and draw the boxes.
+**Live view and object detection**: Video decoded by VCN never leaves GPU memory: VPE scales and converts it, and it is used for display (OpenGL ES) and object detection (HIP, MIGraphX). Only the detection results (8,404 bytes per frame) return to the CPU, which uses them to assign IDs and draw the boxes.
 
-**Person tracking and search**: Preprocessing for person features (ReID), saving images for search and handing data to the NPU run on the CPU, so this is where video is first copied to the CPU. What is copied is a small image (up to 384×384) of just the person, cropped and scaled on the GPU; whole frames are not copied. The ReID model runs on the GPU and the embedding model runs on the NPU from a separate process. Text embedding for search queries and vector search run on the CPU.
+**Person tracking and search**: ReID uses the original VA frame and person ROI through a persistent `appsrc → amdpreproc → appsink` pipeline. VPE crops/resizes and HIP applies ImageNet normalization. OSNet consumes GPU input; only 512-dimensional features (2 KiB/person) return to the CPU for association. A separate GPU path creates search crops and reads them back for PNG storage and other search processing. `search.image_size` bounds each axis (default 384, configurable from 32 to 1024); whole frames are not read back. MobileCLIP2 retains the GPU crops, preprocesses them to 256×256 with HIP, and runs on the GPU or NPU in the same process. NPU input is a HIP-mapped shared tensor. MobileCLIP2 text embedding and vector search run on the CPU.
 
 **Playback**: The CPU reads the recording file; from there on, data passes between VCN, VPE and the GPU with zero-copy, as in the live view.
 
@@ -125,11 +117,11 @@ Click the figure to enlarge it. MobileCLIP green arrows cover application input 
 | Decoding | VCN | Video output to GPU memory (NV12) | GStreamer `vah264dec`, `vah265dec` |
 | Scaling and color conversion for display | VPE | Zero-copy | Framework |
 | Display, drawing boxes and text | GPU (OpenGL ES) | Zero-copy | NVR demo |
-| Scaling to the inference input | VPE | Zero-copy | Framework |
-| Normalization, inference (YOLO), box selection | GPU (HIP, MIGraphX) | Zero-copy; only detection results are read back to the CPU (8 KB) | Framework |
+| Scaling/padding to the model input dimensions | VPE | Zero-copy | Framework |
+| Normalization, inference (YOLO), box selection | GPU (HIP, MIGraphX) | Zero-copy; only detection results are read back to the CPU (8,404 bytes) | Framework |
 | ID assignment | CPU | Metadata only | Framework (`gvatrack`) |
-| Person cropping | VPE, GPU (HIP) | Only the cropped image is copied to the CPU (up to 384×384) | NVR demo |
-| ReID | CPU, GPU (MIGraphX) | Input copied to the GPU, features (2 KB per person) to the CPU | NVR demo |
+| Person cropping | VPE, GPU (HIP) | Search crops only are read back (each axis ≤ `search.image_size`, default 384) | NVR demo |
+| ReID preprocessing/inference | VPE, GPU (HIP, MIGraphX) | GPU input from original VA-frame ROIs; direct binding for batch one, GPU batch assembly otherwise. Only features return to CPU (2 KiB/person) | Framework `amdpreproc` and NVR demo |
 | Associating people, saving analysis | CPU | — | NVR demo, the framework's `Catalog` |
 | Embedding (MobileCLIP2) | GPU preprocessing, GPU/NPU inference | Shared input in one process; EP internals excluded from copy audit | NVR demo, MIGraphX, ONNX Runtime and Ryzen AI Software |
 | Saving search images, vector search, text embedding | CPU | — | NVR demo, SQLite and sqlite-vec |
@@ -143,10 +135,18 @@ Click the figure to enlarge it. MobileCLIP green arrows cover application input 
 - Settings, processing architecture, validation results: [NVR developer documentation](../dev/nvr/README.md)
 - Screen operations and recording management: [Desktop video management](../dev/nvr/vms.md)
 
-## Move the prepared 1440p demo to another environment
+## Prepare the 1440p demo from Git
 
-For `artifacts/1440p-demo`, use the [Git-managed templates and migration guide](../../examples/nvr/demo/1440p/README.md). Launch/configuration/layout files stay in Git while models and videos are exported separately. Generate local settings using destination paths instead of retaining the source machine's absolute config paths. NPU caches also contain internal absolute paths and SDK dependencies, so reprepare and validate them on the destination.
+Use the [1440p demo preparation guide](../../examples/nvr/demo/1440p/README.md) to prepare YOLO11n, OSNet and MobileCLIP2 from locked public checkpoints on the target host. Supply sixteen 1440p30 HEVC videos; generated models and another PC's Python environment are not required. The legacy asset-export section is auxiliary.
 
+
+## Live display frame handling
+
+Live display prioritizes following the latest video. When its three-frame FIFO fills, the oldest entry that has not been consumed is discarded and the new frame is accepted. Initial prefill remains two frame periods. Excessively late queued frames are discarded to catch up; startup burst timing is bounded so scheduled presentation cannot keep moving into the future. Surfaces used by rendering or GPU processing are never reused before completion.
+
+Drops during the first ten seconds after live presentation first starts are excluded from the displayed aggregate. This deadline is shared across cameras and is not extended by reconnecting or resuming presentation. Per-frame diagnostics still retain these drops, with presentation_startup_drop marking their exclusion. After ten seconds, display drops appear as drop N in the single-line tile overlay, as a total in AI Statistics, and as per-camera entries in the ordinary log. Compositor-discarded submissions are accounted separately. latency 10s max covers frames actually presented; a low value alone does not prove that every frame was shown. Recording, retention and AI frequency are unchanged.
+
+Diagnostic analysis with --allow-live-drops reconciles explicit display drops but does not grant all-frames-presented acceptance. The default strict check remains available. Invalid PTS and device failures remain explicit errors. The developer investigation records earlier policies separately as historical evidence.
 
 ## Input-to-actual-display latency in live tiles
 

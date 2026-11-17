@@ -2,21 +2,14 @@
 
 `amdva-nvr CONFIG.json` records every registered RTSP source and displays up to
 16 selected sources in a Qt desktop window. YOLOv8n runs on the selected sources
-with a shared MIGraphX batch executor, optionally also analyzing keyframes from
-hidden sources. Source registration has no fixed count
+with a shared MIGraphX batch executor. Hidden cameras use optional keyframe sampling or continuous decoding/inference when ReID is configured. Source registration has no fixed count
 limit; camera, storage, network and decoder capacity still limit a deployment.
 The supported input format is progressive, even-sized, 8-bit NV12 up to
 2560×1440, BT.709 limited range, from H.264 or H.265 at 30 FPS. Audio is ignored.
 
 ## Build and start
 
-Run `python3 scripts/bootstrap.py` to build the locked dependencies, including
-Qt 6, SQLite, RTSP/RTP and Matroska plugins. The sample is enabled by default;
-`-DAMDVA_BUILD_NVR_GUI=OFF` keeps the backend and the headless `amdva-streams`
-service but needs no Qt, and `-DAMDVA_BUILD_NVR=OFF` skips the sample. Dependencies
-remain under `.deps`; no system packages are installed or replaced. The sample
-also configures on its own against an installed SDK:
-`cmake -S examples/nvr -B build-nvr -DCMAKE_PREFIX_PATH=/path/to/amdva-sdk`.
+Install the host prerequisites and record them with `python3 scripts/host.py --write` as described in [Host build](../host-build.md). ROCm 10.1.0, MIGraphX 2.18.0, Mesa/libva/libdrm, Qt and SQLite development packages come from the validated host. `python3 scripts/bootstrap.py` builds pinned GStreamer 1.28.2 and its patches under `.deps`, then configures/builds the framework; it does not install an alternate GPU SDK or Qt. Always source `scripts/env.sh` before configuring, building or running. `-DAMDVA_BUILD_NVR_GUI=OFF` keeps the backend and headless `amdva-streams` without Qt; `-DAMDVA_BUILD_NVR=OFF` skips the sample. An installed SDK also supports standalone configuration: `cmake -S examples/nvr -B build-nvr -DCMAKE_PREFIX_PATH=/path/to/amdva-sdk`.
 
 Prepare the same YOLOv8n COCO weights in a separate CPU-only export environment:
 
@@ -52,9 +45,11 @@ URLs that may contain credentials.
 
 The config keys are demonstrated in `examples/nvr/config/nvr.json`. Batch size is one of
 1, 2, 4, 8 or 16; `model` must match that size and `single_model` must be a
-batch-1 model for partial batches of one. Model-info describes one image. Schema-1 models remain readable; new models use the general schema-2
-GPU/hash/device-I/O manifest and record the batch size. Dynamic-batch ONNX is exported from the
+batch-1 model for partial batches of one. Model-info describes one image. Compiled models require a schema-3
+manifest with matching GPU, ROCm/MIGraphX versions, SHA-256 and `offload_copy=false`, plus the batch size. Legacy schema-1/2 artifacts must be regenerated on the target host. Dynamic-batch ONNX is exported from the
 weights; changing a fixed-batch ONNX input alone is insufficient.
+
+Each desktop launch clears previous catalogued recordings and search data before reception. Unmanaged files remain. `amdva-streams` and SDK controllers do not clear history automatically. See [recording management](vms.md#camera-management-and-storage).
 
 ## Layout, shared services, tracking and publication
 
@@ -64,7 +59,7 @@ weights; changing a fixed-batch ONNX input alone is insufficient.
 | `app/` | Qt desktop (`amdva-nvr`) |
 | `headless.cpp` | `amdva-streams`, the backend without a display |
 | `tools/`, `tests/`, `scripts/` | validation programs, contract tests, model export and benchmarks |
-| `config/`, `benchmarks/`, `docs/` | example configurations, reviewed fixtures, guides and validation records |
+| `config/`, `benchmarks/` | example configurations and reviewed fixtures; guides and validation records live in `docs/dev/nvr/` |
 
 The backend uses only the public framework: RTSP ingest, segment recording,
 the recording catalog, keyframe inspection and playback come from
@@ -74,10 +69,7 @@ counted in the quota. GPU image packing, batch execution, imageless tracking,
 overlay geometry and result publication use shared framework libraries. See
 [framework interfaces](../framework.md) for SDK and headless usage.
 
-`tracking_enabled` defaults to true. Selected channels run imageless DL Streamer
-tracking across decoded frames and draw class labels and tracking IDs. A source
-reconnect, selection change or incompatible caps resets its tracker. Hidden
-keyframe detections remain independent untracked results.
+`tracking_enabled` defaults to true and enables imageless DL Streamer tracking for displayed frames. Configured ReID supplies confirmed person IDs to the live overlay independently; it uses its own sampled person tracker. Reconnects, selection changes and incompatible caps reset imageless tracking. Without ReID, hidden keyframe detections are independent untracked results.
 
 Optional `results` configuration uses the same asynchronous publisher as
 `amdmetapublish`:
@@ -99,56 +91,25 @@ dropped and error counts. Output is best effort and is not a durable event log.
 
 ## Background AI for hidden sources
 
-Set `background_ai_enabled` to `true` to analyze every source that is not selected
-by the active live layout. `background_ai_interval_seconds` is an integer from 1
-through 3600 and defaults to 5. An omitted enable flag defaults to false for
-existing configurations; `examples/nvr/config/nvr.json` enables the feature. Selected
-sources continue using their normal display inference scheduler.
+`background_ai_enabled` controls analysis of cameras outside the active live layout. It defaults to false when omitted; the example config enables it. Enabling `search` forces background AI on. A nonempty `search.reid_model` selects continuous tracking across visibility changes.
 
-Each hidden source takes the next independently decodable access unit after its
-sampling deadline. H.264 accepts IDR pictures; H.265 accepts IDR, BLA and CRA
-pictures. The compressed parser caches parameter sets by ID, capped at 1 MiB
-per source, and validates slice-header references before admission. An ordinary
-I picture or the absence of `DELTA_UNIT` alone is insufficient. Corrupted units,
-H.264 extensions and multilayer H.265 are excluded. The existing progressive,
-8-bit NV12, size and colorimetry restrictions still apply.
+With ReID configured, hidden cameras use continuous hardware decoding and the requested `ai_fps`, rather than periodic keyframe snapshots. Sixteen dedicated hidden-camera slots are available in addition to sixteen visible slots. Admission beyond hidden capacity waits for a free slot. This is scheduling capacity, not a throughput guarantee. Embedding initialization/runtime failures do not stop tracking; tracking and embedding report separate readiness/errors.
 
-A fresh VA decoder receives cached parameters and exactly one selected AU, then
-EOS to drain reordered output. No dependent pictures are decoded. Decode timeout
-is two seconds; errors affect background AI only. There is no full-stream or CPU
-decode fallback. Recording always receives the original complete compressed
-stream. Compressed headers may be copied on the CPU; decoded pixels remain in
-VAMemory through VPE, HIP and MIGraphX.
+Without ReID, `background_ai_interval_seconds` (integer 1–3600, default 5) selects the next independently decodable access unit after each deadline. H.264 accepts IDR; H.265 accepts IDR, BLA and CRA. Cached parameter sets are bounded to 1 MiB per source and slice references are validated. Ordinary I pictures or the absence of `DELTA_UNIT` alone are insufficient. A fresh VA decoder receives the cached parameters and one AU, then EOS; a two-second timeout affects background AI only. There is no full-stream or CPU decode fallback. Cameras already using a transcoder reuse its decoded frames.
 
-Four background slots bound the entire decode-to-inference workload. Each owns
-only a reusable AI surface and mapping, with no preview/EGL resources. When all
-slots are occupied, a candidate is skipped rather than queued. Older sampling
-deadlines have priority, with rotating ties. The five-second deadline starts at
-admission; long GOPs or contention increase the actual interval. Sampling does
-not request extra keyframes from cameras.
+The controller owns sixteen background slots; keyframe-only operation skips admission when all are occupied. Background and visible images share the batch executor. A mixed batch admits at most one background image; background-only batches can fill all positions. Selection, removal and reconnection invalidate obsolete jobs by generation. Background boxes are not reused as live overlays.
 
-Background and displayed images share the existing batch executor. A mixed
-batch admits at most one background image, and background-only batches may fill
-all available batch positions. Partial batches retain the existing batch-1 and
-GPU-padding behavior. Selection, removal and reconnection cancel pending
-background jobs; generation checks reject obsolete completions. Background
-boxes are never reused as display overlays.
-
-The status column reports background mode, completed inference count, detection
-count and result age. `Controller::status()` and the validation JSON telemetry
-also expose decoded/attempt counts, active jobs, capture timestamps and the
-latest class/score/box coordinates. Results are retained in memory only; this
-feature does not create a persistent detection-event database.
+The camera status and telemetry expose background state, inference/detection counts and result age. Periodic background detections alone do not create a persistent event database. Configured search stores eligible person observations in the catalog; configured result publication can export background observations. Recording remains independent of background sampling.
 
 ## Pipelines and failure handling
 
-Each source has three independently controlled pipelines:
+The ordinary pass-through recording path separates reception, recording and decoding. The diagram is schematic; re-encoded recording uses `Transcoder` and shares its decoder output with analytics/display:
 
 ```text
 rtspsrc → depay → parse → compressed appsink
                        ├─ buffer references → recorder appsrc → parse → splitmuxsink
-                       └─ selected only → decoder appsrc → VA decoder → VAMemory appsink
-                                                                  ├─ VPE → EGL tiles
+                       └─ visible / continuous ReID → decoder appsrc → VA decoder → VAMemory appsink
+                                                                  ├─ presentation FIFO → VPE → EGL tiles
                                                                   └─ VPE → HIP → batch MIGraphX → GPU NMS
 ```
 
@@ -204,8 +165,7 @@ Detector, ReID and embedding tensor sizes are independent of source resolution.
 GL fences protect preview surfaces from reuse while rendering.
 Selection changes reuse these pools, including across camera reconnects.
 
-Preview conversion runs separately from inference. Each source keeps only its
-latest decoded buffer. HIP packs RGB NCHW directly into the corresponding slice
+Preview conversion runs separately from inference. AI keeps the latest decoded buffer per source. Visible presentation separately holds a three-frame FIFO, with two frame periods of initial prefill. A full FIFO replaces the oldest unconsumed frame; late frames are explicitly dropped to catch up. GPU/GL users retain their surfaces until completion. HIP packs RGB NCHW directly into the corresponding slice
 of a reusable device batch arena; the shared batch executor then copies each slice
 GPU-to-GPU into its own batch input. There is no host-to-device tensor copy. The scheduler rotates across eligible sources, waits at most
 20 ms for a batch, uses batch 1 for a single image, and fills unused slots of a
@@ -216,12 +176,7 @@ counts these separately and still rejects derivation of any rendered surface.
 Each valid image reads back an 8404-byte compact detection structure (up to 300
 boxes with their candidate index) as marked metadata; frame pixels remain on the GPU.
 
-AI starts at 5 FPS per selected channel. Measured batch service time and frame
-age adjust sampling, up to 30 FPS per channel, with a 200 ms age target. These
-are scheduling targets, not throughput or maximum-latency guarantees. Each
-result retains channel ID, a globally increasing generation and its geometry.
-Inference does not retain a growing frame queue. The original `amdpreproc` and
-`amdmigraphx` elements remain usable and share the same inference implementation.
+Detection/tracking admissions use `ai_fps` (0.1–10 Hz per camera, default 2). Camera groups are phased by compiled batch size; missed periods are skipped and queued work is replaced with newer inputs under overload. There is no adaptive rate, frame-age target or cross-model GPU lease. Actual completion rates can be lower than requested. Each result retains channel ID, generation and geometry. The standalone `amdpreproc` and `amdmigraphx` elements remain available and share the inference implementation.
 
 ## Verification
 
@@ -285,9 +240,7 @@ registration, credential masking, 64×64 window resizing, recording-directory
 permission failure and recovery. Use a dedicated recording directory; this test
 temporarily changes its permissions.
 
-This sample has no playback, ONVIF discovery, audio recording or 4K performance
-claim. A production NVR should additionally define crash repair, retention
-policy, monitoring, access control and camera-specific qualification.
+The sample supports recording playback and timeline previews. It does not provide ONVIF discovery or audio recording, and makes no 4K performance claim. A production deployment additionally needs crash repair, access control, operational monitoring and camera-specific qualification. Historical validation figures below describe their recorded revisions, not current acceptance guarantees.
 
 The framework's optional `keyframe-tests H264|H265 FILE OUTPUT_PREFIX` executable
 (`AMDVA_HARDWARE_TESTS=ON`) checks
@@ -320,16 +273,9 @@ are in [background AI validation results](nvr-background-validation-results.json
 
 ## Decode and display timing
 
-The optional `telemetry` configuration defaults to
-`{ "enabled": true, "stall_ms": 1000 }`. NVR shows actual decoder-output and
-new-image swap FPS plus input→decode/input→swap P99 columns; the FPS tooltip
-contains detailed statistics. Hidden/minimized display observation pauses while
-decode continues. Legacy SDK `decoded`/`display_fps` fields still describe
-preview processing. Use `Controller::telemetry()` for actual stage counts,
-latency, update intervals, stops and explicit discards. The headless command and
-GUI validator add a top-level `telemetry` array to periodic JSON. There is no
-latency/FPS pass/fail policy. See [telemetry](../telemetry.md) for exact boundaries
-and the limitations of buffer-swap notification as a display measurement.
+The optional `telemetry` configuration defaults to `{ "enabled": true, "stall_ms": 1000 }`. Detailed camera statistics distinguish decoder-output notification, VA GPU-ready observation, preview, swap and actual presentation. The live tile shows `latency 10s max`, measured from first RTP reception to Wayland-confirmed presentation, and `N/A` when no valid confirmed measurement is available. It is not camera-exposure latency. Display drops after the shared ten-second startup exclusion are reported separately; low latency does not prove every frame was displayed.
+
+The AI Statistics decode overview shows the largest per-camera input→GPU-ready P99 over ten seconds. GPU-ready observation includes polling/scheduling delay; it is not pure VCN execution time. Swap/decoder notifications cannot substitute for hardware completion or actual presentation. The headless service has no presentation measurement. Legacy SDK `decoded`/`display_fps` fields describe preview processing; use `Controller::telemetry()` for stage-level data and periodic JSON. See the [user guide](../../guide/nvr-demo.md#input-to-actual-display-latency-in-live-tiles), [telemetry](../telemetry.md) and [diagnostic investigation](input-decode-latency.md) for boundaries and strict validation.
 
 ## Person search
 

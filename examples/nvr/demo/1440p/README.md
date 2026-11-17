@@ -1,4 +1,4 @@
-<!-- source: examples/nvr/demo/1440p/README.ja.md 67b96b388b01b1a5a3c1bd6e6382fc7470f292d2 -->
+<!-- source: examples/nvr/demo/1440p/README.ja.md ba45d447129224f04cbb6e14ae0b6d87b4dc4c90 -->
 # Prepare the 1440p demo from Git
 
 The standard workflow generates models on the target from locked public checkpoints, without copying prepared assets from another PC. The legacy migration section below is an auxiliary export tool, not a requirement for a fresh build.
@@ -29,8 +29,7 @@ See the [support matrix](../../../../docs/dev/support-matrix.md) for reproducibi
 
 ## Legacy asset export (not required for fresh construction)
 
-<!-- source: examples/nvr/demo/1440p/README.ja.md 94b0d9fb3ab85bb2ab997d9e829dc9813cb8829b -->
-# Move the 1440p, 17-input demo to another environment
+### Move the 1440p, 17-input demo to another environment
 
 Keep the templates and scripts here in Git; keep large assets and machine-local state under ignored `artifacts/`. This profile captures the camera configuration, initial layout, video order, COCO labels and deployment tooling behind `artifacts/1440p-demo`. Configuration and file verification require only Python 3.11+ and its standard library.
 
@@ -88,7 +87,7 @@ Transfer this directory using an archive or `rsync -a`. Check out the same appli
 
 ## 2. Prepare the destination runtime
 
-The validated environment is Ubuntu 24.04, gfx1150, ROCm 7.2.0 / MIGraphX 2.15.0. Compiled `.mxr` programs depend on GPU architecture and runtime libraries. For a different GPU/ROCm, recompile from the original ONNX/weights; see [model preparation](../../../../docs/dev/nvr/nvr-ai-performance.md). Recreate the destination Python environment rather than copying a venv.
+The legacy export workflow was validated on Ubuntu 24.04, gfx1150, ROCm 7.2.0 / MIGraphX 2.15.0. The current runtime requires ROCm 10.1.0 / MIGraphX 2.18.0 and schema-3 GPU/SDK/hash manifests. Old-SDK `.mxr` files cannot be run unchanged even on the same GPU. Regenerate from original ONNX/weights using the current preparation workflow and recreate Python environments on the destination. See the [support matrix](../../../../docs/dev/support-matrix.md) for validation status.
 
 Enable the features using the destination Ryzen AI environment, following the [MobileCLIP setup](../../../mobileclip/README.md). Stop running pipelines before building:
 

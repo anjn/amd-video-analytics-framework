@@ -1,5 +1,7 @@
 # AI scheduling, statistics and 16-camera evaluation
 
+The **AI Statistics** tab opens in **Simple** view with video decode, GPU AI, NPU AI and person-tracking cards plus one-minute trends. **Detailed** exposes stage/camera rows and controls. Decoder GPU-ready P99 and live presentation latency use ten-second windows; AI stage timings use the 60-second window below.
+
 The NVR has an **AI Statistics** tab with a 60-second rolling window. It shows
 mean, P50, P95 and maximum completed wall time, average wait, calls per second,
 logical batch size, pending work and cumulative drops. The summary combines
@@ -33,7 +35,7 @@ variables](https://rocm.docs.amd.com/projects/HIP/en/docs-6.4.2/reference/env_va
 The isolation contract holds a GPU semaphore on an unrelated stream and requires
 inference to complete before releasing it.
 
-ReID keeps VPE contexts across changing ROIs; the pinned Mesa implementation
+ReID keeps VPE contexts across changing ROIs; the Mesa implementation used for the recorded validation
 recomputes coefficients when ratios change. Recreating these contexts for every
 person had dominated preprocessing and stalled other work. ROI/batch parity is
 checked against fresh-context features (cosine at least 0.9999). Thumbnails use
@@ -125,7 +127,7 @@ model's tensor contract. YOLO11 uses the existing YOLOv8-family output decoder.
 YOLOX Nano was benchmarked separately with its own decoder; it was not selected
 and is not accepted as an interchangeable live-model output format.
 
-Recommended search settings:
+Configuration used for these measurements (revalidate the prepared models and external runtime on the [target host](../support-matrix.md)):
 
 ```json
 {

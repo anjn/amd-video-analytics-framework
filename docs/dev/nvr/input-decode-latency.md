@@ -1,5 +1,10 @@
 # Input-to-decode latency investigation
 
+
+## Reading the investigation history
+
+The investigation, plans and experiments below are records of their respective checkpoints. Statements such as “FIFO deferred”, “100 ms FIFO-full failure” and “uncommitted” describe those checkpoints, not the current implementation or working tree. Current live display uses a three-frame FIFO, two-period prefill and oldest-unconsumed replacement on overflow; use the opening policy and [user guide](../../guide/nvr-demo.md) for current behavior. Historical measurements and acceptance outcomes are preserved.
+
 ## Live display recovery (2026-11-16)
 
 Live display prioritizes following the latest video. When its three-frame FIFO fills, the oldest entry that has not been consumed is discarded and the new frame is accepted. Initial prefill remains two frame periods. Excessively late queued frames are discarded to catch up; startup burst timing is bounded so scheduled presentation cannot keep moving into the future. Surfaces used by rendering or GPU processing are never reused before completion.

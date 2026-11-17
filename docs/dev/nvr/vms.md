@@ -23,13 +23,12 @@ keeps its border.
 **Show stream info** toggles codec, received resolution, input frame rate and
 bitrate on every live image. It defaults to on and persists in `<config>.ui.json`.
 The lower-left overlay uses one line, for example
-`H.264 1920x1080 30.0 fps 4.2 Mbps  decode 12.3 ms`. A camera whose recording is
+`H.264 1920x1080 30.0 fps 4.2 Mbps  latency 10s max 120.3 ms  drop 2`. A camera whose recording is
 re-encoded adds an encoder line below it, for example
 `→ AV1  1280x720  29.6 fps  1.9 Mbps  -73%  encode 96 ms`: the output codec and
 size, the encoded frame rate and bitrate, the change from the received bitrate, and
 the mean delay from handing a frame to the transcoder to receiving it encoded.
-Decode latency is the existing rolling mean from application input to decode output,
-not camera capture latency; unavailable telemetry displays `decode N/A`. Grid
+Latency is the maximum over the last ten seconds from first RTP reception to Wayland-confirmed presentation, not camera-exposure latency or decoder notification time. Missing/stale/invalid presentation observations display `latency 10s max N/A`. `drop N` appears when display drops are counted after the shared ten-second startup exclusion. Per-frame diagnostics retain startup drops separately. See [latency boundaries](../../guide/nvr-demo.md#input-to-actual-display-latency-in-live-tiles). Grid
 text uses a 12px target size, while single view uses 22px. Rates update approximately once per second from received
 parser-output compressed access units before queue drops, decoding and recording
 selection.
@@ -128,7 +127,7 @@ before submitting work on their independent streams; the wait is reported as **D
 with engine headroom). Every 2 s the controller also lowers a frame-rate cap shared
 by all transcoders (factor 0.7, at least 5 fps) while that wait averages more than
 2 ms, and raises it by 2 fps while it stays under 0.5 ms, until it is removed. The tracking worker takes up to eight
-queued frames (one per camera) at a time, crops them and runs ReID
+queued frames (one per camera) at a time, prepares original-frame ROIs on VPE/HIP and runs ReID
 for all their people in one call to fill ReID batches. On the Radeon 890M with sixteen 1440p30 HEVC cameras on screen
 and person tracking on all of them, tracking keeps up with detection and drops no
 frames (it dropped about one per second before batching); with four re-encoded
